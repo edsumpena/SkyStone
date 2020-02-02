@@ -351,7 +351,7 @@ public class Path {
                 currentPos = straightDrive.getPoseEstimate();
                 RobotLog.dd(TAG, "step20, " + currentPos.toString());
 
-                straightDrive.turnSync(-Math.toRadians(70));
+                straightDrive.turnSync(-Math.toRadians(80));
                 RobotLog.dd(TAG, "step21, " + straightDrive.getPoseEstimate().toString());
                 currentPos = straightDrive.getPoseEstimate();
 
@@ -603,7 +603,7 @@ public class Path {
 
                 if (DriveConstantsPID.RUN_USING_ODOMETRY_WHEEL) {
                     builder = builder.setReversed(false)
-                            .setReversed(true).lineTo(new Vector2d(straightDrive.getPoseEstimate().getX(), -25));
+                            .setReversed(true).lineTo(new Vector2d(straightDrive.getPoseEstimate().getX(), -23));
                     //.strafeTo(new Vector2d(42, -30));
                 }
                 trajectory = builder.build();
