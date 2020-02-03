@@ -16,7 +16,7 @@ import java.util.ArrayList;
 
 /*
  * -Gamepad A:
- *  -Left Joystick controls Left Wheel
+ *  -Start + Back to switch modes
  *  -Right Joystick controls Right Wheel
  *  -Left Bumper strafes left
  *  -Right Bumper strafes right
@@ -43,12 +43,14 @@ public class Teleop extends LinearOpMode {
     private HardwareMap hwMap;
     private boolean manualOverride = false;
     private boolean blockerCapstone = false;
+    private boolean transHornFlag = false;
 
     private ArrayList<OnOffButton> buttonLogic = new ArrayList<>();
 
     private boolean blocker = false;
 
     private boolean dummy = false;
+    private boolean transferHornDummy = false;
     private boolean parking = false;
     private ArrayList<String> kVData = new ArrayList<>();
 
@@ -105,15 +107,15 @@ public class Teleop extends LinearOpMode {
         /*buttonLogic.add(new OnOffButton(gamepad2, GamepadButtons.DPAD_DOWN,
                 new Servo[]{hwMap.innerTransfer},
                 new double[][]{{TeleopConstants.innerTransferPosBlock, TeleopConstants.innerTransferPosTucked}}));*/
-        buttonLogic.add(new OnOffButton(gamepad2, GamepadButtons.LEFT_TRIGGER, new Servo[]{hwMap.transferHorn},
-                new double[][]{{TeleopConstants.transferHornPosPush, TeleopConstants.transferHornPosReady}}));
+        /*buttonLogic.add(new OnOffButton(gamepad2, GamepadButtons.LEFT_TRIGGER, new Servo[]{hwMap.transferHorn},
+                new double[][]{{TeleopConstants.transferHornPosPush, TeleopConstants.transferHornPosReady}}));*/
         buttonLogic.add(new OnOffButton(gamepad2, GamepadButtons.DPAD_LEFT, new Servo[]{hwMap.liftOdometry},
                 new double[][]{{TeleopConstants.liftOdometryUp, TeleopConstants.liftOdometryDown}}));
 
         telemetry.addData("Status", "Ready");
         hwMap.clawInit.setPosition(TeleopConstants.clawInitPosCapstone);
-        hwMap.redAutoClawJoint1.setPosition(TeleopConstants.autoClaw1TeleOp);
-        hwMap.redAutoClawJoint2.setPosition(TeleopConstants.autoClaw2Stowed);
+        //hwMap.redAutoClawJoint1.setPosition(TeleopConstants.autoClaw1TeleOp);
+        //hwMap.redAutoClawJoint2.setPosition(TeleopConstants.autoClaw2Stowed);
         hwMap.parkingServo.setPosition(TeleopConstants.parkingServoPosLock);
 
         waitForStart();
@@ -123,21 +125,25 @@ public class Teleop extends LinearOpMode {
         toggleLoop();
         parkingLoop();
         armDelayHandler();
+        initIntakeClawArm();
 
         while (opModeIsActive()) {
 
-            if (gamepad2.a && buttonLogic.get(0).getState()[0] && buttonLogic.get(3).getState()[0]) {
-                buttonLogic.get(3).manualActivate(true, false);
-
-                if (!buttonLogic.get(2).getState()[1])
-                    buttonLogic.get(3).manualActivate(false, true);
+            if (gamepad2.a && buttonLogic.get(0).getState()[0]) {
+                hwMap.transferHorn.setPosition(TeleopConstants.transferHornPosReady);
+                try{
+                    Thread.sleep(200);
+                } catch (Exception e){}
+                /*hwMap.clawServo1.setPosition(TeleopConstants.clawServo1PosReceive);
+                hwMap.clawServo2.setPosition(TeleopConstants.clawServo2Block);
+                try{
+                    Thread.sleep(200);
+                } catch (Exception e){}*/
+                hwMap.innerTransfer.setPosition(TeleopConstants.innerTransferPosTucked);
+                try{
+                    Thread.sleep(200);
+                } catch (Exception e){}
             }
-
-            //if (gamepad2.left_trigger >= 0.5 && buttonLogic.get(3).getState()[0])
-            //    buttonLogic.get(3).manualActivate(true, false);
-
-            if (gamepad2.y && !buttonLogic.get(2).getState()[0] && buttonLogic.get(1).getState()[0])
-                buttonLogic.get(2).manualActivate(true, false);
 
             //------------------------------===Capstone===------------------------------------------
 
@@ -146,17 +152,18 @@ public class Teleop extends LinearOpMode {
 
                 hwMap.innerTransfer.setPosition(TeleopConstants.innerTransferPosTucked);
                 hwMap.clawServo1.setPosition(TeleopConstants.clawServo1Capstone);
+                hwMap.transferHorn.setPosition(TeleopConstants.transferHornCapstone);
 
                 try{
-                    Thread.sleep(300);
+                    Thread.sleep(750);
                 } catch(Exception e){}
 
-                if (!buttonLogic.get(2).getState()[0])
+                /*if (!buttonLogic.get(2).getState()[0])
                     buttonLogic.get(2).manualActivate(true, false);
 
                 try{
                     Thread.sleep(500);
-                } catch (Exception e){}
+                } catch (Exception e){}*/
 
                 hwMap.innerTransfer.setPosition(TeleopConstants.innerTransferPosClosed);
 
@@ -164,39 +171,50 @@ public class Teleop extends LinearOpMode {
                     Thread.sleep(500);
                 } catch (Exception e){}
 
+                hwMap.innerTransfer.setPosition(TeleopConstants.innerTransferPosReleased);
+
+                try{
+                    Thread.sleep(300);
+                } catch (Exception e){}
+
+                hwMap.clawServo1.setPosition(TeleopConstants.clawServo1PosReceive);
+                hwMap.clawServo2.setPosition(TeleopConstants.clawServo2Block);
+                hwMap.transferHorn.setPosition(TeleopConstants.transferHornPosReady);
+
+                try{
+                    Thread.sleep(500);
+                } catch (Exception e){}
+
+                hwMap.transferHorn.setPosition(TeleopConstants.transferHornPosPush);
+
+                try{
+                    Thread.sleep(1000);
+                } catch (Exception e){}
+
                 hwMap.innerTransfer.setPosition(TeleopConstants.innerTransferPosTucked);
 
                 try{
-                    Thread.sleep(300);
-                } catch (Exception e){}
-
-                if (buttonLogic.get(2).getState()[0])
-                    buttonLogic.get(2).manualActivate(true, false);
-
-                try{
-                    Thread.sleep(300);
-                } catch (Exception e){}
-
-                hwMap.clawServo1.setPosition(TeleopConstants.clawServo1PosOpen);
-                hwMap.clawServo2.setPosition(TeleopConstants.clawServo2Block);
-
-                try{
-                    Thread.sleep(300);
-                } catch (Exception e){}
-
-                if (!buttonLogic.get(2).getState()[0])
-                    buttonLogic.get(2).manualActivate(true, false);
-
-                try{
-                    Thread.sleep(300);
+                    Thread.sleep(800);
                 } catch (Exception e){}
             } else if (!gamepad2.dpad_up && blockerCapstone) {
                 blockerCapstone = false;
 
-                if (buttonLogic.get(2).getState()[0])
-                    buttonLogic.get(2).manualActivate(true, false);
+                hwMap.transferHorn.setPosition(TeleopConstants.transferHornPosReady);
 
                 hwMap.innerTransfer.setPosition(TeleopConstants.innerTransferPosTucked);
+                hwMap.clawServo1.setPosition(TeleopConstants.clawServo1PosReceive);
+                hwMap.clawServo2.setPosition(TeleopConstants.clawServo2Block);
+                try{
+                    Thread.sleep(200);
+                } catch(Exception e){}
+            }
+
+            if(gamepad2.dpad_down){
+                hwMap.clawServo1.setPosition(TeleopConstants.clawServo1Capstone);
+                hwMap.clawServo2.setPosition(TeleopConstants.clawServo2Block);
+                try{
+                    Thread.sleep(300);
+                } catch (Exception e){}
             }
 
             //------------------------------===Driving/Strafing===------------------------------------------
@@ -320,8 +338,6 @@ public class Teleop extends LinearOpMode {
     }
 
     private void driveLoop() {
-
-
         Thread drive = new Thread() {
             public void run() {
                 while (opModeIsActive()) {
@@ -479,11 +495,11 @@ public class Teleop extends LinearOpMode {
                         } else {
                             hwMap.clawServo1.setPosition(TeleopConstants.clawServo1Prep);
                             try{
-                                Thread.sleep(500);
+                                Thread.sleep(250);
                             } catch (Exception e){}
                             hwMap.clawServo2.setPosition(TeleopConstants.clawServo2PosClose);
                             try{
-                                Thread.sleep(500);
+                                Thread.sleep(250);
                             } catch (Exception e){}
                             hwMap.clawServo1.setPosition(TeleopConstants.clawServo1PosClose);
                             intake = false;
@@ -494,18 +510,18 @@ public class Teleop extends LinearOpMode {
 
                     if (gamepad2.right_bumper && !blocker) {
                         if (!outake) {
-                            hwMap.clawServo1.setPosition(TeleopConstants.clawServo1PosOpen);
+                            hwMap.clawServo1.setPosition(TeleopConstants.clawServo1PosReceive);
                             hwMap.clawServo2.setPosition(TeleopConstants.clawServo2Block);
                             intake = false;
                             outake = true;
                         } else {
                             hwMap.clawServo1.setPosition(TeleopConstants.clawServo1Prep);
                             try{
-                                Thread.sleep(500);
+                                Thread.sleep(250);
                             } catch (Exception e){}
                             hwMap.clawServo2.setPosition(TeleopConstants.clawServo2PosClose);
                             try{
-                                Thread.sleep(500);
+                                Thread.sleep(250);
                             } catch (Exception e){}
                             hwMap.clawServo1.setPosition(TeleopConstants.clawServo1PosClose);
                             intake = false;
@@ -530,7 +546,7 @@ public class Teleop extends LinearOpMode {
                     if(gamepad2.right_trigger >= 0.5){
                         if(gamepad2.x && !dummy){
                             if(!parking) {
-                                hwMap.redAutoClawJoint1.setPosition(TeleopConstants.autoClaw1Up - 0.03);
+                                //hwMap.redAutoClawJoint1.setPosition(TeleopConstants.autoClaw1Up - 0.08);
                                 try{
                                     Thread.sleep(300);
                                 } catch (Exception e){}
@@ -541,7 +557,7 @@ public class Teleop extends LinearOpMode {
                                 try{
                                     Thread.sleep(300);
                                 } catch (Exception e){}
-                                hwMap.redAutoClawJoint1.setPosition(TeleopConstants.autoClaw1TeleOp);
+                                //hwMap.redAutoClawJoint1.setPosition(TeleopConstants.autoClaw1TeleOp);
                                 parking = false;
                             }
                             dummy = true;
@@ -549,10 +565,88 @@ public class Teleop extends LinearOpMode {
                             dummy = false;
                         }
                     }
+
+                    if(gamepad2.left_trigger >= 0.5 && !transferHornDummy){
+                        if(!transHornFlag) {
+                            hwMap.transferHorn.setPosition(TeleopConstants.transferHornPosPush);
+                            transHornFlag = true;
+                        } else {
+                            hwMap.transferHorn.setPosition(TeleopConstants.transferHornPosReady);
+                            transHornFlag = false;
+                        }
+                        transferHornDummy = true;
+                    } else if(gamepad2.left_trigger < 0.5 && transferHornDummy){
+                        transferHornDummy = false;
+                    }
                 }
             }
         };
         parkingServ.start();
+    }
+
+    private void initIntakeClawArm() {
+        Thread intake = new Thread() {
+            public void run() {
+                hwMap.clawInit.setPosition(TeleopConstants.clawInitPosCapstone);
+                hwMap.clawServo2.setPosition(TeleopConstants.clawServo2Block + 0.08);
+                //resetLift(TeleopConstants.liftPower);
+                try {
+                    Thread.sleep(300);
+                } catch (Exception e) {}
+
+                hwMap.innerTransfer.setPosition(TeleopConstants.intakeInitPosRight);
+                try {
+                    Thread.sleep(700);
+                } catch (Exception e) {}
+
+                hwMap.innerTransfer.setPosition(TeleopConstants.intakeInitPosLeft);
+
+                try {
+                    Thread.sleep(700);
+                } catch (Exception e) {}
+
+                hwMap.innerTransfer.setPosition(TeleopConstants.intakeInitPosReset);
+            }
+        };
+
+        Thread claw = new Thread(){
+            public void run(){
+                //hwMap.clawInit.setPosition(TeleopConstants.clawInitPosReset);
+                hwMap.clawInit.setPosition(TeleopConstants.clawInitPosReset);
+
+                try {
+                    Thread.sleep(800);
+                } catch (Exception e) {}
+
+                hwMap.clawInit.setPosition(TeleopConstants.clawInitPosCapstone);
+            }
+        };
+
+        Thread autoClaw = new Thread(){
+            public void run(){
+               // hwMap.redAutoClawJoint1.setPosition(TeleopConstants.autoClaw1Init);
+
+                try{
+                    Thread.sleep(150);
+                } catch(Exception e){}
+
+                hwMap.redAutoClawJoint2.setPosition(TeleopConstants.autoClaw2Init);
+            }
+        };
+
+        Thread loop = new Thread() {
+            public void run() {
+                while (opModeIsActive()){
+                    if(gamepad2.dpad_right){
+                        intake.run();
+                        claw.run();
+                        autoClaw.run();
+                    }
+                }
+            }
+        };
+
+        loop.start();
     }
 
     private void saveDataLoop(HardwareMap hw) {

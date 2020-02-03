@@ -31,10 +31,9 @@ public class ServoTester extends LinearOpMode {
                 rw.intakeInit,
                 rw.redAutoClawJoint1,
                 rw.redAutoClawJoint2,
-                rw.parkingServo,
+                rw.redAutoClawJoint3,
+                //rw.parkingServo,
                 rw.liftOdometry
-                //rw.blueAutoClawJoint1
-                //rw.blueAutoClawJoint2
         };
 
         List<String> servoNames = new ArrayList<>();
@@ -42,8 +41,8 @@ public class ServoTester extends LinearOpMode {
         double[] pos = new double[] {TeleopConstants.clawServo1PosClose, TeleopConstants.clawServo2PosClose,
                 TeleopConstants.transferLockPosUp, TeleopConstants.transferHornPosReady,
                 TeleopConstants.clawInitPosCapstone, TeleopConstants.innerTransferPosTucked,
-                TeleopConstants.foundationLockUnlock, TeleopConstants.intakeInitPosReset, TeleopConstants.autoClaw1Init,
-                TeleopConstants.autoClaw2Init, TeleopConstants.parkingServoPosLock, TeleopConstants.liftOdometryDown};
+                TeleopConstants.foundationLockUnlock, TeleopConstants.intakeInitPosReset, TeleopConstants.autoClaw1Extended,
+                TeleopConstants.autoClaw2Init, TeleopConstants.autoClaw3Init, TeleopConstants.liftOdometryDown};
 
         for(int i = 0; i < servos.length; i++) {
             servoPositions.add(pos[i]);

@@ -19,8 +19,10 @@ import org.firstinspires.ftc.teamcode.All.FourWheelMecanumDrivetrain;
 import org.firstinspires.ftc.teamcode.All.HardwareMap;
 import org.firstinspires.ftc.teamcode.Autonomous.Vision.Detect;
 import org.firstinspires.ftc.teamcode.PID.DriveConstantsPID;
+import org.firstinspires.ftc.teamcode.PID.RobotLogger;
 import org.firstinspires.ftc.teamcode.PID.mecanum.SampleMecanumDriveBase;
 import org.firstinspires.ftc.teamcode.PID.mecanum.SampleMecanumDriveREV;
+import org.firstinspires.ftc.teamcode.PID.mecanum.SampleMecanumDriveREVOptimized;
 
 import java.util.Arrays;
 import java.util.List;
@@ -116,17 +118,20 @@ public class MainAutonomous extends LinearOpMode {
             if (initialize) {
                 telemetry.addData("STATUS", "Calibrating IMU...");
                 telemetry.update();
-                straightDrive = new SampleMecanumDriveREV(hardwareMap, false);
+                if (DriveConstantsPID.USING_BULK_READ == false)
+                    straightDrive = new SampleMecanumDriveREV(hardwareMap, false);
+                else
+                    straightDrive = new SampleMecanumDriveREVOptimized(hardwareMap, false);
+                /*
                 strafeDrive = new SampleMecanumDriveREV(hardwareMap, true);
                 imu = hardwareMap.get(BNO055IMU.class, "imu");
                 BNO055IMU.Parameters parameters = new BNO055IMU.Parameters();
                 parameters.angleUnit = BNO055IMU.AngleUnit.RADIANS;
                 imu.initialize(parameters);
-
-
+                */
                 telemetry.addData("STATUS", "Done!");
                 telemetry.update();
-                path = new Path(hwMap, this, straightDrive, strafeDrive, startingPos, hardwareMap, imu);
+                path = new Path(hwMap, this, straightDrive, startingPos, hardwareMap, imu);
 
                 if (fieldPosition == FieldPosition.RED_QUARY || fieldPosition == FieldPosition.BLUE_QUARY) {
                     telemetry.addData("STATUS", "Initializing TensorFlow...");
@@ -175,40 +180,55 @@ public class MainAutonomous extends LinearOpMode {
 
             telemetry.addData("SKYSTONE POSITIONS", Arrays.toString(skystonePositions));
             telemetry.addData("External Heading",
-                    Math.round(Math.toDegrees(imu.getAngularOrientation().firstAngle) * 1000.0) / 1000.0);
+                    Math.round(Math.toDegrees(straightDrive.getExternalHeading()) * 1000.0) / 1000.0);
             telemetry.addData("Current (starting) Location", path.getPoseEstimate());
             telemetry.update();
+            try {
+                Thread.sleep(200);
+            } catch (Exception e) {
+            }
         }
 
-        if (isStopRequested() && tfod != null)
+        if (isStopRequested() && tfod != null) {
             tfod.shutdown();
+            tfod = null;
+        }
 
         waitForStart();
-
-        if (tfod != null)
+        if (tfod != null) {
+            RobotLogger.dd("", "to shutdown tensor flow");
             tfod.shutdown();
-
+            tfod = null;
+            RobotLogger.dd("", "tensor flow is shutdown");
+        }
         if (opModeIsActive() && fieldPosition != null) {
-            sendData();
-            //resetLiftEncoder();
-            switch (fieldPosition) {
-                case RED_QUARY:
-                    path.RedQuary(skystonePositions);
-                    break;
-                case RED_FOUNDATION_PARK:
-                    path.RedFoundationPark();
-                    break;
-                case BLUE_QUARY:
-                    path.BlueQuary(skystonePositions);
-                    break;
-                case BLUE_FOUNDATION_PARK:
-                    path.BlueFoundationPark();
-                    break;
-                case BLUE_FOUNDATION_DRAG:
-                    path.BlueFoundationDrag();
-                    break;
-                case RED_FOUNDATION_DRAG:
-                    break;
+            if(skystonePositions != null) {
+                sendData();
+                //resetLiftEncoder();
+                switch (fieldPosition) {
+                    case RED_QUARY:
+                        path.RedQuary(skystonePositions);
+                        break;
+                    case RED_FOUNDATION_PARK:
+                        path.RedFoundationPark();
+                        break;
+                    case BLUE_QUARY:
+                        path.BlueQuary(skystonePositions);
+                        break;
+                    case BLUE_FOUNDATION_PARK:
+                        path.BlueFoundationPark();
+                        break;
+                    case BLUE_FOUNDATION_DRAG:
+                        path.BlueFoundationDrag();
+                        break;
+                    case RED_FOUNDATION_DRAG:
+                        break;
+                }
+            } else {
+                while (opModeIsActive()) {
+                    telemetry.addData("ERROR", "No SKYSTONE position data received!");
+                    telemetry.update();
+                }
             }
         } else {
             while (opModeIsActive()) {
@@ -279,9 +299,13 @@ public class MainAutonomous extends LinearOpMode {
 
         Thread update = new Thread() {
             public void run() {
-                while (opModeIsActive()) {
+                while (opModeIsActive() && (tfod != null)) {
                     path.updateTFODData(recognize());
                     path.updateHeading();
+                    try {
+                        Thread.sleep(500);
+                    } catch (Exception e) {
+                    }
                     if (isStopRequested() && tfod != null)
                         tfod.shutdown();
                 }
