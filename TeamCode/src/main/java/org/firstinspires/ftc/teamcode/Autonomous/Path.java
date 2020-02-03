@@ -221,7 +221,7 @@ Blue F. -->  | B |    |     | R | <-- Red Foundation
                 */
                 double theta;
 
-                double yCoordMvmtPlane = -12.0; //Y-coordinate value which the robot moves back and forth on
+                double yCoordMvmtPlane = -26.0; //Y-coordinate value which the robot moves back and forth on
                 double wallSkyStoneX = -45.0;   //X-coordinate of the Skystone closest to the wall
                 double furtherMostSkyStoneX = -28.5;    //X-coordinate of the Skystone furthest away from the wall
                 double foundationX = 37.0;  //X-coordinate of the foundation
