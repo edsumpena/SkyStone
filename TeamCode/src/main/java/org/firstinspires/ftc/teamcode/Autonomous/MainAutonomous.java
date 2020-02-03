@@ -137,7 +137,7 @@ public class MainAutonomous extends LinearOpMode {
                     telemetry.addData("STATUS", "Initializing TensorFlow...");
                     telemetry.update();
 
-                    drivetrain.resetEncoders();
+                    //drivetrain.resetEncoders();
 
                     //if(fieldPosition == FieldPosition.RED_QUARY)
                         initVuforia(CameraController.WEBCAM);
@@ -162,7 +162,7 @@ public class MainAutonomous extends LinearOpMode {
             telemetry.update();
         }
 
-        drivetrain.resetEncoders();
+        //drivetrain.resetEncoders();
 
         // begin tfod processing before starting -- use it to ascertain the positions of skystones in quarry
         while (!isStarted() && (fieldPosition == FieldPosition.BLUE_QUARY || fieldPosition == FieldPosition.RED_QUARY) &&
@@ -183,15 +183,22 @@ public class MainAutonomous extends LinearOpMode {
                     Math.round(Math.toDegrees(straightDrive.getExternalHeading()) * 1000.0) / 1000.0);
             telemetry.addData("Current (starting) Location", path.getPoseEstimate());
             telemetry.update();
+            try {
+                Thread.sleep(200);
+            } catch (Exception e) {
+            }
         }
 
-        if (isStopRequested() && tfod != null)
+        if (isStopRequested() && tfod != null) {
             tfod.shutdown();
+            tfod = null;
+        }
 
         waitForStart();
         if (tfod != null) {
             RobotLogger.dd("", "to shutdown tensor flow");
             tfod.shutdown();
+            tfod = null;
             RobotLogger.dd("", "tensor flow is shutdown");
         }
         if (opModeIsActive() && fieldPosition != null) {
@@ -292,9 +299,13 @@ public class MainAutonomous extends LinearOpMode {
 
         Thread update = new Thread() {
             public void run() {
-                while (opModeIsActive()) {
+                while (opModeIsActive() && (tfod != null)) {
                     path.updateTFODData(recognize());
                     path.updateHeading();
+                    try {
+                        Thread.sleep(500);
+                    } catch (Exception e) {
+                    }
                     if (isStopRequested() && tfod != null)
                         tfod.shutdown();
                 }
