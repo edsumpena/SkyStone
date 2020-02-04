@@ -43,6 +43,11 @@ public class VuforiaTest extends LinearOpMode {
 
         if (isStopRequested()) return;
         while (!isStopRequested()) {
+            try {
+                Thread.sleep(1000);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
 
             Pose2d poseEstimate = vLocalizer.getPoseEstimate();
             telemetry.addData("x", poseEstimate.getX());
@@ -50,11 +55,6 @@ public class VuforiaTest extends LinearOpMode {
             telemetry.addData("heading", poseEstimate.getHeading());
             telemetry.update();
             RobotLogger.dd(TAG, "vuforia localization: " + poseEstimate.toString());
-            try {
-                Thread.sleep(1000);
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
         }
 
         RobotLogger.dd(TAG, "----------done --------------------- unit test for vuforia localizer");

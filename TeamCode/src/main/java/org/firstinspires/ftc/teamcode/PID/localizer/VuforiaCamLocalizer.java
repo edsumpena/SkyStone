@@ -88,7 +88,7 @@ import com.qualcomm.robotcore.util.RobotLog;
 
 //@TeleOp(name="SKYSTONE Vuforia Nav", group ="Linear Opmode")
 //@Disabled
-public class VuforiaCamLocalizer implements Runnable, Localizer {
+public class VuforiaCamLocalizer implements Localizer {
 
     // IMPORTANT:  For Phone Camera, set 1) the camera source and 2) the orientation, based on how your phone is mounted:
     // 1) Camera Source.  Valid choices are:  BACK (behind screen) or FRONT (selfie side)
@@ -143,30 +143,41 @@ public class VuforiaCamLocalizer implements Runnable, Localizer {
 
     Pose2d poseEstimate = new Pose2d(0, 0, 0);
 
-    double currentX, currentY, currentZ;
+    double currentX, currentY, currentZ, currentHeading;
     List<VuforiaTrackable> allTrackables;
     VuforiaTrackables targetsSkyStone;
-    Thread thread;
     private static String TAG = "VuforiaCamLocalizer";
+    private static VuforiaCamLocalizer single_instance = null;
+
+    synchronized  public static VuforiaCamLocalizer getSingle_instance(HardwareMap hardwareMap)
+    {
+        if (single_instance == null) {
+            single_instance = new VuforiaCamLocalizer(hardwareMap);
+        }
+        return single_instance;
+    }
+
     @NotNull
     @Override
     public Pose2d getPoseEstimate() {
+        RobotLogger.dd(TAG, "getPoseEstimate");
         update();
         return poseEstimate;
     }
 
     @Override
     public void setPoseEstimate(@NotNull Pose2d pose2d) {
-        poseEstimate = pose2d;
+        RobotLogger.dd(TAG, "setPoseEstimate for vuforia localizer is not supported");
     }
 
     @Override
     public void update() {
+        runVuforiaTracking();
         RobotLog.dd(TAG, "Vuforia targetVisible? " + targetVisible + " vuforia X/Y: "
                 + Double.toString(currentX) + " " + Double.toString(currentY));
         if (targetVisible)
             poseEstimate = new Pose2d(currentX, currentY,
-                0);
+                Math.toRadians(currentHeading));
         else
             poseEstimate = new Pose2d(0, 0, 0);
     }
@@ -353,73 +364,61 @@ public class VuforiaCamLocalizer implements Runnable, Localizer {
         // Tap the preview window to receive a fresh image.
 
         targetsSkyStone.activate();
-        thread = new Thread(this);
-        thread.start();
+        //thread = new Thread(this);
+        //thread.start();
     }
     public void finalize() throws Throwable{
-        DriveConstantsPID.keep_vuforia_running = false;
+        // Disable Tracking when we are done;
+        targetsSkyStone.deactivate();
+
         try {
             Thread.sleep(200);
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
+        single_instance = null;
     }
+    private void runVuforiaTracking() {
+        // check all the trackable targets to see which one (if any) is visible.
+        targetVisible = false;
+        for (VuforiaTrackable trackable : allTrackables) {
+            if (((VuforiaTrackableDefaultListener)trackable.getListener()).isVisible()) {
+                //telemetry.addData("Visible Target", trackable.getName());
 
-    public void run(){
-        int print_count = 0;
-        RobotLogger.dd(TAG, "thread started...");
-        while (DriveConstantsPID.keep_vuforia_running) {
-            print_count ++;
-            // check all the trackable targets to see which one (if any) is visible.
-            targetVisible = false;
-            for (VuforiaTrackable trackable : allTrackables) {
-                if (((VuforiaTrackableDefaultListener)trackable.getListener()).isVisible()) {
-                    //telemetry.addData("Visible Target", trackable.getName());
-                    if (print_count%100==0)
-                        RobotLog.dd(TAG, "Visible Target" + trackable.getName());
-                    targetVisible = true;
+                RobotLogger.dd(TAG, "Visible Target" + trackable.getName());
+                targetVisible = true;
 
-                    // getUpdatedRobotLocation() will return null if no new information is available since
-                    // the last time that call was made, or if the trackable is not currently visible.
-                    OpenGLMatrix robotLocationTransform = ((VuforiaTrackableDefaultListener)trackable.getListener()).getUpdatedRobotLocation();
-                    if (robotLocationTransform != null) {
-                        lastLocation = robotLocationTransform;
-                    }
-                    break;
+                // getUpdatedRobotLocation() will return null if no new information is available since
+                // the last time that call was made, or if the trackable is not currently visible.
+                OpenGLMatrix robotLocationTransform = ((VuforiaTrackableDefaultListener)trackable.getListener()).getUpdatedRobotLocation();
+                if (robotLocationTransform != null) {
+                    lastLocation = robotLocationTransform;
                 }
+                break;
             }
-
-            // Provide feedback as to where the robot is located (if we know).
-            if (targetVisible) {
-                // express position (translation) of robot in inches.
-                VectorF translation = lastLocation.getTranslation();
-
-                //telemetry.addData("Pos (in)", "{X, Y, Z} = %.1f, %.1f, %.1f",
-                  //      translation.get(0) / mmPerInch, translation.get(1) / mmPerInch, translation.get(2) / mmPerInch);
-                if (print_count%10==0)
-                    RobotLog.dd(TAG, "Pos (in), {X, Y, Z} = %.1f, %.1f, %.1f",
-                        translation.get(0) / mmPerInch, translation.get(1) / mmPerInch, translation.get(2) / mmPerInch);
-                currentX = translation.get(0) / mmPerInch;
-                currentY = translation.get(1) / mmPerInch;
-                currentZ = translation.get(2) / mmPerInch;
-                // express the rotation of the robot in degrees.
-                Orientation rotation = Orientation.getOrientation(lastLocation, EXTRINSIC, XYZ, DEGREES);
-                //telemetry.addData("Rot (deg)", "{Roll, Pitch, Heading} = %.0f, %.0f, %.0f", rotation.firstAngle, rotation.secondAngle, rotation.thirdAngle);
-                if (print_count%10==0)
-                    RobotLog.dd(TAG, "Rot (deg), {Roll, Pitch, Heading} = %.0f, %.0f, %.0f", rotation.firstAngle, rotation.secondAngle, rotation.thirdAngle);
-            }
-            else {
-                //telemetry.addData("Visible Target", "none");
-                if (print_count%10==0)
-                    RobotLog.dd(TAG, "Visible Target none");
-            }
-            try{
-                Thread.sleep(100);
-            } catch(Exception e){}
-
         }
 
-        // Disable Tracking when we are done;
-        targetsSkyStone.deactivate();
-    }
+        // Provide feedback as to where the robot is located (if we know).
+        if (targetVisible) {
+            // express position (translation) of robot in inches.
+            VectorF translation = lastLocation.getTranslation();
+            currentX = translation.get(0) / mmPerInch;
+            currentY = translation.get(1) / mmPerInch;
+            currentZ = translation.get(2) / mmPerInch;
+
+            //telemetry.addData("Pos (in)", "{X, Y, Z} = %.1f, %.1f, %.1f",
+              //      translation.get(0) / mmPerInch, translation.get(1) / mmPerInch, translation.get(2) / mmPerInch);
+            RobotLogger.dd(TAG, "Pos (in), {X, Y, Z} = %.1f, %.1f, %.1f",currentX, currentY, currentZ);
+            // express the rotation of the robot in degrees.
+            Orientation rotation = Orientation.getOrientation(lastLocation, EXTRINSIC, XYZ, DEGREES);
+            //telemetry.addData("Rot (deg)", "{Roll, Pitch, Heading} = %.0f, %.0f, %.0f", rotation.firstAngle, rotation.secondAngle, rotation.thirdAngle);
+            RobotLog.dd(TAG, "Rot (deg), {Roll, Pitch, Heading} = %.0f, %.0f, %.0f", rotation.firstAngle, rotation.secondAngle, rotation.thirdAngle);
+            currentHeading = rotation.thirdAngle;
+        }
+        else {
+            //telemetry.addData("Visible Target", "none");
+            RobotLog.dd(TAG, "Visible Target none");
+        }
+    };
 }
+

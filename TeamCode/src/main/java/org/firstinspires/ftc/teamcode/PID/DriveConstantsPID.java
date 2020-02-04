@@ -40,7 +40,7 @@ import org.w3c.dom.Element;
 @Config
 public class DriveConstantsPID {
 
-    public static final boolean RUN_USING_PARAMTER_FROM_PROPERTIES = true;
+    public static final boolean RUN_USING_PARAMTER_FROM_PROPERTIES = false;
 
     public static boolean RUN_USING_ODOMETRY_WHEEL = false;
     public static boolean RUN_USING_IMU_LOCALIZER = true;
@@ -135,7 +135,7 @@ public class DriveConstantsPID {
     public static double strafeMaxAccel = 35.0;   //20.0
     public static double maxAngVel = 135.0;
     public static double maxAngAccel = 90.0;
-	public static boolean keep_vuforia_running = true;
+	public static boolean keep_vuforia_running = false;
 	public static boolean USE_VUFORIA_LOCALIZER = false;
     public static boolean RECREATE_DRIVE_AND_BUILDER = false;
     public static boolean drvCorrection = false;
