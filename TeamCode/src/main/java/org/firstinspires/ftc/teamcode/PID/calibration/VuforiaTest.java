@@ -32,29 +32,37 @@ public class VuforiaTest extends LinearOpMode {
     private HardwareMap hwMap;
     private Path path;
     private FieldPosition fieldPosition = null;
-    private VuforiaCamLocalizer vLocalizer = null;
 
     @Override
     public void runOpMode() throws InterruptedException {
         DriveConstantsPID.updateConstantsFromProperties();
         RobotLogger.dd(TAG, "unit test for vuforia localizer");
-        vLocalizer = new VuforiaCamLocalizer(hardwareMap);
+
         waitForStart();
 
         if (isStopRequested()) return;
-        while (!isStopRequested()) {
-            try {
-                Thread.sleep(1000);
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
+        VuforiaCamLocalizer vLocalizer = null;
 
-            Pose2d poseEstimate = vLocalizer.getPoseEstimate();
-            telemetry.addData("x", poseEstimate.getX());
-            telemetry.addData("y", poseEstimate.getY());
-            telemetry.addData("heading", poseEstimate.getHeading());
-            telemetry.update();
-            RobotLogger.dd(TAG, "vuforia localization: " + poseEstimate.toString());
+        int count = 0;
+        while (!isStopRequested()) {
+            vLocalizer = VuforiaCamLocalizer.getSingle_instance(hardwareMap, VuforiaCamLocalizer.VuforiaCameraChoice.PHONE_BACK);
+
+            Pose2d poseEstimate;
+            for (int i = 0; i < 10; i ++ ) {
+                poseEstimate = vLocalizer.getPoseEstimate();
+                telemetry.addData("x", poseEstimate.getX());
+                telemetry.addData("y", poseEstimate.getY());
+                telemetry.addData("heading", poseEstimate.getHeading());
+                telemetry.update();
+                RobotLogger.dd(TAG, "vuforia localization: " + poseEstimate.toString());
+                try {
+                    Thread.sleep(1000);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+            count ++;
+            //vLocalizer.stop();
         }
 
         RobotLogger.dd(TAG, "----------done --------------------- unit test for vuforia localizer");
