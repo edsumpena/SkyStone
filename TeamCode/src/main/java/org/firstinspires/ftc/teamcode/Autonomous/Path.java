@@ -12,11 +12,13 @@ import com.qualcomm.robotcore.util.RobotLog;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.robotcore.external.tfod.Recognition;
+import org.firstinspires.ftc.teamcode.All.DriveConstant;
 import org.firstinspires.ftc.teamcode.All.HardwareMap;
 import org.firstinspires.ftc.teamcode.Autonomous.Vision.Align;
 import org.firstinspires.ftc.teamcode.PID.DriveConstantsPID;
 import org.firstinspires.ftc.teamcode.PID.RobotLogger;
 import org.firstinspires.ftc.teamcode.PID.localizer.StandardTrackingWheelLocalizer;
+import org.firstinspires.ftc.teamcode.PID.localizer.VuforiaCamLocalizer;
 import org.firstinspires.ftc.teamcode.PID.mecanum.SampleMecanumDriveBase;
 import org.firstinspires.ftc.teamcode.PID.mecanum.SampleMecanumDriveREV;
 import org.firstinspires.ftc.teamcode.PID.mecanum.SampleMecanumDriveREVOptimized;
@@ -190,7 +192,7 @@ public class Path {
             e.printStackTrace();
         }
     }
-    private int FollowPathFromXMLFile(Pose2d coordinates[]) {
+    private int FollowPathFromXMLFile(Pose2d coordinates[], VuforiaCamLocalizer vLocal) {
         int xy_len = coordinates.length;
         if (xy_len == 0)
         {
@@ -227,6 +229,10 @@ public class Path {
         _drive.followTrajectorySync(trajectory);
         step_count ++;
 
+        if (vLocal != null) {
+            Pose2d t = vLocal.getPoseEstimate();
+            RobotLogger.dd(TAG, "Calibrate before grab stone! Vuforia local info: " + t.toString());
+        }
         RobotLog.dd(TAG, "step1.5, after strafe, to grab");
         if (DriveConstantsPID.ENABLE_ARM_ACTIONS) {
             grabStone(FieldPosition.RED_QUARY);   //*******
@@ -247,7 +253,10 @@ public class Path {
                         .setReversed(false).strafeTo(new Vector2d(foundationX, yCoordMvmtPlane + strafeDistance));
                 trajectory = builder.build();   //x - 2.812, y + 7.984
                 _drive.followTrajectorySync(trajectory);*/
-
+        if (vLocal != null) {
+            Pose2d t = vLocal.getPoseEstimate();
+            RobotLogger.dd(TAG, "Calibrate before drop stone! Vuforia local info: " + t.toString());
+        }
         RobotLog.dd(TAG, "step2.5, after straight");
         if (DriveConstantsPID.ENABLE_ARM_ACTIONS) {
             dropStone(FieldPosition.RED_QUARY); //*******
@@ -267,6 +276,10 @@ public class Path {
         trajectory = builder.build();   //x - 2.812, y + 7.984
         _drive.followTrajectorySync(trajectory);
         step_count ++;
+        if (vLocal != null) {
+            Pose2d t = vLocal.getPoseEstimate();
+            RobotLogger.dd(TAG, "Calibrate before grab 2nd stone! Vuforia local info: " + t.toString());
+        }
         if (DriveConstantsPID.ENABLE_ARM_ACTIONS) {
             prepGrab(FieldPosition.RED_QUARY); //*******
         }
@@ -303,7 +316,10 @@ public class Path {
                         .setReversed(false).strafeTo(new Vector2d(foundationX + 3, yCoordMvmtPlane + strafeDistance));
                 trajectory = builder.build();   //x - 2.812, y + 7.984
                 _drive.followTrajectorySync(trajectory);*/
-
+        if (vLocal != null) {
+            Pose2d t = vLocal.getPoseEstimate();
+            RobotLogger.dd(TAG, "Calibrate before drop 2nd stone! Vuforia local info: " + t.toString());
+        }
         RobotLog.dd(TAG, "step4.5, after straight move, to drop");
         if (DriveConstantsPID.ENABLE_ARM_ACTIONS) {
             dropStone(FieldPosition.RED_QUARY);   //*******
@@ -379,6 +395,11 @@ public class Path {
         return 0;
     }
     public void RedQuary(int[] skystonePositions) {
+        VuforiaCamLocalizer vuLocalizer = null;
+        if (DriveConstantsPID.USE_VUFORIA_LOCALIZER) {
+            vuLocalizer = VuforiaCamLocalizer.getSingle_instance(hardwareMap,
+                    VuforiaCamLocalizer.VuforiaCameraChoice.PHONE_BACK);
+        }
         switch (skystonePositions[0]) {
             case 1:
                 /*
@@ -416,7 +437,7 @@ Blue F. -->  | B |    |     | R | <-- Red Foundation
                 RobotLogger.dd(TAG, "to read XY coordinates from " + path_file);
 
                 Pose2d xys[] = DriveConstantsPID.parsePathXY(path_file);
-                FollowPathFromXMLFile(xys);
+                FollowPathFromXMLFile(xys, vuLocalizer);
 
                 break;
             case 2:
@@ -457,7 +478,7 @@ Blue F. -->  | B |    |     | R | <-- Red Foundation
                 RobotLogger.dd(TAG, "to read XY coordinates from " + path_file);
 
                 Pose2d xys2[] = DriveConstantsPID.parsePathXY(path_file);
-                FollowPathFromXMLFile(xys2);
+                FollowPathFromXMLFile(xys2, vuLocalizer);
                 break;
             case 3:
                 /*
@@ -496,7 +517,7 @@ Blue F. -->  | B |    |     | R | <-- Red Foundation
                 RobotLogger.dd(TAG, "to read XY coordinates from " + path_file);
 
                 Pose2d xys3[] = DriveConstantsPID.parsePathXY(path_file);
-                FollowPathFromXMLFile(xys3);
+                FollowPathFromXMLFile(xys3, vuLocalizer);
                 break;
         }
     }
