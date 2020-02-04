@@ -40,6 +40,7 @@ import org.firstinspires.ftc.robotcore.external.navigation.VuforiaTrackable;
 import org.firstinspires.ftc.robotcore.external.navigation.VuforiaTrackableDefaultListener;
 import org.firstinspires.ftc.robotcore.external.navigation.VuforiaTrackables;
 import org.firstinspires.ftc.teamcode.PID.DriveConstantsPID;
+import org.firstinspires.ftc.teamcode.PID.RobotLogger;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
@@ -50,6 +51,8 @@ import static org.firstinspires.ftc.robotcore.external.navigation.AxesOrder.XYZ;
 import static org.firstinspires.ftc.robotcore.external.navigation.AxesOrder.YZX;
 import static org.firstinspires.ftc.robotcore.external.navigation.AxesReference.EXTRINSIC;
 import static org.firstinspires.ftc.robotcore.external.navigation.VuforiaLocalizer.CameraDirection.BACK;
+import static org.firstinspires.ftc.robotcore.external.navigation.VuforiaLocalizer.CameraDirection.FRONT;
+
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.util.RobotLog;
 /**
@@ -94,7 +97,7 @@ public class VuforiaCamLocalizer implements Runnable, Localizer {
     // NOTE: If you are running on a CONTROL HUB, with only one USB WebCam, you must select CAMERA_CHOICE = BACK; and PHONE_IS_PORTRAIT = false;
     //
     private static final VuforiaLocalizer.CameraDirection CAMERA_CHOICE = BACK;
-    private static final boolean PHONE_IS_PORTRAIT = false  ;
+    private static final boolean PHONE_IS_PORTRAIT = true  ;
 
     /*
      * IMPORTANT: You need to obtain your own license key to use Vuforia. The string below with which
@@ -353,8 +356,18 @@ public class VuforiaCamLocalizer implements Runnable, Localizer {
         thread = new Thread(this);
         thread.start();
     }
+    public void finalize() throws Throwable{
+        DriveConstantsPID.keep_vuforia_running = false;
+        try {
+            Thread.sleep(200);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+    }
+
     public void run(){
         int print_count = 0;
+        RobotLogger.dd(TAG, "thread started...");
         while (DriveConstantsPID.keep_vuforia_running) {
             print_count ++;
             // check all the trackable targets to see which one (if any) is visible.
@@ -362,7 +375,7 @@ public class VuforiaCamLocalizer implements Runnable, Localizer {
             for (VuforiaTrackable trackable : allTrackables) {
                 if (((VuforiaTrackableDefaultListener)trackable.getListener()).isVisible()) {
                     //telemetry.addData("Visible Target", trackable.getName());
-                    if (print_count%10==0)
+                    if (print_count%100==0)
                         RobotLog.dd(TAG, "Visible Target" + trackable.getName());
                     targetVisible = true;
 
