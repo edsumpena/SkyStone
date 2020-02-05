@@ -1,5 +1,5 @@
 adb shell setprop debug.ftc.logging 1
-adb shell setprop debug.ftc.enable_arm 1
+adb shell setprop debug.ftc.enable_arm 0
 adb shell setprop debug.ftc.skystonePos 1
 adb shell setprop debug.ftc.pause 1
 adb shell setprop debug.ftc.bulk 1
