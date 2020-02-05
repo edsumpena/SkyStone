@@ -48,8 +48,11 @@ public class PathTest extends LinearOpMode {
         //
         int[] skystonePositions = new int[2];
         skystonePositions[0] = (int) DriveConstantsPID.TEST_SKY_STONE_POSITION;
-
-        Pose2d t[] = DriveConstantsPID.parsePathXY("path_red1.xml");
+        RobotLogger.dd(TAG, "xml file %d", skystonePositions[0]);
+        String filename = "path_red_.xml";
+        filename = filename.substring(0, 8) + Integer.toString(skystonePositions[0])
+                + filename.substring(9);
+        Pose2d t[] = DriveConstantsPID.parsePathXY(filename);
         RobotLogger.dd(TAG, "XY array len: " + Integer.toString(t.length));
 
 

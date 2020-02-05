@@ -179,7 +179,7 @@ public class VuforiaCamLocalizer implements Localizer {
             single_instance_per_camera[camera_choice.ordinal()] = obj;
         }
         else
-            RobotLogger.dd("VuforiaCamLocalizer", "reuse previous isntance");
+            RobotLogger.dd("VuforiaCamLocalizer", "reuse previous instance");
         return obj;
     }
 

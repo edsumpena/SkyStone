@@ -408,7 +408,7 @@ public class Path {
         VuforiaCamLocalizer vuLocalizer = null;
         if (DriveConstantsPID.USE_VUFORIA_LOCALIZER) {
             vuLocalizer = VuforiaCamLocalizer.getSingle_instance(hardwareMap,
-                    VuforiaCamLocalizer.VuforiaCameraChoice.PHONE_BACK);
+                    VuforiaCamLocalizer.VuforiaCameraChoice.HUB_USB);
         }
         switch (skystonePositions[0]) {
             case 1:
@@ -523,7 +523,7 @@ Blue F. -->  | B |    |     | R | <-- Red Foundation
                 parkingX = 0.0;    //X-coordinate of parking location
                 parkingY = -38.0;    //Y-coordinate of parking location
                 */
-                path_file = "path_red2.xml";
+                path_file = "path_red3.xml";
                 RobotLogger.dd(TAG, "to read XY coordinates from " + path_file);
 
                 Pose2d xys3[] = DriveConstantsPID.parsePathXY(path_file);
