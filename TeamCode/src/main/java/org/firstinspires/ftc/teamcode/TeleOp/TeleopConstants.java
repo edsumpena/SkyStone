@@ -44,7 +44,7 @@ public class TeleopConstants {
     public static double intakeInitPosReset = 0.3108;
 
     public static double autoClaw1Retracted = 0.1048;
-    public static double autoClaw1Drop = 0.37829;
+    public static double autoClaw1Drop = 0.27829;
     public static double autoClaw1Stone = 0.7461;
     public static double autoClaw1Extended = 0.31285;
 

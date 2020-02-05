@@ -1,5 +1,5 @@
 adb shell setprop debug.ftc.logging 1
-adb shell setprop debug.ftc.enable_arm 0
+adb shell setprop debug.ftc.enable_arm 1
 adb shell setprop debug.ftc.skystonePos 1
 adb shell setprop debug.ftc.pause 5
 adb shell setprop debug.ftc.bulk 1
@@ -54,6 +54,9 @@ adb shell setprop debug.ftc.odoTicksPerRev 1565
 adb shell setprop debug.ftc.odomTrackwidth 14.8
 adb shell setprop debug.ftc.odomForwardOffset -5.5
 adb shell getprop |grep debug.ftc
+adb push TeamCode\src\main\java\org\firstinspires\ftc\teamcode\All\path_red1.xml /sdcard/FIRST
+adb push TeamCode\src\main\java\org\firstinspires\ftc\teamcode\All\path_red2.xml /sdcard/FIRST
+adb push TeamCode\src\main\java\org\firstinspires\ftc\teamcode\All\path_red3.xml /sdcard/FIRST
 rem adb logcat -s VrApi
 IF "%1"=="1" (
 exit

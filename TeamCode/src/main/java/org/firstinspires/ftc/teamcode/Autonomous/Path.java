@@ -22,6 +22,7 @@ import org.firstinspires.ftc.teamcode.PID.mecanum.SampleMecanumDriveREV;
 import org.firstinspires.ftc.teamcode.PID.mecanum.SampleMecanumDriveREVOptimized;
 import org.firstinspires.ftc.teamcode.TeleOp.TeleopConstants;
 
+import java.util.Arrays;
 import java.util.List;
 
 import static java.lang.Math.PI;
@@ -313,7 +314,8 @@ public class Path {
         DriveBuilderReset(true, false, "step" + Integer.toString(step_count) + coordinates[step_count].toString() +
                 ", after drop 2nd stone, to strafe");
         builder = builder
-                .setReversed(false).strafeTo(new Vector2d(coordinates[step_count].getX(), coordinates[step_count].getY()));
+                .setReversed(false).strafeTo(new Vector2d(_drive.getPoseEstimate().getX() + coordinates[step_count].getX(),
+                        _drive.getPoseEstimate().getY() + coordinates[step_count].getY()));
         trajectory = builder.build();   //x - 2.812, y + 7.984
         _drive.followTrajectorySync(trajectory);
         step_count ++;
@@ -372,9 +374,17 @@ public class Path {
                 ", spline, back to parking");
         //builder = new TrajectoryBuilder(_drive.getPoseEstimate(), DriveConstantsPID.BASE_CONSTRAINTS);
         builder = builder
-                .setReversed(false).splineTo(new Pose2d(new Vector2d(coordinates[step_count].getX(), coordinates[step_count].getY()), coordinates[step_count].getHeading()));
+                .setReversed(false).splineTo(new Pose2d(new Vector2d(_drive.getPoseEstimate().getX() + coordinates[step_count].getX(),
+                        _drive.getPoseEstimate().getY() + coordinates[step_count].getY()), coordinates[step_count].getHeading()));
         trajectory = builder.build();   //x - 2.812, y + 7.984
         _drive.followTrajectorySync(trajectory);
+        while(opMode.opModeIsActive()){
+            String o = "";
+            for(Pose2d p2d : coordinates)
+                o += p2d.toString() + ", ";
+            telemetry.addData("Pose2d", o);
+            telemetry.update();
+        }
         step_count ++;
         return 0;
     }
@@ -1525,7 +1535,7 @@ Blue F. -->  | B |    |     | R | <-- Red Foundation
 
     private void dropStone(FieldPosition fieldPosition) {
         hwMap.redAutoClawJoint1.setPosition(TeleopConstants.autoClaw1Drop);
-        sleep_millisec(200);
+        sleep_millisec(400);
 
         hwMap.redAutoClawJoint2.setPosition(TeleopConstants.autoClaw2Grabbing);
         sleep_millisec(200);
@@ -1533,10 +1543,10 @@ Blue F. -->  | B |    |     | R | <-- Red Foundation
         hwMap.redAutoClawJoint3.setPosition(TeleopConstants.autoClaw3Open);
         sleep_millisec(200);
 
-        hwMap.redAutoClawJoint1.setPosition(TeleopConstants.autoClaw1Stone);
-        sleep_millisec(200);
-
         hwMap.redAutoClawJoint2.setPosition(TeleopConstants.autoClaw2PickUp);
+        sleep_millisec(400);
+
+        hwMap.redAutoClawJoint1.setPosition(TeleopConstants.autoClaw1Stone);
         sleep_millisec(200);
 
         hwMap.redAutoClawJoint3.setPosition(TeleopConstants.autoClaw3Init);
