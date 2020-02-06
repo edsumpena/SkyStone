@@ -37,27 +37,27 @@
       <h>0.0</h>
    </movestep>
    
-   <movestep drive_type = "5, strafe, after drop 2nd, strafe away from foundation, delta???">
-      <x>-10.0</x>
-      <y>-7.0</y>
+   <movestep drive_type = "5, strafe, after drop 2nd, strafe away from foundation">
+      <x>7.5</x>
+      <y>-5.0</y>
       <h>0.0</h>
    </movestep>
    
-   <movestep drive_type = "6, reverse true, strafe back, after turn, to lock foundation, delta???">
+   <movestep drive_type = "6, reverse true, strafe back, after turn, to lock foundation">
       <x>0.0</x>
-      <y>13.0</y>
+      <y>8.0</y>
       <h>0.0</h>
    </movestep>
    
-   <movestep drive_type = "7, spline, offset from current Pos, after drop foundation, delta???">
+   <movestep drive_type = "7, spline, offset from current Pos, after drop foundation">
       <x>-24.0</x>
-      <y>-40.0</y>
+      <y>-32.0</y>
       <h>180.0</h>
    </movestep>
    
-   <movestep drive_type = "8, spline, after drop foundation, to back to parking, delta???">
-      <x>-10.0</x>
-      <y>30.0</y>
+   <movestep drive_type = "8, spline, after drop foundation, to back to parking, delta">
+      <x>-34.0</x>
+      <y>0.0</y>
       <h>180.0</h>
    </movestep>
 </pathXY>
