@@ -123,7 +123,7 @@ public class Teleop extends LinearOpMode {
         driveLoop();
         liftLoop();
         toggleLoop();
-        //parkingLoop();
+        parkingLoop();
         armDelayHandler();
         initIntakeClawArm();
 
@@ -542,7 +542,7 @@ public class Teleop extends LinearOpMode {
         Thread parkingServ = new Thread(){
             public void run(){
                 while(opModeIsActive()){
-                    if(gamepad2.right_trigger >= 0.5){
+                    /*if(gamepad2.right_trigger >= 0.5){
                         if(gamepad2.x && !dummy){
                             if(!parking) {
                                 //hwMap.redAutoClawJoint1.setPosition(TeleopConstants.autoClaw1Up - 0.08);
@@ -563,7 +563,7 @@ public class Teleop extends LinearOpMode {
                         } else if(!gamepad2.x && dummy){
                             dummy = false;
                         }
-                    }
+                    }*/
 
                     if(gamepad2.left_trigger >= 0.5 && !transferHornDummy){
                         if(!transHornFlag) {
