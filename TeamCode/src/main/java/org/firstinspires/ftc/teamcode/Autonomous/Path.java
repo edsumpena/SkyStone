@@ -408,7 +408,7 @@ public class Path {
         VuforiaCamLocalizer vuLocalizer = null;
         if (DriveConstantsPID.USE_VUFORIA_LOCALIZER) {
             vuLocalizer = VuforiaCamLocalizer.getSingle_instance(hardwareMap,
-                    VuforiaCamLocalizer.VuforiaCameraChoice.HUB_USB);
+                    VuforiaCamLocalizer.VuforiaCameraChoice.PHONE_BACK);
         }
         switch (skystonePositions[0]) {
             case 1:
