@@ -67,7 +67,7 @@ public class Path {
         this.telemetry = telemetry;
         //vu = new VuforiaCamLocalizer(hardwareMap);
     }
-    private void StrafeDiagonalHelper(SampleMecanumDriveBase _drive, Vector2d xy) {
+    private void StrafeDiagonalHelper(SampleMecanumDriveBase _drive, Vector2d dest) {
         Trajectory trajectory;
         Pose2d currentPos = _drive.getPoseEstimate();
         TrajectoryBuilder  builder = null;
@@ -78,34 +78,52 @@ public class Path {
 
         Pose2d error_pose = _drive.follower.getLastError();
 
-        RobotLogger.dd(TAG, "StrafeDiagonalHelper, xy: %s", xy.toString());
-        RobotLogger.dd(TAG, "StrafeDiagonalHelper, currentPos %s, errorPos %s",currentPos.toString(), error_pose.toString());
         double current_x = currentPos.getX();
         double current_y = currentPos.getY();
-        double delta_x = xy.getX() - current_x;
-        double delta_y = xy.getY() - current_y;
+        double delta_x = dest.getX() - current_x;
+        double delta_y = dest.getY() - current_y;
 
+        RobotLogger.dd(TAG, "StrafeDiagonalHelper, currentPos %s, errorPos %s",currentPos.toString(), error_pose.toString());
+        RobotLogger.dd(TAG, "StrafeDiagonalHelper, xy: %s", dest.toString());
+        Vector2d firstStop;
         if (Math.abs(delta_x) > Math.abs(delta_y)) {
-            double x_offset = delta_x - delta_y;;
-            double squre_offset = delta_y;
-            builder.setReversed(false).lineTo(new Vector2d(current_x + x_offset, current_y)).strafeTo(new Vector2d(xy.getX(), xy.getY()));
+            RobotLogger.dd(TAG, "x > y, line first and then strafe");
+            double square_offset = Math.abs(delta_y);
+            double new_x = 0;
+            if (delta_x > 0)
+                new_x = dest.getX() - square_offset;
+            else
+                new_x = dest.getX() + square_offset;
+
+            firstStop = new Vector2d(new_x, current_y);
+            RobotLogger.dd(TAG, "added one line to stop: " + firstStop.toString());
+            builder.setReversed(false).lineTo(firstStop).strafeTo(dest);
         }
         else if (Math.abs(delta_x) < Math.abs(delta_y)){
-            double y_offset = delta_y - delta_x;
-            double squre_offset = delta_x;
-            builder.setReversed(false).strafeTo(new Vector2d(current_x, current_y + y_offset)).strafeTo(new Vector2d(xy.getX(), xy.getY()));
+            RobotLogger.dd(TAG, "x > y, strafe first and then line");
+            double square_offset = Math.abs(delta_x);
+            double new_y = 0;
+            if (delta_y < 0)
+                new_y = current_y - square_offset;
+            else
+                new_y = current_y + square_offset;
+
+            firstStop = new Vector2d(dest.getX(), new_y);
+            RobotLogger.dd(TAG, "added one strafe stop: " + firstStop.toString());
+            builder.setReversed(false).strafeTo(firstStop).strafeTo(dest);
         }
         else
         {
             //double y_offset = delta_y - delta_x;
-            double squre_offset = delta_x;
-            builder.setReversed(false).strafeTo(new Vector2d(xy.getX(), xy.getY()));
+            builder.setReversed(false).strafeTo(dest);
         }
         trajectory = builder.build();   //x - 2.812, y + 7.984
         _drive.followTrajectorySync(trajectory);
+
+        currentPos = _drive.getPoseEstimate();
+        error_pose = _drive.follower.getLastError();
         RobotLogger.dd(TAG, "StrafeDiagonalHelper, currentPos %s, errorPos %s",currentPos.toString(), error_pose.toString());
     }
-
     /*
     input: last pose from previous move;
     return: drive instance;
@@ -224,10 +242,14 @@ public class Path {
         // step 1;
         DriveBuilderReset(true, false, "step" + Integer.toString(step_count) + coordinates[step_count].toString() +
                 ", after prepare, start");
+        //StrafeDiagonalHelper(_drive, (new Vector2d(coordinates[step_count].getX(), coordinates[step_count].getY())));
+
         builder = builder
                 .setReversed(false).strafeTo(new Vector2d(coordinates[step_count].getX(), coordinates[step_count].getY()));
         trajectory = builder.build();   //x - 2.812, y + 7.984
         _drive.followTrajectorySync(trajectory);
+
+
         step_count ++;
 
         if (vLocal != null) {
