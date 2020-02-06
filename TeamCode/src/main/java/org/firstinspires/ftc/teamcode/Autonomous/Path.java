@@ -330,8 +330,8 @@ public class Path {
         DriveBuilderReset(true, false, "step" + Integer.toString(step_count) + coordinates[step_count].toString() +
                 ", after drop 2nd stone, to strafe");
         builder = builder
-                .setReversed(false).strafeTo(new Vector2d(_drive.getPoseEstimate().getX() + coordinates[step_count].getX(),
-                        _drive.getPoseEstimate().getY() + coordinates[step_count].getY()));
+                .setReversed(false).strafeTo(new Vector2d(coordinates[step_count].getX(),
+                        coordinates[step_count].getY()));
         trajectory = builder.build();   //x - 2.812, y + 7.984
         _drive.followTrajectorySync(trajectory);
         step_count ++;
@@ -357,8 +357,8 @@ public class Path {
         DriveBuilderReset(false, false, "step" + Integer.toString(step_count) + coordinates[step_count].toString() +
                 ", after foundation lock, to straight move");
 
-        builder = builder.setReversed(true).lineTo(new Vector2d(_drive.getPoseEstimate().getX() + coordinates[step_count].getX(),
-                _drive.getPoseEstimate().getY() + coordinates[step_count].getY()));
+        builder = builder.setReversed(true).lineTo(new Vector2d(coordinates[step_count].getX(),
+                coordinates[step_count].getY()));
         trajectory = builder.build();   //x - 2.812, y + 7.984
         _drive.followTrajectorySync(trajectory);
         step_count ++;
@@ -372,8 +372,8 @@ public class Path {
         DriveBuilderReset(false, false, "step" + Integer.toString(step_count) + coordinates[step_count].toString() +
                 ", after drop fundation,, to spline ");
         builder = builder.setReversed(false)
-                .splineTo(new Pose2d(new Vector2d(_drive.getPoseEstimate().getX() + coordinates[step_count].getX(),
-                        _drive.getPoseEstimate().getY() + coordinates[step_count].getY()), coordinates[step_count].getHeading()));
+                .splineTo(new Pose2d(new Vector2d(coordinates[step_count].getX(),
+                        coordinates[step_count].getY()), coordinates[step_count].getHeading()));
         trajectory = builder.build();   //x - 2.812, y + 7.984
         _drive.followTrajectorySync(trajectory);
         step_count ++;
@@ -390,8 +390,8 @@ public class Path {
                 ", spline, back to parking");
         //builder = new TrajectoryBuilder(_drive.getPoseEstimate(), DriveConstantsPID.BASE_CONSTRAINTS);
         builder = builder
-                .setReversed(false).splineTo(new Pose2d(new Vector2d(_drive.getPoseEstimate().getX() + coordinates[step_count].getX(),
-                        _drive.getPoseEstimate().getY() + coordinates[step_count].getY()), coordinates[step_count].getHeading()));
+                .setReversed(false).splineTo(new Pose2d(new Vector2d(coordinates[step_count].getX(),
+                        coordinates[step_count].getY()), coordinates[step_count].getHeading()));
         trajectory = builder.build();   //x - 2.812, y + 7.984
         _drive.followTrajectorySync(trajectory);
         while(opMode.opModeIsActive()){
@@ -523,7 +523,7 @@ Blue F. -->  | B |    |     | R | <-- Red Foundation
                 parkingX = 0.0;    //X-coordinate of parking location
                 parkingY = -38.0;    //Y-coordinate of parking location
                 */
-                path_file = "path_red2.xml";
+                path_file = "path_red3.xml";
                 RobotLogger.dd(TAG, "to read XY coordinates from " + path_file);
 
                 Pose2d xys3[] = DriveConstantsPID.parsePathXY(path_file);
