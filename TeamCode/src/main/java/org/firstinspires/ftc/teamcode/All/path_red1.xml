@@ -8,7 +8,7 @@
       <h>0.0</h>
    </movestep>
    
-   <movestep drive_type = "1, strafe to grab">
+   <movestep drive_type = "1, strafe to grab, X, Y looks weird!!!">
    <!--wallSkyStoneX, yCoordMvmtPlane -->
    <!--X-coordinate of the Skystone closest to the wall-->
    <!--Y-coordinate value which the robot moves back and forth on-->
@@ -23,39 +23,39 @@
       <h>0.0</h>
    </movestep>
    
-   <movestep drive_type = "3, line to, straight back to stones">
+   <movestep drive_type = "3, reverse true, line to, straight back to stones">
    <!--X-coordinate of the Skystone furthest away from the wall-->
       <x>-47.5</x>
       <y>-5.0</y>
       <h>0.0</h>
    </movestep>
    
-    <movestep drive_type = "4, line to, line to fundation">
+    <movestep drive_type = "4, line to, line to foundation">
 	  <!--X-coordinate of the foundation-->
       <x>17.5</x>
       <y>-5.0</y>
       <h>0.0</h>
    </movestep>
    
-   <movestep drive_type = "5, strafe, after drop 2nd, strafe away from foundation">
+   <movestep drive_type = "5, strafe, after drop 2nd, strafe away from foundation, delta???">
       <x>-10.0</x>
       <y>-7.0</y>
       <h>0.0</h>
    </movestep>
    
-   <movestep drive_type = "6, strafe back, after turn, to lock foundation">
+   <movestep drive_type = "6, reverse true, strafe back, after turn, to lock foundation, delta???">
       <x>0.0</x>
       <y>13.0</y>
       <h>0.0</h>
    </movestep>
    
-   <movestep drive_type = "7, spline, offset from current Pos, after drop foundation">
+   <movestep drive_type = "7, spline, offset from current Pos, after drop foundation, delta???">
       <x>-24.0</x>
       <y>-40.0</y>
       <h>180.0</h>
    </movestep>
    
-   <movestep drive_type = "8, spline, after drop foundation, to back to parking">
+   <movestep drive_type = "8, spline, after drop foundation, to back to parking, delta???">
       <x>-10.0</x>
       <y>30.0</y>
       <h>180.0</h>
