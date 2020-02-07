@@ -37,28 +37,34 @@
       <y>-18.0</y>
       <h>0.0</h>
    </movestep>
-   
+  
    <movestep drive_type = "5, strafe, after drop 2nd, strafe away from foundation">
-      <x>45</x>
-      <y>-42.0</y>
+   <!---(-7, -10)-->
+      <x>31</x>
+      <y>-28.0</y>
       <h>0.0</h>
    </movestep>
    
-   <movestep drive_type = "6, reverse true, strafe back, after turn, to lock foundation">
-      <x>24</x>
-      <y>-36.0</y>
+   <movestep drive_type = "6, reverse true, lineto, after turn, to lock foundation, this is delta!!!">
+      <!--not using X-->
+	  <x>0</x>
+	<!--_drive.getPoseEstimate().getY() + coordinates[step_count].getY())-->	  
+      <y>13.0</y>
       <h>0.0</h>
    </movestep>
    
-   <movestep drive_type = "7, spline, offset from current Pos, after drop foundation">
-      <x>24.0</x>
-      <y>-30.0</y>
+   <movestep drive_type = "7, spline, offset from current Pos, after drop foundation, delta !!!">      
+	  <!--drive.getPoseEstimate().getX() - coordinates[step_count].getX()-->
+	  <x>12.0</x>
+	  <!--_drive.getPoseEstimate().getY() - coordinates[step_count].getY()-->
+      <y>30.0</y>
       <h>180.0</h>
    </movestep>
    
-   <movestep drive_type = "8, spline, after drop foundation, to back to parking, delta">
-      <x>0.0</x>
-      <y>-30.0</y>
+   <movestep drive_type = "8, spline, after drop foundation, to back to parking, absulate XY, not delta">
+         <!--not delta -->
+      <x>-10.0</x>
+      <y>-38.0</y>
       <h>180.0</h>
    </movestep>
 </pathXY>

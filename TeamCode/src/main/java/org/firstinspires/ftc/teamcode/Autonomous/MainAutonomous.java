@@ -20,6 +20,7 @@ import org.firstinspires.ftc.teamcode.All.HardwareMap;
 import org.firstinspires.ftc.teamcode.Autonomous.Vision.Detect;
 import org.firstinspires.ftc.teamcode.PID.DriveConstantsPID;
 import org.firstinspires.ftc.teamcode.PID.RobotLogger;
+import org.firstinspires.ftc.teamcode.PID.localizer.VuforiaCamLocalizer;
 import org.firstinspires.ftc.teamcode.PID.mecanum.SampleMecanumDriveBase;
 import org.firstinspires.ftc.teamcode.PID.mecanum.SampleMecanumDriveREV;
 import org.firstinspires.ftc.teamcode.PID.mecanum.SampleMecanumDriveREVOptimized;
@@ -49,6 +50,7 @@ public class MainAutonomous extends LinearOpMode {
     private SampleMecanumDriveBase strafeDrive;
     private boolean initialize = false;
     public BNO055IMU imu;
+    private VuforiaCamLocalizer vuLocalizer = null;
 
     private enum CameraController{
         WEBCAM, PHONECAM
@@ -201,19 +203,24 @@ public class MainAutonomous extends LinearOpMode {
             tfod = null;
             RobotLogger.dd("", "tensor flow is shutdown");
         }
+
+        if (DriveConstantsPID.USE_VUFORIA_LOCALIZER) {
+            vuLocalizer = VuforiaCamLocalizer.getSingle_instance(hardwareMap,
+                    VuforiaCamLocalizer.VuforiaCameraChoice.PHONE_BACK);
+        }
         if (opModeIsActive() && fieldPosition != null) {
             if(skystonePositions != null) {
                 sendData();
                 //resetLiftEncoder();
                 switch (fieldPosition) {
                     case RED_QUARY:
-                        path.RedQuary(skystonePositions);
+                        path.RedQuary(skystonePositions, vuLocalizer);
                         break;
                     case RED_FOUNDATION_PARK:
                         path.RedFoundationPark();
                         break;
                     case BLUE_QUARY:
-                        path.BlueQuary(skystonePositions);
+                        path.BlueQuary(skystonePositions, vuLocalizer);
                         break;
                     case BLUE_FOUNDATION_PARK:
                         path.BlueFoundationPark();
