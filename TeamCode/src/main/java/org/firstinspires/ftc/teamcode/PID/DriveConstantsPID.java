@@ -200,7 +200,7 @@ public class DriveConstantsPID {
         return 32767 / getTicksPerSec();
     }
 
-    private static double getTeamCodePropertyValue(String prop_str) {
+    public static double getTeamCodePropertyValue(String prop_str) {
         double value = Double.MAX_VALUE;
         try {
             Process proc = Runtime.getRuntime().exec(new String[]{"/system/bin/getprop", prop_str});
