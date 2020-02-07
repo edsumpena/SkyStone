@@ -50,8 +50,6 @@ public class Path {
     private Telemetry telemetry;
     private String path_file;
     private int first_skystone_location = 0;
-    //VuforiaCamLocalizer vu;
-
 
     public Path(HardwareMap hwMap, LinearOpMode opMode, SampleMecanumDriveBase straightDrive,
                 com.qualcomm.robotcore.hardware.HardwareMap hardwareMap, BNO055IMU imu, Telemetry telemetry) {
@@ -102,7 +100,7 @@ public class Path {
             builder.setReversed(false).lineTo(firstStop).strafeTo(dest);
         }
         else if (Math.abs(delta_x) < Math.abs(delta_y)){
-            RobotLogger.dd(TAG, "x > y, strafe first and then line");
+            RobotLogger.dd(TAG, "x < y, strafe first and then line");
             double square_offset = Math.abs(delta_x);
             double new_y = 0;
             if (delta_y < 0)
@@ -139,6 +137,7 @@ public class Path {
         if (DriveConstantsPID.ENABLE_ARM_ACTIONS == false){
             sleep_millisec((int) DriveConstantsPID.TEST_PAUSE_TIME);
         }
+        /*
         if (DriveConstantsPID.drvCorrection)
         {
             boolean done = false;
@@ -183,6 +182,7 @@ public class Path {
                 currentPos = newPos;
             }
         }
+         */
         //RobotLogger.dd(TAG, "vuforia localization info: %s", vu.getPoseEstimate().toString());
 
         if (DriveConstantsPID.RECREATE_DRIVE_AND_BUILDER) {
@@ -214,6 +214,7 @@ public class Path {
         }
     }
     private int FollowPathFromXMLFile(Pose2d coordinates[], VuforiaCamLocalizer vLocal, boolean isRed) {
+        Pose2d error_pose;
         int xy_len = coordinates.length;
         if (xy_len == 0)
         {
@@ -246,6 +247,7 @@ public class Path {
 
         }
         // step 1;
+
         DriveBuilderReset(true, false, "step" + Integer.toString(step_count) + coordinates[step_count].toString() +
                 ", after prepare, start");
         if (first_skystone_location != 2) {
@@ -272,8 +274,15 @@ public class Path {
         }
 
         // step 2;
+        error_pose = _drive.follower.getLastError();
         DriveBuilderReset(false, false, "step" + Integer.toString(step_count) + coordinates[step_count].toString() +
                 ", after grab , to go straight");
+
+        if (DriveConstantsPID.drvCorrection) {
+            coordinates[step_count] = new Pose2d(coordinates[step_count].getX() + error_pose.getX(),
+                    coordinates[step_count].getY() + error_pose.getY(), coordinates[step_count].getHeading());
+            RobotLogger.dd(TAG, "next step after correction: " + coordinates[step_count].toString());
+        }
 
         builder = builder
                 .setReversed(false).lineTo(new Vector2d(coordinates[step_count].getX(), coordinates[step_count].getY()));
@@ -295,8 +304,16 @@ public class Path {
 
 
         // step 3;
+        error_pose = _drive.follower.getLastError();
         DriveBuilderReset(false, false, "step" + Integer.toString(step_count) + coordinates[step_count].toString() +
                 ", after drop 1st stone, to straight move back");
+
+        if (DriveConstantsPID.drvCorrection) {
+            coordinates[step_count] = new Pose2d(coordinates[step_count].getX() + error_pose.getX(),
+                    coordinates[step_count].getY() + error_pose.getY(), coordinates[step_count].getHeading());
+            RobotLogger.dd(TAG, "next step after correction: " + coordinates[step_count].toString());
+        }
+
         builder = builder
                 .setReversed(true).lineTo((new Vector2d(coordinates[step_count].getX(), coordinates[step_count].getY())));
         trajectory = builder.build();   //x - 2.812, y + 7.984
@@ -324,8 +341,14 @@ public class Path {
         }
 
         // step 4;
+        error_pose = _drive.follower.getLastError();
         DriveBuilderReset(false, false, "step" + Integer.toString(step_count) + coordinates[step_count].toString() +
                 "after straight move, grabbed 2nd, to straight move");
+        if (DriveConstantsPID.drvCorrection) {
+            coordinates[step_count] = new Pose2d(coordinates[step_count].getX() + error_pose.getX(),
+                    coordinates[step_count].getY() + error_pose.getY(), coordinates[step_count].getHeading());
+            RobotLogger.dd(TAG, "next step after correction: " + coordinates[step_count].toString());
+        }
         builder = builder
                 .setReversed(false).lineTo(new Vector2d(coordinates[step_count].getX(), coordinates[step_count].getY()));
         trajectory = builder.build();   //x - 2.812, y + 7.984
