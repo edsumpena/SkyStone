@@ -49,6 +49,7 @@ public class Path {
     private BNO055IMU imu;
     private Telemetry telemetry;
     private String path_file;
+    private int first_skystone_location = 0;
     //VuforiaCamLocalizer vu;
 
 
@@ -247,14 +248,15 @@ public class Path {
         // step 1;
         DriveBuilderReset(true, false, "step" + Integer.toString(step_count) + coordinates[step_count].toString() +
                 ", after prepare, start");
-        //StrafeDiagonalHelper(_drive, (new Vector2d(coordinates[step_count].getX(), coordinates[step_count].getY())));
-
-        builder = builder
-                .setReversed(false).strafeTo(new Vector2d(coordinates[step_count].getX(), coordinates[step_count].getY()));
-        trajectory = builder.build();   //x - 2.812, y + 7.984
-        _drive.followTrajectorySync(trajectory);
-
-
+        if (first_skystone_location != 2) {
+            builder = builder
+                    .setReversed(false).strafeTo(new Vector2d(coordinates[step_count].getX(), coordinates[step_count].getY()));
+            trajectory = builder.build();   //x - 2.812, y + 7.984
+            _drive.followTrajectorySync(trajectory);
+        }
+        else {
+            StrafeDiagonalHelper(_drive, new Vector2d(coordinates[step_count].getX(), coordinates[step_count].getY()));
+        }
         step_count ++;
 
         if (vLocal != null) {
@@ -430,6 +432,7 @@ public class Path {
     }
     public void RedQuary(int[] skystonePositions, VuforiaCamLocalizer vuLocalizer) {
         String tmp = "path_red_.xml";
+        first_skystone_location = skystonePositions[0];
         path_file = tmp.substring(0, 8) + Integer.toString(skystonePositions[0])
                 + tmp.substring(9);
         RobotLogger.dd(TAG, "to read XY coordinates from " + path_file);
@@ -470,6 +473,7 @@ public class Path {
 
     public void BlueQuary(int[] skystonePositions, VuforiaCamLocalizer vuLocalizer) {    // (-x, y)
         String tmp = "path_blue_.xml";
+        first_skystone_location = skystonePositions[0];
         path_file = tmp.substring(0, 9) + Integer.toString(skystonePositions[0])
                 + tmp.substring(10);
         RobotLogger.dd(TAG, "to read XY coordinates from " + path_file);
@@ -632,10 +636,10 @@ public class Path {
 
     private void grabStone(FieldPosition fieldPosition) {
         hwMap.redAutoClawJoint2.setPosition(TeleopConstants.autoClaw2Grabbing);
-        sleep_millisec(200);
+        sleep_millisec(400);
 
         hwMap.redAutoClawJoint3.setPosition(TeleopConstants.autoClaw3Closed);
-        sleep_millisec(200);
+        sleep_millisec(400);
 
         hwMap.redAutoClawJoint2.setPosition(TeleopConstants.autoClaw2PickUp);
         sleep_millisec(200);

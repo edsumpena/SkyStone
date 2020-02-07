@@ -43,15 +43,15 @@ public class TeleopConstants {
     public static double intakeInitPosRight = 0.13306;
     public static double intakeInitPosReset = 0.3108;
 
-    public static double autoClaw1Retracted = 0.1048;
-    public static double autoClaw1Drop = 0.27829;
-    public static double autoClaw1Stone = 0.7461;
-    public static double autoClaw1Extended = 0.31285;
+    public static double autoClaw1Retracted = 0; // stove away
+    public static double autoClaw1Drop = 0.26; // dropping onto foundation
+    public static double autoClaw1Stone = 0.7; // store behind robot
+    public static double autoClaw1Extended = 0.5; // move to get stone
 
-    public static double autoClaw2PickUp = 0.9028;
+    public static double autoClaw2PickUp = 0.92;
     public static double autoClaw2Init = 0.77635;
     public static double autoClaw2Prep = 0.77635;
-    public static double autoClaw2Grabbing = 0.63033;
+    public static double autoClaw2Grabbing = 0.45;
 
     public static double autoClaw3Init = 0.8554;
     public static double autoClaw3Closed = 0.5709;
