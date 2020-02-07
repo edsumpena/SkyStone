@@ -619,10 +619,10 @@ public class Path {
     }
 
     private void prepGrab(FieldPosition fieldPosition) {
-        hwMap.redAutoClawJoint3.setPosition(TeleopConstants.autoClaw3Open);
+        hwMap.redAutoClawJoint1.setPosition(TeleopConstants.autoClaw1Extended);
         sleep_millisec(200);
 
-        hwMap.redAutoClawJoint1.setPosition(TeleopConstants.autoClaw1Extended);
+        hwMap.redAutoClawJoint3.setPosition(TeleopConstants.autoClaw3Open);
         sleep_millisec(200);
 
         hwMap.redAutoClawJoint2.setPosition(TeleopConstants.autoClaw2Prep);
