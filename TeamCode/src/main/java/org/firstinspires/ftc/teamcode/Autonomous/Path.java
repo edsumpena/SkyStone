@@ -212,7 +212,7 @@ public class Path {
             e.printStackTrace();
         }
     }
-    private int FollowPathFromXMLFile(Pose2d coordinates[], VuforiaCamLocalizer vLocal) {
+    private int FollowPathFromXMLFile(Pose2d coordinates[], VuforiaCamLocalizer vLocal, boolean isRed) {
         int xy_len = coordinates.length;
         if (xy_len == 0)
         {
@@ -222,6 +222,7 @@ public class Path {
             return -1;
         }
         RobotLogger.dd(TAG, "finished reading path coordinates num: " + Integer.toString(xy_len));
+        step_count = 0;
 
         startingPos = coordinates[step_count];
         RobotLogger.dd(TAG, "step" + Integer.toString(step_count) + coordinates[step_count].toString());
@@ -237,8 +238,11 @@ public class Path {
             transferReset();
             initIntakeClaw();
             init();
+            if (isRed)
+                prepGrab(FieldPosition.RED_QUARY);    //*******
+            else
+                prepGrab(FieldPosition.BLUE_QUARY);    //*******
 
-            prepGrab(FieldPosition.RED_QUARY);    //*******
         }
         // step 1;
         DriveBuilderReset(true, false, "step" + Integer.toString(step_count) + coordinates[step_count].toString() +
@@ -259,7 +263,10 @@ public class Path {
         }
         RobotLog.dd(TAG, "step1.5, after strafe, to grab");
         if (DriveConstantsPID.ENABLE_ARM_ACTIONS) {
-            grabStone(FieldPosition.RED_QUARY);   //*******
+            if (isRed)
+                grabStone(FieldPosition.RED_QUARY);   //*******
+            else
+                grabStone(FieldPosition.BLUE_QUARY);
         }
 
         // step 2;
@@ -272,25 +279,18 @@ public class Path {
         _drive.followTrajectorySync(trajectory);
         step_count ++;
 
-                /*DriveBuilderReset(true, false, "step4, after long straight to drop stone");
-                builder = builder
-                        .setReversed(false).strafeTo(new Vector2d(foundationX, yCoordMvmtPlane + strafeDistance));
-                trajectory = builder.build();   //x - 2.812, y + 7.984
-                _drive.followTrajectorySync(trajectory);*/
         if (vLocal != null) {
             Pose2d t = vLocal.getPoseEstimate();
             RobotLogger.dd(TAG, "Calibrate before drop stone! Vuforia local info: " + t.toString());
         }
         RobotLog.dd(TAG, "step2.5, after straight");
         if (DriveConstantsPID.ENABLE_ARM_ACTIONS) {
-            dropStone(FieldPosition.RED_QUARY); //*******
+            if (isRed)
+                dropStone(FieldPosition.RED_QUARY); //*******
+            else
+                dropStone(FieldPosition.BLUE_QUARY);
         }
 
-                /*DriveBuilderReset(true, false, "step5, after strafe and drop stone");
-                builder = builder
-                        .setReversed(false).strafeTo(new Vector2d(foundationX, yCoordMvmtPlane));
-                trajectory = builder.build();   //x - 2.812, y + 7.984
-                _drive.followTrajectorySync(trajectory);*/
 
         // step 3;
         DriveBuilderReset(false, false, "step" + Integer.toString(step_count) + coordinates[step_count].toString() +
@@ -305,26 +305,21 @@ public class Path {
             RobotLogger.dd(TAG, "Calibrate before grab 2nd stone! Vuforia local info: " + t.toString());
         }
         if (DriveConstantsPID.ENABLE_ARM_ACTIONS) {
-            prepGrab(FieldPosition.RED_QUARY); //*******
+            if (isRed)
+                prepGrab(FieldPosition.RED_QUARY); //*******
+            else
+                prepGrab(FieldPosition.BLUE_QUARY);
         }
 
         sleep_millisec(100);
 
-                /*builder = builder
-                        .setReversed(false).strafeTo(new Vector2d(furtherMostSkyStoneX, yCoordMvmtPlane + strafeDistance));
-                trajectory = builder.build();   //x - 2.812, y + 7.984
-                _drive.followTrajectorySync(trajectory);
-                RobotLog.dd(TAG, "step7.5 after strafe, to grab");*/
 
         if (DriveConstantsPID.ENABLE_ARM_ACTIONS) {
-            grabStone(FieldPosition.RED_QUARY);   //*******
+            if (isRed)
+                grabStone(FieldPosition.RED_QUARY);   //*******
+            else
+                grabStone(FieldPosition.BLUE_QUARY);
         }
-
-                /*DriveBuilderReset(true, false, "step8, after strafe and grab");
-                builder = builder
-                        .setReversed(false).strafeTo(new Vector2d(furtherMostSkyStoneX, yCoordMvmtPlane));
-                trajectory = builder.build();   //x - 2.812, y + 7.984
-                _drive.followTrajectorySync(trajectory);*/
 
         // step 4;
         DriveBuilderReset(false, false, "step" + Integer.toString(step_count) + coordinates[step_count].toString() +
@@ -335,18 +330,16 @@ public class Path {
         _drive.followTrajectorySync(trajectory);
         step_count ++;
 
-               /* DriveBuilderReset(true, false, "step10, after straight move");
-                builder = builder
-                        .setReversed(false).strafeTo(new Vector2d(foundationX + 3, yCoordMvmtPlane + strafeDistance));
-                trajectory = builder.build();   //x - 2.812, y + 7.984
-                _drive.followTrajectorySync(trajectory);*/
         if (vLocal != null) {
             Pose2d t = vLocal.getPoseEstimate();
             RobotLogger.dd(TAG, "Calibrate before drop 2nd stone! Vuforia local info: " + t.toString());
         }
         RobotLog.dd(TAG, "step4.5, after straight move, to drop");
         if (DriveConstantsPID.ENABLE_ARM_ACTIONS) {
-            dropStone(FieldPosition.RED_QUARY);   //*******
+            if (isRed)
+                dropStone(FieldPosition.RED_QUARY);   //*******
+            else
+                dropStone(FieldPosition.BLUE_QUARY);
         }
 
         // step 5
@@ -424,6 +417,8 @@ public class Path {
                         coordinates[step_count].getY()), coordinates[step_count].getHeading()));
         trajectory = builder.build();   //x - 2.812, y + 7.984
         _drive.followTrajectorySync(trajectory);
+        step_count ++;
+
         while(opMode.opModeIsActive()){
             String o = "";
             for(Pose2d p2d : coordinates)
@@ -431,131 +426,16 @@ public class Path {
             telemetry.addData("Pose2d", o);
             telemetry.update();
         }
-        step_count ++;
         return 0;
     }
     public void RedQuary(int[] skystonePositions, VuforiaCamLocalizer vuLocalizer) {
+        String tmp = "path_red_.xml";
+        path_file = tmp.substring(0, 8) + Integer.toString(skystonePositions[0])
+                + tmp.substring(9);
+        RobotLogger.dd(TAG, "to read XY coordinates from " + path_file);
 
-        switch (skystonePositions[0]) {
-            case 1:
-                /*
-           FIELD COORDINATES LAYOUT
-                      X
-                      /\ 72
-              _ _     |      _ _
-             |   |    |     |   |
-Blue F. -->  | B |    |     | R | <-- Red Foundation
-              - -     |      - -
-                      |
-                      |
-        < - - - - - - - - - - - - - > Y
-       72             |            -72
-                      |
-                      |
-                      |
-                      |
-                      |
-                      \/ -72
-                double yCoordMvmtPlane = -26.0; //Y-coordinate value which the robot moves back and forth on
-                double wallSkyStoneX = -45.0;   //X-coordinate of the Skystone closest to the wall
-                double furtherMostSkyStoneX = -28.5;    //X-coordinate of the Skystone furthest away from the wall
-                double foundationX = 37.0;  //X-coordinate of the foundation
-                double strafeDistanceY = 7.0;    //Distance to strafe out before grabbing foundation
-                double strafeDistanceX = 10.0;   //Distance to strafe down before grabbing foundation
-                double reverseToFoundationInches = 13.0;    //Distance to back up to grab foundation
-                double foundationDragXDecrease = 12.0;  //Decrease in X from original position when dragging foundation
-                double foundationDragYDecrease = 30.0;  //Decrease in Y from original posiion when dragging foundation
-                double parkingX = -10.0;    //X-coordinate of parking location
-                double parkingY = -38.0;    //Y-coordinate of parking location
-                    */
-
-                path_file = "path_red1.xml";
-                RobotLogger.dd(TAG, "to read XY coordinates from " + path_file);
-
-                Pose2d xys[] = DriveConstantsPID.parsePathXY(path_file);
-                FollowPathFromXMLFile(xys, vuLocalizer);
-
-                break;
-            case 2:
-                /*
-           FIELD COORDINATES LAYOUT
-                      X
-                      /\ 72
-              _ _     |      _ _
-             |   |    |     |   |
-Blue F. -->  | B |    |     | R | <-- Red Foundation
-              - -     |      - -
-                      |
-                      |
-        < - - - - - - - - - - - - - > Y
-       72             |            -72
-                      |
-                      |
-                      |
-                      |
-                      |
-                      \/ -72
-                */
-                /*
-                yCoordMvmtPlane = -18.0; //Y-coordinate value which the robot moves back and forth on
-                wallSkyStoneX = -49.0;   //X-coordinate of the Skystone closest to the wall
-                furtherMostSkyStoneX = -25.5;    //X-coordinate of the Skystone furthest away from the wall
-                foundationX = 43.0;  //X-coordinate of the foundation
-                strafeDistanceY = 7.0;    //Distance to strafe out before grabbing foundation
-                strafeDistanceX = 7.0;   //Distance to strafe down before grabbing foundation
-                reverseToFoundationInches = 13.0;    //Distance to back up to grab foundation
-                foundationDragXDecrease = 12.0;  //Decrease in X from original position when dragging foundation
-                foundationDragYDecrease = 30.0;  //Decrease in Y from original posiion when dragging foundation
-                parkingX = 0.0;    //X-coordinate of parking location
-                parkingY = -38.0;    //Y-coordinate of parking location
-                */
-
-                path_file = "path_red2.xml";
-                RobotLogger.dd(TAG, "to read XY coordinates from " + path_file);
-
-                Pose2d xys2[] = DriveConstantsPID.parsePathXY(path_file);
-                FollowPathFromXMLFile(xys2, vuLocalizer);
-                break;
-            case 3:
-                /*
-           FIELD COORDINATES LAYOUT
-                      X
-                      /\ 72
-              _ _     |      _ _
-             |   |    |     |   |
-Blue F. -->  | B |    |     | R | <-- Red Foundation
-              - -     |      - -
-                      |
-                      |
-        < - - - - - - - - - - - - - > Y
-       72             |            -72
-                      |
-                      |
-                      |
-                      |
-                      |
-                      \/ -72
-                */
-/*
-                yCoordMvmtPlane = -18.0; //Y-coordinate value which the robot moves back and forth on
-                wallSkyStoneX = -56.0;   //X-coordinate of the Skystone closest to the wall
-                furtherMostSkyStoneX = -32.5;    //X-coordinate of the Skystone furthest away from the wall
-                foundationX = 43.0;  //X-coordinate of the foundation
-                strafeDistanceY = 7.0;    //Distance to strafe out before grabbing foundation
-                strafeDistanceX = 7.0;   //Distance to strafe down before grabbing foundation
-                reverseToFoundationInches = 13.0;    //Distance to back up to grab foundation
-                foundationDragXDecrease = 12.0;  //Decrease in X from original position when dragging foundation
-                foundationDragYDecrease = 30.0;  //Decrease in Y from original posiion when dragging foundation
-                parkingX = 0.0;    //X-coordinate of parking location
-                parkingY = -38.0;    //Y-coordinate of parking location
-                */
-                path_file = "path_red3.xml";
-                RobotLogger.dd(TAG, "to read XY coordinates from " + path_file);
-
-                Pose2d xys3[] = DriveConstantsPID.parsePathXY(path_file);
-                FollowPathFromXMLFile(xys3, vuLocalizer);
-                break;
-        }
+        Pose2d xys1[] = DriveConstantsPID.parsePathXY(path_file);
+        FollowPathFromXMLFile(xys1, vuLocalizer, true);
     }
 
     public void RedFoundationPark() {
@@ -587,612 +467,15 @@ Blue F. -->  | B |    |     | R | <-- Red Foundation
         trajectory = builder.build();
         straightDrive.followTrajectorySync(trajectory);*/
     }
-    private void FollowPathFromXMLFile_blue(Pose2d coordinates[], VuforiaCamLocalizer vLocal)
-    {
-        double yCoordMvmtPlane = 43.5;
-        double wallSkyStoneX = -49.5;
-        double furtherMostSkyStoneX = -25.0;
-        double firstRegularStoneX = -34.0;
-        double foundationX = 47.0;
-        double strafeDistance = -10.0;
-        if (DriveConstantsPID.ENABLE_ARM_ACTIONS) {
-            transferReset();
-            initIntakeClaw();
 
-            hwMap.parkingServo.setPosition(TeleopConstants.parkingServoPosLock);
-            hwMap.foundationLock.setPosition(TeleopConstants.foundationLockUnlock);
-            hwMap.transferLock.setPosition(TeleopConstants.transferLockPosPlatform);
-        }
-        straightDrive = DriveBuilderReset(false, false, "step1, after strafe");
-        if (DriveConstantsPID.RUN_USING_ODOMETRY_WHEEL) {
-
-            builder = builder
-                    .setReversed(true).lineTo(new Vector2d(wallSkyStoneX, straightDrive.getPoseEstimate().getY()));
-
-        } else {
-            builder = builder.strafeTo(new Vector2d(straightDrive.getPoseEstimate().getX(), -30)).setReversed(true)
-                    .lineTo(new Vector2d(-50, -30));
-        }
-        trajectory = builder.build();   //x - 2.812, y + 7.984
-        straightDrive.followTrajectorySync(trajectory);
-        currentPos = straightDrive.getPoseEstimate();
-        if (DriveConstantsPID.ENABLE_ARM_ACTIONS) {
-            prepGrab(FieldPosition.RED_QUARY);
-        }
-        strafeDrive = DriveBuilderReset(true, false, "step1, after strafe");
-        builder = new TrajectoryBuilder(strafeDrive.getPoseEstimate(), DriveConstantsPID.STRAFE_BASE_CONSTRAINTS);   //-34.752, -63.936
-        if (DriveConstantsPID.RUN_USING_ODOMETRY_WHEEL) {
-
-            builder = builder
-                    .strafeTo(new Vector2d(strafeDrive.getPoseEstimate().getX(), yCoordMvmtPlane + strafeDistance));
-
-        } else {
-            builder = builder.strafeTo(new Vector2d(strafeDrive.getPoseEstimate().getX(), -30)).setReversed(true)
-                    .lineTo(new Vector2d(-50, -30));
-        }
-        trajectory = builder.build();   //x - 2.812, y + 7.984
-        strafeDrive.followTrajectorySync(trajectory);
-        if (DriveConstantsPID.ENABLE_ARM_ACTIONS) {
-            grabStone(FieldPosition.RED_QUARY);
-        }
-        strafeDrive = DriveBuilderReset(true, false, "step2, after grab stone ");
-        if (DriveConstantsPID.RUN_USING_ODOMETRY_WHEEL) {
-            builder = builder.setReversed(false).strafeTo(new Vector2d(wallSkyStoneX, yCoordMvmtPlane));  //-52, -39
-        } else {
-            builder = builder.setReversed(false).strafeTo(new Vector2d(-50, -40))
-                    .lineTo(new Vector2d(50, -40)).strafeTo(new Vector2d(50, -30));
-        }
-        trajectory = builder.build();
-        strafeDrive.followTrajectorySync(trajectory);
-        currentPos = strafeDrive.getPoseEstimate();
-
-        straightDrive = DriveBuilderReset(false, false, "step3");
-        if (DriveConstantsPID.RUN_USING_ODOMETRY_WHEEL) {
-            builder = builder.setReversed(false)
-                    .lineTo(new Vector2d(foundationX, straightDrive.getPoseEstimate().getY() - 1));
-            //-52, -39
-        } else {
-            builder = builder.setReversed(false).strafeTo(new Vector2d(-50, -40))
-                    .lineTo(new Vector2d(50, -40)).strafeTo(new Vector2d(50, -30));
-        }
-        trajectory = builder.build();
-        straightDrive.followTrajectorySync(trajectory);
-        currentPos = straightDrive.getPoseEstimate();
-
-
-        strafeDrive = DriveBuilderReset(true, false, "step4");
-        if (DriveConstantsPID.RUN_USING_ODOMETRY_WHEEL) {
-            builder = builder.strafeTo(new Vector2d(foundationX, yCoordMvmtPlane + strafeDistance));
-        } else {
-            builder = builder.strafeTo(new Vector2d(50, -40)).setReversed(true).lineTo(new Vector2d(-20, -40))
-                    .strafeTo(new Vector2d(-20, -28));
-        }
-        trajectory = builder.build();
-        strafeDrive.followTrajectorySync(trajectory);
-        currentPos = strafeDrive.getPoseEstimate();
-        if (DriveConstantsPID.ENABLE_ARM_ACTIONS) {
-            dropStone(FieldPosition.RED_QUARY);
-        }
-
-                /*strafeDrive = DriveBuilderReset(true, false, "step5, after drop 1st stone");
-                if (DriveConstantsPID.RUN_USING_ODOMETRY_WHEEL) {
-                    builder = builder.strafeTo(new Vector2d(foundationX, yCoordMvmtPlane));
-                } else {
-                    builder = builder.strafeTo(new Vector2d(50, -40)).setReversed(true).lineTo(new Vector2d(-20, -40))
-                            .strafeTo(new Vector2d(-20, -28));
-                }
-                trajectory = builder.build();
-                strafeDrive.followTrajectorySync(trajectory);
-                currentPos = strafeDrive.getPoseEstimate();
-                straightDrive = DriveBuilderReset(false, false, "step6");
-                if (DriveConstantsPID.RUN_USING_ODOMETRY_WHEEL) {
-                    builder = builder
-                            .setReversed(true).lineTo(new Vector2d(furtherMostSkyStoneX, straightDrive.getPoseEstimate().getY()));
-                } else {
-                    builder = builder.strafeTo(new Vector2d(50, -40)).setReversed(true).lineTo(new Vector2d(-20, -40))
-                            .strafeTo(new Vector2d(-20, -28));
-                }
-                trajectory = builder.build();
-                straightDrive.followTrajectorySync(trajectory);
-                currentPos = straightDrive.getPoseEstimate();
-                prepGrab(FieldPosition.RED_QUARY);
-                strafeDrive = DriveBuilderReset(true, false, "step7");
-                if (DriveConstantsPID.RUN_USING_ODOMETRY_WHEEL) {
-                    builder = builder
-                            .strafeTo(new Vector2d(furtherMostSkyStoneX, yCoordMvmtPlane + strafeDistance));
-                } else {
-                    builder = builder.strafeTo(new Vector2d(50, -40)).setReversed(true).lineTo(new Vector2d(-20, -40))
-                            .strafeTo(new Vector2d(-20, -28));
-                }
-                trajectory = builder.build();
-                strafeDrive.followTrajectorySync(trajectory);
-                currentPos = strafeDrive.getPoseEstimate();
-                grabStone(FieldPosition.RED_QUARY);
-                strafeDrive = DriveBuilderReset(true, false, "step8, grabbed 2nd stone");
-                if (DriveConstantsPID.RUN_USING_ODOMETRY_WHEEL) {
-                    builder = builder.setReversed(false).strafeTo(new Vector2d(furtherMostSkyStoneX, yCoordMvmtPlane));
-                } else {
-                    builder = builder.setReversed(false).strafeTo(new Vector2d(-20, -40)).lineTo(new Vector2d(50, -40))
-                            .strafeTo(new Vector2d(50, -30));
-                }
-                trajectory = builder.build();
-                strafeDrive.followTrajectorySync(trajectory);
-                currentPos = strafeDrive.getPoseEstimate();
-                straightDrive = DriveBuilderReset(false, false, "step9");
-                if (DriveConstantsPID.RUN_USING_ODOMETRY_WHEEL) {
-                    builder = builder.setReversed(false)
-                            .lineTo(new Vector2d(foundationX, yCoordMvmtPlane));
-                } else {
-                    builder = builder.setReversed(false).strafeTo(new Vector2d(-20, -40)).lineTo(new Vector2d(50, -40))
-                            .strafeTo(new Vector2d(50, -30));
-                }
-                trajectory = builder.build();
-                straightDrive.followTrajectorySync(trajectory);
-                currentPos = straightDrive.getPoseEstimate();
-                strafeDrive = DriveBuilderReset(true, false, "step10");
-                if (DriveConstantsPID.RUN_USING_ODOMETRY_WHEEL) {
-                    builder = builder.setReversed(false)
-                            .strafeTo(new Vector2d(foundationX, yCoordMvmtPlane + strafeDistance));
-                } else {
-                    builder = builder.setReversed(false).strafeTo(new Vector2d(-20, -40)).lineTo(new Vector2d(50, -40))
-                            .strafeTo(new Vector2d(50, -30));
-                }
-                trajectory = builder.build();
-                strafeDrive.followTrajectorySync(trajectory);
-                currentPos = strafeDrive.getPoseEstimate();
-                dropStone(FieldPosition.RED_QUARY);*/
-
-                /*strafeDrive = DriveBuilderReset(true, false, "step11, dropped 2nd stone");
-                if (DriveConstantsPID.RUN_USING_ODOMETRY_WHEEL) {
-                    builder = builder.strafeTo(new Vector2d(foundationX, yCoordMvmtPlane));
-                }
-                trajectory = builder.build();
-                strafeDrive.followTrajectorySync(trajectory);
-                currentPos = strafeDrive.getPoseEstimate();
-                straightDrive = DriveBuilderReset(false, false, "step12");
-                if (DriveConstantsPID.RUN_USING_ODOMETRY_WHEEL) {
-                    builder = builder
-                            .setReversed(true).lineTo(new Vector2d(firstRegularStoneX, yCoordMvmtPlane));
-                }
-                trajectory = builder.build();
-                straightDrive.followTrajectorySync(trajectory);
-                currentPos = straightDrive.getPoseEstimate();
-                prepGrab(FieldPosition.RED_QUARY);
-                strafeDrive = DriveBuilderReset(true, false, "step13");
-                if (DriveConstantsPID.RUN_USING_ODOMETRY_WHEEL) {
-                    builder = builder
-                            .strafeTo(new Vector2d(firstRegularStoneX, yCoordMvmtPlane + strafeDistance));
-                }
-                trajectory = builder.build();
-                strafeDrive.followTrajectorySync(trajectory);
-                currentPos = strafeDrive.getPoseEstimate();
-                grabStone(FieldPosition.RED_QUARY);
-                strafeDrive = DriveBuilderReset(true, false, "step14, grabbed 3rd stone");
-                if (DriveConstantsPID.RUN_USING_ODOMETRY_WHEEL) {
-                    builder = builder.setReversed(false).strafeTo(new Vector2d(firstRegularStoneX, yCoordMvmtPlane));
-                }
-                trajectory = builder.build();
-                strafeDrive.followTrajectorySync(trajectory);
-                currentPos = strafeDrive.getPoseEstimate();
-                straightDrive = DriveBuilderReset(false, false, "step15");
-                if (DriveConstantsPID.RUN_USING_ODOMETRY_WHEEL) {
-                    builder = builder.setReversed(false)
-                            .lineTo(new Vector2d(foundationX, yCoordMvmtPlane));
-                }
-                trajectory = builder.build();
-                straightDrive.followTrajectorySync(trajectory);
-                currentPos = straightDrive.getPoseEstimate();
-                strafeDrive = DriveBuilderReset(true, false, "step16");
-                if (DriveConstantsPID.RUN_USING_ODOMETRY_WHEEL) {
-                    builder = builder.setReversed(false)
-                            .strafeTo(new Vector2d(foundationX, yCoordMvmtPlane + strafeDistance));
-                }
-                trajectory = builder.build();
-                strafeDrive.followTrajectorySync(trajectory);
-                currentPos = strafeDrive.getPoseEstimate();
-                DriveConstantsPID.keep_vuforia_running = false;
-                dropStone(FieldPosition.RED_QUARY);*/
-        if (DriveConstantsPID.ENABLE_ARM_ACTIONS) {
-            hwMap.foundationLock.setPosition(TeleopConstants.foundationLockUnlock);
-            hwMap.transferLock.setPosition(TeleopConstants.transferLockPosOut);
-        }
-        strafeDrive = DriveBuilderReset(true, false, "step17.5");
-
-        if (DriveConstantsPID.RUN_USING_ODOMETRY_WHEEL) {
-            builder = builder.setReversed(false).strafeTo(new Vector2d(foundationX, yCoordMvmtPlane - 2));
-            //.strafeTo(new Vector2d(42, -30));
-        }
-        trajectory = builder.build();
-        strafeDrive.followTrajectorySync(trajectory);
-        currentPos = strafeDrive.getPoseEstimate();
-
-        straightDrive = DriveBuilderReset(true, false, "step17.0, dropped 3rd stones");
-
-                /*if (getIMUAngle() < Math.PI)
-                    straightDrive.turnSync(Math.PI / 2 - getIMUAngle());
-                else
-                    straightDrive.turnSync(Math.PI / 2 - (getIMUAngle() - 2 * PI));*/
-        currentPos = strafeDrive.getPoseEstimate();
-
-        straightDrive = DriveBuilderReset(false, false, "step18");
-
-        if (DriveConstantsPID.RUN_USING_ODOMETRY_WHEEL) {
-            builder = builder.setReversed(false)
-                    .setReversed(true).lineTo(new Vector2d(straightDrive.getPoseEstimate().getX(), 31));
-            //.strafeTo(new Vector2d(42, -30));
-        }
-        trajectory = builder.build();
-        straightDrive.followTrajectorySync(trajectory);
-        currentPos = straightDrive.getPoseEstimate();
-        if (DriveConstantsPID.ENABLE_ARM_ACTIONS) {
-            hwMap.foundationLock.setPosition(TeleopConstants.foundationLockLock);
-            hwMap.transferLock.setPosition(TeleopConstants.transferLockPosUp);
-        }
-        sleep_millisec(300);
-
-
-        straightDrive = DriveBuilderReset(false, false, "step19");
-
-        if (DriveConstantsPID.RUN_USING_ODOMETRY_WHEEL) {
-            builder = builder.setReversed(false)//.strafeTo(new Vector2d(-24, -40))
-                    .setReversed(false).lineTo(new Vector2d(straightDrive.getPoseEstimate().getX() - 6, 58));
-            //.strafeTo(new Vector2d(42, -30));
-        }
-        trajectory = builder.build();
-        straightDrive.followTrajectorySync(trajectory);
-        currentPos = straightDrive.getPoseEstimate();
-        RobotLog.dd(TAG, "step20, " + currentPos.toString());
-
-        straightDrive.turnSync(Math.toRadians(70));
-        RobotLog.dd(TAG, "step21, " + straightDrive.getPoseEstimate().toString());
-        currentPos = straightDrive.getPoseEstimate();
-        if (DriveConstantsPID.ENABLE_ARM_ACTIONS) {
-            hwMap.foundationLock.setPosition(TeleopConstants.foundationLockUnlock);
-            hwMap.transferLock.setPosition(TeleopConstants.transferLockPosOut);
-        }
-        sleep_millisec(300);
-
-
-        straightDrive = DriveBuilderReset(false, false, "step18");
-
-        if (DriveConstantsPID.RUN_USING_ODOMETRY_WHEEL) {
-            //builder = builder.splineTo(new Pose2d(straightDrive.getPoseEstimate().getX() - 12, straightDrive.getPoseEstimate().getY() - 24, PI / 2));
-            builder = builder.forward(30);
-            //.strafeTo(new Vector2d(42, -30));
-        }
-        trajectory = builder.build();
-        straightDrive.followTrajectorySync(trajectory);
-    }
     public void BlueQuary(int[] skystonePositions, VuforiaCamLocalizer vuLocalizer) {    // (-x, y)
-        switch (skystonePositions[0]) {
-            case 1:
-                path_file = "path_blue1.xml";
-                RobotLogger.dd(TAG, "to read XY coordinates from " + path_file);
+        String tmp = "path_blue_.xml";
+        path_file = tmp.substring(0, 9) + Integer.toString(skystonePositions[0])
+                + tmp.substring(10);
+        RobotLogger.dd(TAG, "to read XY coordinates from " + path_file);
 
-                Pose2d xys1[] = DriveConstantsPID.parsePathXY(path_file);
-                FollowPathFromXMLFile_blue(xys1, vuLocalizer);
-                break;
-            case 2:
-                path_file = "path_blue2.xml";
-                RobotLogger.dd(TAG, "to read XY coordinates from " + path_file);
-
-                Pose2d xys2[] = DriveConstantsPID.parsePathXY(path_file);
-                FollowPathFromXMLFile_blue(xys2, vuLocalizer);
-                break;
-                /*
-                yCoordMvmtPlane = 43.5;
-                wallSkyStoneX = -56.5;
-                furtherMostSkyStoneX = -30.5;
-                firstRegularStoneX = -34.0;
-                foundationX = 47.0;
-                strafeDistance = -10.0;
-
-                if (DriveConstantsPID.ENABLE_ARM_ACTIONS) {
-                    // hwMap.parkingServo.setPosition(TeleopConstants.parkingServoPosLock);
-                    hwMap.foundationLock.setPosition(TeleopConstants.foundationLockUnlock);
-                    hwMap.transferLock.setPosition(TeleopConstants.transferLockPosPlatform);
-                }
-                straightDrive = DriveBuilderReset(false, false, "step1, after strafe");
-                if (DriveConstantsPID.RUN_USING_ODOMETRY_WHEEL) {
-
-                    builder = builder
-                            .setReversed(true).lineTo(new Vector2d(wallSkyStoneX, straightDrive.getPoseEstimate().getY()));
-
-                } else {
-                    builder = builder.strafeTo(new Vector2d(straightDrive.getPoseEstimate().getX(), -30)).setReversed(true)
-                            .lineTo(new Vector2d(-50, -30));
-                }
-                trajectory = builder.build();   //x - 2.812, y + 7.984
-                straightDrive.followTrajectorySync(trajectory);
-                currentPos = straightDrive.getPoseEstimate();
-                if (DriveConstantsPID.ENABLE_ARM_ACTIONS) {
-                    prepGrab(FieldPosition.RED_QUARY);
-                }
-                strafeDrive = DriveBuilderReset(true, false, "step1, after strafe");
-                builder = new TrajectoryBuilder(strafeDrive.getPoseEstimate(), DriveConstantsPID.STRAFE_BASE_CONSTRAINTS);   //-34.752, -63.936
-                if (DriveConstantsPID.RUN_USING_ODOMETRY_WHEEL) {
-
-                    builder = builder
-                            .strafeTo(new Vector2d(strafeDrive.getPoseEstimate().getX(), yCoordMvmtPlane + strafeDistance));
-
-                } else {
-                    builder = builder.strafeTo(new Vector2d(strafeDrive.getPoseEstimate().getX(), -30)).setReversed(true)
-                            .lineTo(new Vector2d(-50, -30));
-                }
-                trajectory = builder.build();   //x - 2.812, y + 7.984
-                strafeDrive.followTrajectorySync(trajectory);
-                if (DriveConstantsPID.ENABLE_ARM_ACTIONS) {
-                    grabStone(FieldPosition.RED_QUARY);
-                    transferReset();
-                    initIntakeClaw();
-                }
-                strafeDrive = DriveBuilderReset(true, false, "step2, after grab stone ");
-                if (DriveConstantsPID.RUN_USING_ODOMETRY_WHEEL) {
-                    builder = builder.setReversed(false).strafeTo(new Vector2d(wallSkyStoneX, yCoordMvmtPlane));  //-52, -39
-                } else {
-                    builder = builder.setReversed(false).strafeTo(new Vector2d(-50, -40))
-                            .lineTo(new Vector2d(50, -40)).strafeTo(new Vector2d(50, -30));
-                }
-                trajectory = builder.build();
-                strafeDrive.followTrajectorySync(trajectory);
-                currentPos = strafeDrive.getPoseEstimate();
-
-                straightDrive = DriveBuilderReset(false, false, "step3");
-                if (DriveConstantsPID.RUN_USING_ODOMETRY_WHEEL) {
-                    builder = builder.setReversed(false)
-                            .lineTo(new Vector2d(foundationX, straightDrive.getPoseEstimate().getY() + 2));
-                    //-52, -39
-                } else {
-                    builder = builder.setReversed(false).strafeTo(new Vector2d(-50, -40))
-                            .lineTo(new Vector2d(50, -40)).strafeTo(new Vector2d(50, -30));
-                }
-                trajectory = builder.build();
-                straightDrive.followTrajectorySync(trajectory);
-                currentPos = straightDrive.getPoseEstimate();
-
-                strafeDrive = DriveBuilderReset(true, false, "step4");
-                if (DriveConstantsPID.RUN_USING_ODOMETRY_WHEEL) {
-                    builder = builder.strafeTo(new Vector2d(foundationX, yCoordMvmtPlane + strafeDistance));
-                } else {
-                    builder = builder.strafeTo(new Vector2d(50, -40)).setReversed(true).lineTo(new Vector2d(-20, -40))
-                            .strafeTo(new Vector2d(-20, -28));
-                }
-                trajectory = builder.build();
-                strafeDrive.followTrajectorySync(trajectory);
-                currentPos = strafeDrive.getPoseEstimate();
-                if (DriveConstantsPID.ENABLE_ARM_ACTIONS) {
-                    dropStone(FieldPosition.RED_QUARY);
-                }
-                if (DriveConstantsPID.ENABLE_ARM_ACTIONS) {
-                    hwMap.foundationLock.setPosition(TeleopConstants.foundationLockUnlock);
-                    hwMap.transferLock.setPosition(TeleopConstants.transferLockPosOut);
-                }
-                strafeDrive = DriveBuilderReset(true, false, "step17.5");
-
-                if (DriveConstantsPID.RUN_USING_ODOMETRY_WHEEL) {
-                    builder = builder.setReversed(false).strafeTo(new Vector2d(foundationX, yCoordMvmtPlane - 2));
-                    //.strafeTo(new Vector2d(42, -30));
-                }
-                trajectory = builder.build();
-                strafeDrive.followTrajectorySync(trajectory);
-                currentPos = strafeDrive.getPoseEstimate();
-
-                straightDrive = DriveBuilderReset(true, false, "step17.0, dropped 3rd stones");
-
-
-                currentPos = strafeDrive.getPoseEstimate();
-
-                straightDrive = DriveBuilderReset(false, false, "step18");
-
-                if (DriveConstantsPID.RUN_USING_ODOMETRY_WHEEL) {
-                    builder = builder.setReversed(false)
-                            .setReversed(true).lineTo(new Vector2d(straightDrive.getPoseEstimate().getX(), 31.5));
-                    //.strafeTo(new Vector2d(42, -30));
-                }
-                trajectory = builder.build();
-                straightDrive.followTrajectorySync(trajectory);
-                currentPos = straightDrive.getPoseEstimate();
-                if (DriveConstantsPID.ENABLE_ARM_ACTIONS) {
-                    hwMap.foundationLock.setPosition(TeleopConstants.foundationLockLock);
-                    hwMap.transferLock.setPosition(TeleopConstants.transferLockPosUp);
-                }
-                sleep_millisec(300);
-
-
-                straightDrive = DriveBuilderReset(false, false, "step19");
-
-                if (DriveConstantsPID.RUN_USING_ODOMETRY_WHEEL) {
-                    builder = builder.setReversed(false)//.strafeTo(new Vector2d(-24, -40))
-                            .setReversed(false).lineTo(new Vector2d(straightDrive.getPoseEstimate().getX() - 6, 60));
-                    //.strafeTo(new Vector2d(42, -30));
-                }
-                trajectory = builder.build();
-                straightDrive.followTrajectorySync(trajectory);
-                currentPos = straightDrive.getPoseEstimate();
-                RobotLog.dd(TAG, "step20, " + currentPos.toString());
-
-                straightDrive.turnSync(Math.toRadians(70));
-                RobotLog.dd(TAG, "step21, " + straightDrive.getPoseEstimate().toString());
-                currentPos = straightDrive.getPoseEstimate();
-                if (DriveConstantsPID.ENABLE_ARM_ACTIONS) {
-                    hwMap.foundationLock.setPosition(TeleopConstants.foundationLockUnlock);
-                    hwMap.transferLock.setPosition(TeleopConstants.transferLockPosOut);
-                }
-                sleep_millisec(300);
-
-
-                straightDrive = DriveBuilderReset(false, false, "step18");
-
-                if (DriveConstantsPID.RUN_USING_ODOMETRY_WHEEL) {
-                    //builder = builder.splineTo(new Pose2d(straightDrive.getPoseEstimate().getX() - 12, straightDrive.getPoseEstimate().getY() - 24, PI / 2));
-                    builder = builder.forward(30);
-                    //.strafeTo(new Vector2d(42, -30));
-                }
-                trajectory = builder.build();
-                straightDrive.followTrajectorySync(trajectory);
-                break;
-                */
-            case 3:
-                path_file = "path_blue3.xml";
-                RobotLogger.dd(TAG, "to read XY coordinates from " + path_file);
-
-                Pose2d xys3[] = DriveConstantsPID.parsePathXY(path_file);
-                FollowPathFromXMLFile_blue(xys3, vuLocalizer);
-                break;
-                /*
-                yCoordMvmtPlane = 46.0;
-                wallSkyStoneX = -63.5;
-                furtherMostSkyStoneX = -40.0;
-                firstRegularStoneX = -36.0;
-                foundationX = 47.0;
-                strafeDistance = -10.0;
-                if (DriveConstantsPID.ENABLE_ARM_ACTIONS) {
-                    //hwMap.parkingServo.setPosition(TeleopConstants.parkingServoPosLock);
-                    hwMap.foundationLock.setPosition(TeleopConstants.foundationLockUnlock);
-                    hwMap.transferLock.setPosition(TeleopConstants.transferLockPosPlatform);
-                }
-                straightDrive = DriveBuilderReset(false, false, "step1, after strafe");
-                if (DriveConstantsPID.RUN_USING_ODOMETRY_WHEEL) {
-
-                    builder = builder
-                            .setReversed(true).lineTo(new Vector2d(wallSkyStoneX, straightDrive.getPoseEstimate().getY()));
-
-                } else {
-                    builder = builder.strafeTo(new Vector2d(straightDrive.getPoseEstimate().getX(), -30)).setReversed(true)
-                            .lineTo(new Vector2d(-50, -30));
-                }
-                trajectory = builder.build();   //x - 2.812, y + 7.984
-                straightDrive.followTrajectorySync(trajectory);
-                currentPos = straightDrive.getPoseEstimate();
-                if (DriveConstantsPID.ENABLE_ARM_ACTIONS) {
-                    prepGrab(FieldPosition.RED_QUARY);
-                }
-                strafeDrive = DriveBuilderReset(true, false, "step1, after strafe");
-                builder = new TrajectoryBuilder(strafeDrive.getPoseEstimate(), DriveConstantsPID.STRAFE_BASE_CONSTRAINTS);   //-34.752, -63.936
-                if (DriveConstantsPID.RUN_USING_ODOMETRY_WHEEL) {
-
-                    builder = builder
-                            .strafeTo(new Vector2d(strafeDrive.getPoseEstimate().getX(), yCoordMvmtPlane + strafeDistance));
-
-                } else {
-                    builder = builder.strafeTo(new Vector2d(strafeDrive.getPoseEstimate().getX(), -30)).setReversed(true)
-                            .lineTo(new Vector2d(-50, -30));
-                }
-                trajectory = builder.build();   //x - 2.812, y + 7.984
-                strafeDrive.followTrajectorySync(trajectory);
-                if (DriveConstantsPID.ENABLE_ARM_ACTIONS) {
-                    grabStone(FieldPosition.RED_QUARY);
-                    transferReset();
-                    initIntakeClaw();
-                }
-                strafeDrive = DriveBuilderReset(true, false, "step2, after grab stone ");
-                if (DriveConstantsPID.RUN_USING_ODOMETRY_WHEEL) {
-                    builder = builder.setReversed(false).strafeTo(new Vector2d(wallSkyStoneX, yCoordMvmtPlane));  //-52, -39
-                } else {
-                    builder = builder.setReversed(false).strafeTo(new Vector2d(-50, -40))
-                            .lineTo(new Vector2d(50, -40)).strafeTo(new Vector2d(50, -30));
-                }
-                trajectory = builder.build();
-                strafeDrive.followTrajectorySync(trajectory);
-                currentPos = strafeDrive.getPoseEstimate();
-
-                straightDrive = DriveBuilderReset(false, false, "step3");
-                if (DriveConstantsPID.RUN_USING_ODOMETRY_WHEEL) {
-                    builder = builder.setReversed(false)
-                            .lineTo(new Vector2d(foundationX, straightDrive.getPoseEstimate().getY()));
-                    //-52, -39
-                } else {
-                    builder = builder.setReversed(false).strafeTo(new Vector2d(-50, -40))
-                            .lineTo(new Vector2d(50, -40)).strafeTo(new Vector2d(50, -30));
-                }
-                trajectory = builder.build();
-                straightDrive.followTrajectorySync(trajectory);
-                currentPos = straightDrive.getPoseEstimate();
-
-
-                strafeDrive = DriveBuilderReset(true, false, "step4");
-                if (DriveConstantsPID.RUN_USING_ODOMETRY_WHEEL) {
-                    builder = builder.strafeTo(new Vector2d(foundationX, yCoordMvmtPlane + strafeDistance));
-                } else {
-                    builder = builder.strafeTo(new Vector2d(50, -40)).setReversed(true).lineTo(new Vector2d(-20, -40))
-                            .strafeTo(new Vector2d(-20, -28));
-                }
-                trajectory = builder.build();
-                strafeDrive.followTrajectorySync(trajectory);
-                currentPos = strafeDrive.getPoseEstimate();
-                if (DriveConstantsPID.ENABLE_ARM_ACTIONS) {
-                    dropStone(FieldPosition.RED_QUARY);
-                }
-
-                if (DriveConstantsPID.ENABLE_ARM_ACTIONS) {
-                    hwMap.foundationLock.setPosition(TeleopConstants.foundationLockUnlock);
-                    hwMap.transferLock.setPosition(TeleopConstants.transferLockPosOut);
-                }
-                strafeDrive = DriveBuilderReset(true, false, "step17.5");
-
-                if (DriveConstantsPID.RUN_USING_ODOMETRY_WHEEL) {
-                    builder = builder.setReversed(false).strafeTo(new Vector2d(foundationX, yCoordMvmtPlane - 2));
-                    //.strafeTo(new Vector2d(42, -30));
-                }
-                trajectory = builder.build();
-                strafeDrive.followTrajectorySync(trajectory);
-                currentPos = strafeDrive.getPoseEstimate();
-
-                straightDrive = DriveBuilderReset(true, false, "step17.0, dropped 3rd stones");
-
-
-                currentPos = strafeDrive.getPoseEstimate();
-
-                straightDrive = DriveBuilderReset(false, false, "step18");
-
-                if (DriveConstantsPID.RUN_USING_ODOMETRY_WHEEL) {
-                    builder = builder.setReversed(false)
-                            .setReversed(true).lineTo(new Vector2d(straightDrive.getPoseEstimate().getX(), 28));
-                    //.strafeTo(new Vector2d(42, -30));
-                }
-                trajectory = builder.build();
-                straightDrive.followTrajectorySync(trajectory);
-                currentPos = straightDrive.getPoseEstimate();
-                if (DriveConstantsPID.ENABLE_ARM_ACTIONS) {
-                    hwMap.foundationLock.setPosition(TeleopConstants.foundationLockLock);
-                    hwMap.transferLock.setPosition(TeleopConstants.transferLockPosUp);
-                }
-                sleep_millisec(300);
-
-
-                straightDrive = DriveBuilderReset(false, false, "step19");
-
-                if (DriveConstantsPID.RUN_USING_ODOMETRY_WHEEL) {
-                    builder = builder.setReversed(false)//.strafeTo(new Vector2d(-24, -40))
-                            .setReversed(false).lineTo(new Vector2d(straightDrive.getPoseEstimate().getX() - 6, 58));
-                    //.strafeTo(new Vector2d(42, -30));
-                }
-                trajectory = builder.build();
-                straightDrive.followTrajectorySync(trajectory);
-                currentPos = straightDrive.getPoseEstimate();
-                RobotLog.dd(TAG, "step20, " + currentPos.toString());
-
-                straightDrive.turnSync(Math.toRadians(70));
-                RobotLog.dd(TAG, "step21, " + straightDrive.getPoseEstimate().toString());
-                currentPos = straightDrive.getPoseEstimate();
-                if (DriveConstantsPID.ENABLE_ARM_ACTIONS) {
-                    hwMap.foundationLock.setPosition(TeleopConstants.foundationLockUnlock);
-                    hwMap.transferLock.setPosition(TeleopConstants.transferLockPosOut);
-                }
-                sleep_millisec(300);
-
-                straightDrive = DriveBuilderReset(false, false, "step18");
-
-                if (DriveConstantsPID.RUN_USING_ODOMETRY_WHEEL) {
-                    //builder = builder.splineTo(new Pose2d(straightDrive.getPoseEstimate().getX() - 12, straightDrive.getPoseEstimate().getY() - 24, PI / 2));
-                    builder = builder.forward(30);
-                    //.strafeTo(new Vector2d(42, -30));
-                }
-                trajectory = builder.build();
-                straightDrive.followTrajectorySync(trajectory);
-                break;
-                */
-        }
+        Pose2d xys1[] = DriveConstantsPID.parsePathXY(path_file);
+        FollowPathFromXMLFile(xys1, vuLocalizer, false);
     }
 
     public void BlueFoundationPark() {
