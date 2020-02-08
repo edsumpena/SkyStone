@@ -38,8 +38,7 @@ public class ManualParamTest extends LinearOpMode {
     private final int polling_interval = 1000;
     private String TAG = "ManualParamTest";
     Localizer localizer = null;
-    private HardwareMap hwMap = new HardwareMap(hardwareMap);
-
+    private HardwareMap hwMap;
 
     private void sleep_millisec(int c)
     {
@@ -128,6 +127,7 @@ public class ManualParamTest extends LinearOpMode {
     @Override
     public void runOpMode() throws InterruptedException {
         DriveConstantsPID.updateConstantsFromProperties();
+        hwMap = new HardwareMap(hardwareMap);
         SampleMecanumDriveBase drive = null;
         if (DriveConstantsPID.USING_BULK_READ == false)
             drive = new SampleMecanumDriveREV(hardwareMap, false);
@@ -155,7 +155,7 @@ public class ManualParamTest extends LinearOpMode {
         }
 
         VuforiaCamLocalizer vu = VuforiaCamLocalizer.getSingle_instance(hardwareMap, VuforiaCamLocalizer.VuforiaCameraChoice.PHONE_BACK);
-        while (opModeIsActive()) {
+        while (!isStopRequested()) {
             if (DriveConstantsPID.RUN_USING_ODOMETRY_WHEEL && (localizer!=null)) {
                 StandardTrackingWheelLocalizer t = (StandardTrackingWheelLocalizer)localizer; // @TODO
                 List<Double>  odo_positions = t.getWheelPositions();
