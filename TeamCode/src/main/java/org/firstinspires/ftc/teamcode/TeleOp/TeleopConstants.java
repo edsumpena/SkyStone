@@ -25,8 +25,8 @@ public class TeleopConstants {
     public static double transferLockPosUp = 0.418;
     public static double transferLockPosOut = 0.221;
 
-    public static double foundationLockUnlock = 0.304;
-    public static double foundationLockLock = 0.201;
+    public static double foundationLockUnlock = 0.44;//0.304;
+    public static double foundationLockLock = 0.148;//0.167;
 
     public static double transferHornPosReady = 0.62;
     public static double transferHornPosPush = 0;

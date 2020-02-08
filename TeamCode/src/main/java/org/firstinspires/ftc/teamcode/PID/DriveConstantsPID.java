@@ -40,7 +40,7 @@ import org.w3c.dom.Element;
 @Config
 public class DriveConstantsPID {
 
-    public static final boolean RUN_USING_PARAMTER_FROM_PROPERTIES = true;
+    public static final boolean RUN_USING_PARAMTER_FROM_PROPERTIES = false;
 
     public static boolean RUN_USING_ODOMETRY_WHEEL = false;
     public static boolean RUN_USING_IMU_LOCALIZER = true;
@@ -52,7 +52,7 @@ public class DriveConstantsPID {
     public static double imuPollingInterval = 10;
 
     public static boolean ENABLE_LOGGING = false;
-    public static double TEST_SKY_STONE_POSITION = 1;
+    public static double TEST_SKY_STONE_POSITION = 2;
     public static boolean ENABLE_ARM_ACTIONS = true;
     public static double TEST_PAUSE_TIME = 1;  // milli-seconds;
 
@@ -130,9 +130,9 @@ public class DriveConstantsPID {
 	public static double TEST_DISTANCE = 48;
     public static double TEST_DISTANCE_0 = 24;
 	public static double maxVel = 75.0; //90.0
-	public static double maxAccel = 40.0;   //35.0
+	public static double maxAccel = 35.0;   //35.0
     public static double strafeMaxVel = 30.0; //40.0
-    public static double strafeMaxAccel = 15.0;   //20.0
+    public static double strafeMaxAccel = 10.0;   //20.0
     public static double maxAngVel = 135.0;
     public static double maxAngAccel = 90.0;
 	public static boolean keep_vuforia_running = false;
