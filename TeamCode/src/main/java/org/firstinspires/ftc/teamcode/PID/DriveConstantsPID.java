@@ -52,7 +52,7 @@ public class DriveConstantsPID {
     public static double imuPollingInterval = 10;
 
     public static boolean ENABLE_LOGGING = false;
-    public static double TEST_SKY_STONE_POSITION = 1;
+    public static double TEST_SKY_STONE_POSITION = 2;
     public static boolean ENABLE_ARM_ACTIONS = true;
     public static double TEST_PAUSE_TIME = 1;  // milli-seconds;
 
@@ -130,9 +130,9 @@ public class DriveConstantsPID {
 	public static double TEST_DISTANCE = 48;
     public static double TEST_DISTANCE_0 = 24;
 	public static double maxVel = 75.0; //90.0
-	public static double maxAccel = 40.0;   //35.0
-    public static double strafeMaxVel = 70.0; //40.0
-    public static double strafeMaxAccel = 35.0;   //20.0
+	public static double maxAccel = 35.0;   //35.0
+    public static double strafeMaxVel = 30.0; //40.0
+    public static double strafeMaxAccel = 10.0;   //20.0
     public static double maxAngVel = 135.0;
     public static double maxAngAccel = 90.0;
 	public static boolean keep_vuforia_running = false;
@@ -200,7 +200,7 @@ public class DriveConstantsPID {
         return 32767 / getTicksPerSec();
     }
 
-    private static double getTeamCodePropertyValue(String prop_str) {
+    public static double getTeamCodePropertyValue(String prop_str) {
         double value = Double.MAX_VALUE;
         try {
             Process proc = Runtime.getRuntime().exec(new String[]{"/system/bin/getprop", prop_str});
