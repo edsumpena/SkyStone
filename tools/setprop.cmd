@@ -7,7 +7,7 @@ adb push TeamCode\src\main\java\org\firstinspires\ftc\teamcode\All\path_blue3.xm
 
 adb shell setprop debug.ftc.logging 1
 adb shell setprop debug.ftc.enable_arm 1
-adb shell setprop debug.ftc.skystonePos 2
+adb shell setprop debug.ftc.skystonePos 3
 adb shell setprop debug.ftc.pause 2000
 adb shell setprop debug.ftc.bulk 1
 adb shell setprop debug.ftc.imu 1
@@ -15,7 +15,7 @@ adb shell setprop debug.ftc.resetfollow 1
 adb shell setprop debug.ftc.imuInterval 10
 adb shell setprop debug.ftc.odom 0
 adb shell setprop debug.ftc.vuforia 0
-adb shell setprop debug.ftc.brake 0
+adb shell setprop debug.ftc.brake 1
 adb shell setprop debug.ftc.recreateDrv 0
 adb shell setprop debug.ftc.drvCorrect 0
 rem (-24, 24) for strafe diagonal
@@ -26,7 +26,7 @@ adb shell setprop debug.ftc.trackwidth 14.2
 adb shell setprop debug.ftc.maxVel 70.0
 adb shell setprop debug.ftc.maxAccel 35.0
 adb shell setprop debug.ftc.strafeMaxVel 30.0
-adb shell setprop debug.ftc.strafeMaxAccel 15.0
+adb shell setprop debug.ftc.strafeMaxAccel 10.0
 rem smaller does make straight test go shorter distance;
 adb shell setprop debug.ftc.kV 0.0111
 rem 0.0111 for 4 wheel
