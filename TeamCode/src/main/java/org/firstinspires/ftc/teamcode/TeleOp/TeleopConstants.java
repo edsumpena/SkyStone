@@ -1,47 +1,39 @@
 package org.firstinspires.ftc.teamcode.TeleOp;
 
 public class TeleopConstants {
-
     public static double liftSpeedSlow = 0.3;
-
     public static double drivePowerNormal = 0.8;
     public static double drivePowerTurbo = 1;
     public static double drivePowerSlow = 0.5;
     public static double turnPower = 0.5;
     public static double intakePower = 0.8;
     public static double liftPower = 1;
-
     public static double clawServo1PosClose = 0.075;    //@TODO Get clawServo1 & clawServo2 positions
     public static double clawServo1PosOpen = 0.3003;
     public static double clawServo1PosReceive = 0.54;
     public static double clawServo1Prep = 0.2196;
-    public static double clawServo1Capstone = 0.307;
-
+    public static double clawServo1Capstone = 0.295;
     public static double clawServo2Block = 0.74281;
     public static double clawServo2PosClose = 0.522;
     public static double clawServo2PosOpen = 0.95;
-
     public static double transferLockPosPlatform = 0.465;
     public static double transferLockPosUp = 0.418;
     public static double transferLockPosOut = 0.221;
+    public static double foundationLockUnlock = 0.304;
+    public static double foundationLockLock = 0.201;
 
-    public static double foundationLockUnlock = 0.44;//0.304;
-    public static double foundationLockLock = 0.148;//0.167;
 
-    public static double transferHornPosReady = 0.62;
-    public static double transferHornPosPush = 0;
+    public static double transferHornPosReady = 0.4;
+    public static double transferHornPosPush = 1.0;
     public static double transferHornCapstone = 0.0523;
-
     public static double clawInitPosReset = 0.1;
     public static double clawInitPosCapstone = 0.6623;
     public static double clawInitPosCapstoneForReal = 0.547;
-
     public static double innerTransferPosOpen = 0.367; //0.1201 closed,
     public static double innerTransferPosClosed = 0.264;     //@TODO Get servo position innerTransfer "block" position
-
     public static double intakeInitPosLeft = 0.4787;     //@TODO Get intakeInit servo positions
-    public static double intakeInitPosRight = 0.4787;
-    public static double intakeInitPosReset = 0.28;
+    public static double intakeInitPosRight = innerTransferPosOpen;
+    public static double intakeInitPosReset = 0.3108;
 
     public static double autoClaw1Retracted = 0; // stove away
     public static double autoClaw1Drop = 0.26; // dropping onto foundation
