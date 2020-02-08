@@ -51,7 +51,7 @@ public class TeleopConstants {
 
     public static double autoClaw1Retracted_blue = 0.95;
     public static double autoClaw1Drop_blue = 0.73;
-    public static double autoClaw1Stone_blue = 0.26;
+    public static double autoClaw1Stone_blue = 0.23;
     public static double autoClaw1Extended_blue = 0.44;
 
     public static double autoClaw2PickUp = 0.9028;
@@ -61,7 +61,7 @@ public class TeleopConstants {
 
     public static double autoClaw2PickUp_blue = 0.38207;
     public static double autoClaw2Init_blue = 0.5221;
-    public static double autoClaw2Prep_blue = 0.5221;
+    public static double autoClaw2Prep_blue = 0.73;
     public static double autoClaw2Grabbing_blue = 0.7934;
 
     public static double autoClaw3Init = 0.8554;

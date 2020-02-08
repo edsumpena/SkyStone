@@ -323,7 +323,7 @@ public class Path {
         }
         if (DriveConstantsPID.ENABLE_ARM_ACTIONS) {
             FieldPosition fp = isRed ? FieldPosition.RED_QUARY : FieldPosition.BLUE_QUARY;
-            prepGrab(fp, true); //*******
+            prepGrab(fp, false); //*******
         }
 
         sleep_millisec(100);
@@ -376,13 +376,24 @@ public class Path {
         // step 6
         DriveBuilderReset(false, false, "step" + Integer.toString(step_count) + coordinates[step_count].toString() +
                 ", after drop and strafe");
-        theta = _drive.getExternalHeading() >= 0 ? _drive.getExternalHeading() :
-                _drive.getExternalHeading() + 2 * PI;
 
-        if (theta > PI)
-            _drive.turnSync(-(_drive.getExternalHeading() - 3 * PI / 2) + PI / 6);
-        else
-            _drive.turnSync(-(_drive.getExternalHeading() + 2 * PI - 3 * PI / 2) + PI / 6);
+        if(!isRed) {
+            theta = _drive.getExternalHeading() >= 0 ? _drive.getExternalHeading() :
+                    _drive.getExternalHeading() + 2 * PI;
+
+            if (theta > PI)
+                _drive.turnSync(-(_drive.getExternalHeading() - PI / 2) + PI / 6);
+            else
+                _drive.turnSync(-(_drive.getExternalHeading() - PI / 2) + PI / 6);
+        } else {
+            theta = _drive.getExternalHeading() >= 0 ? _drive.getExternalHeading() :
+                    _drive.getExternalHeading() + 2 * PI;
+
+            if (theta > PI)
+                _drive.turnSync(-(_drive.getExternalHeading() - 3 * PI / 2) + PI / 6);
+            else
+                _drive.turnSync(-(_drive.getExternalHeading() + 2 * PI - 3 * PI / 2) + PI / 6);
+        }
 
         if (DriveConstantsPID.ENABLE_ARM_ACTIONS) {
             hwMap.foundationLock.setPosition(TeleopConstants.foundationLockUnlock);
@@ -691,10 +702,10 @@ public class Path {
     private void grabStone(FieldPosition fieldPosition) {
         if (FieldPosition.RED_QUARY == fieldPosition) {
             hwMap.redAutoClawJoint2.setPosition(TeleopConstants.autoClaw2Grabbing);
-            sleep_millisec(200);
+            sleep_millisec(400);
 
             hwMap.redAutoClawJoint3.setPosition(TeleopConstants.autoClaw3Closed);
-            sleep_millisec(200);
+            sleep_millisec(400);
 
             hwMap.redAutoClawJoint2.setPosition(TeleopConstants.autoClaw2PickUp);
             sleep_millisec(200);
@@ -704,10 +715,10 @@ public class Path {
         }
         else{
             hwMap.redAutoClawJoint2.setPosition(TeleopConstants.autoClaw2Grabbing_blue);
-            sleep_millisec(200);
+            sleep_millisec(400);
 
             hwMap.redAutoClawJoint3.setPosition(TeleopConstants.autoClaw3Closed_blue);
-            sleep_millisec(200);
+            sleep_millisec(400);
 
             hwMap.redAutoClawJoint2.setPosition(TeleopConstants.autoClaw2PickUp_blue);
             sleep_millisec(200);
