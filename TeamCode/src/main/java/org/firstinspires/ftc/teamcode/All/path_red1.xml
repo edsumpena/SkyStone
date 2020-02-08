@@ -34,7 +34,7 @@
 	  <!--X-coordinate of the foundation-->
      <x>38</x>
 	 <!--not using -20, to compensate Y direction off -->
-      <y>-25.0</y>
+      <y>-20.0</y>
       <h>0.0</h>
    </movestep>
    
