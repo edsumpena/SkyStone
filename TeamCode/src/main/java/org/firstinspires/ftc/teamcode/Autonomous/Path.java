@@ -639,8 +639,8 @@ public class Path {
         t.start();
     }
 
-    private void prepGrab(boolean starting) {
-        if(starting) {
+    private void prepGrab(FieldPosition fieldPosition) {
+        if (FieldPosition.RED_QUARY == fieldPosition) {
             hwMap.redAutoClawJoint1.setPosition(TeleopConstants.autoClaw1Extended);
             sleep_millisec(200);
 
@@ -649,52 +649,94 @@ public class Path {
 
             hwMap.redAutoClawJoint2.setPosition(TeleopConstants.autoClaw2Prep);
             sleep_millisec(200);
-        } else {
-            hwMap.redAutoClawJoint3.setPosition(TeleopConstants.autoClaw3Open);
+        }
+        else {
+            hwMap.redAutoClawJoint1.setPosition(TeleopConstants.autoClaw1Extended_blue);
             sleep_millisec(200);
 
-            hwMap.redAutoClawJoint2.setPosition(TeleopConstants.autoClaw2Prep);
+            hwMap.redAutoClawJoint3.setPosition(TeleopConstants.autoClaw3Open_blue);
             sleep_millisec(200);
 
-            hwMap.redAutoClawJoint1.setPosition(TeleopConstants.autoClaw1Extended);
+            hwMap.redAutoClawJoint2.setPosition(TeleopConstants.autoClaw2Prep_blue);
             sleep_millisec(200);
         }
 
     }
 
+
     private void grabStone(FieldPosition fieldPosition) {
-        hwMap.redAutoClawJoint2.setPosition(TeleopConstants.autoClaw2Grabbing);
-        sleep_millisec(400);
+        if (FieldPosition.RED_QUARY == fieldPosition) {
+            hwMap.redAutoClawJoint2.setPosition(TeleopConstants.autoClaw2Grabbing);
+            sleep_millisec(200);
 
-        hwMap.redAutoClawJoint3.setPosition(TeleopConstants.autoClaw3Closed);
-        sleep_millisec(400);
+            hwMap.redAutoClawJoint3.setPosition(TeleopConstants.autoClaw3Closed);
+            sleep_millisec(200);
 
-        hwMap.redAutoClawJoint2.setPosition(TeleopConstants.autoClaw2PickUp);
-        sleep_millisec(200);
+            hwMap.redAutoClawJoint2.setPosition(TeleopConstants.autoClaw2PickUp);
+            sleep_millisec(200);
 
-        hwMap.redAutoClawJoint1.setPosition(TeleopConstants.autoClaw1Stone);
-        sleep_millisec(200);
+            hwMap.redAutoClawJoint1.setPosition(TeleopConstants.autoClaw1Stone);
+            sleep_millisec(200);
+        }
+        else{
+            hwMap.redAutoClawJoint2.setPosition(TeleopConstants.autoClaw2Grabbing_blue);
+            sleep_millisec(200);
 
+            hwMap.redAutoClawJoint3.setPosition(TeleopConstants.autoClaw3Closed_blue);
+            sleep_millisec(200);
+
+            hwMap.redAutoClawJoint2.setPosition(TeleopConstants.autoClaw2PickUp_blue);
+            sleep_millisec(200);
+
+            hwMap.redAutoClawJoint1.setPosition(TeleopConstants.autoClaw1Stone_blue);
+            sleep_millisec(200);
+
+        }
     }
 
     private void dropStone(FieldPosition fieldPosition) {
-        hwMap.redAutoClawJoint1.setPosition(TeleopConstants.autoClaw1Drop);
-        sleep_millisec(400);
 
-        hwMap.redAutoClawJoint2.setPosition(TeleopConstants.autoClaw2Grabbing);
-        sleep_millisec(200);
+        if (FieldPosition.RED_QUARY == fieldPosition) {
 
-        hwMap.redAutoClawJoint3.setPosition(TeleopConstants.autoClaw3Open);
-        sleep_millisec(200);
+            hwMap.redAutoClawJoint1.setPosition(TeleopConstants.autoClaw1Drop);
+            sleep_millisec(400);
 
-        hwMap.redAutoClawJoint2.setPosition(TeleopConstants.autoClaw2PickUp);
-        sleep_millisec(400);
+            hwMap.redAutoClawJoint2.setPosition(TeleopConstants.autoClaw2Grabbing);
+            sleep_millisec(200);
 
-        hwMap.redAutoClawJoint1.setPosition(TeleopConstants.autoClaw1Stone);
-        sleep_millisec(200);
+            hwMap.redAutoClawJoint3.setPosition(TeleopConstants.autoClaw3Open);
+            sleep_millisec(200);
 
-        hwMap.redAutoClawJoint3.setPosition(TeleopConstants.autoClaw3Init);
-        sleep_millisec(200);
+            hwMap.redAutoClawJoint2.setPosition(TeleopConstants.autoClaw2PickUp);
+            sleep_millisec(400);
+
+            hwMap.redAutoClawJoint1.setPosition(TeleopConstants.autoClaw1Stone);
+            sleep_millisec(200);
+
+            hwMap.redAutoClawJoint3.setPosition(TeleopConstants.autoClaw3Init);
+            sleep_millisec(200);
+        }
+        else
+        {
+
+            hwMap.redAutoClawJoint1.setPosition(TeleopConstants.autoClaw1Drop_blue);
+            sleep_millisec(400);
+
+            hwMap.redAutoClawJoint2.setPosition(TeleopConstants.autoClaw2Grabbing_blue);
+            sleep_millisec(200);
+
+            hwMap.redAutoClawJoint3.setPosition(TeleopConstants.autoClaw3Open_blue);
+            sleep_millisec(200);
+
+            hwMap.redAutoClawJoint2.setPosition(TeleopConstants.autoClaw2PickUp_blue);
+            sleep_millisec(400);
+
+            hwMap.redAutoClawJoint1.setPosition(TeleopConstants.autoClaw1Stone_blue);
+            sleep_millisec(200);
+
+            hwMap.redAutoClawJoint3.setPosition(TeleopConstants.autoClaw3Init_blue);
+            sleep_millisec(200);
+        }
 
     }
 
