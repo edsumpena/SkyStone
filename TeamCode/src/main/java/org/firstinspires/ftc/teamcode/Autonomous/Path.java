@@ -240,7 +240,8 @@ public class Path {
             transferReset();
             initIntakeClaw();
             init();
-            prepGrab(true);    //*******
+            FieldPosition fp = isRed ? FieldPosition.RED_QUARY : FieldPosition.BLUE_QUARY;
+            prepGrab(fp, true);    //*******
 
         }
         // step 1;
@@ -321,7 +322,8 @@ public class Path {
             RobotLogger.dd(TAG, "Calibrate before grab 2nd stone! Vuforia local info: " + t.toString());
         }
         if (DriveConstantsPID.ENABLE_ARM_ACTIONS) {
-            prepGrab(false); //*******
+            FieldPosition fp = isRed ? FieldPosition.RED_QUARY : FieldPosition.BLUE_QUARY;
+            prepGrab(fp, true); //*******
         }
 
         sleep_millisec(100);
@@ -639,26 +641,48 @@ public class Path {
         t.start();
     }
 
-    private void prepGrab(FieldPosition fieldPosition) {
+    private void prepGrab(FieldPosition fieldPosition, boolean first) {
         if (FieldPosition.RED_QUARY == fieldPosition) {
-            hwMap.redAutoClawJoint1.setPosition(TeleopConstants.autoClaw1Extended);
-            sleep_millisec(200);
+            if(first) {
+                hwMap.redAutoClawJoint1.setPosition(TeleopConstants.autoClaw1Extended);
+                sleep_millisec(200);
 
-            hwMap.redAutoClawJoint3.setPosition(TeleopConstants.autoClaw3Open);
-            sleep_millisec(200);
+                hwMap.redAutoClawJoint3.setPosition(TeleopConstants.autoClaw3Open);
+                sleep_millisec(200);
 
-            hwMap.redAutoClawJoint2.setPosition(TeleopConstants.autoClaw2Prep);
-            sleep_millisec(200);
+                hwMap.redAutoClawJoint2.setPosition(TeleopConstants.autoClaw2Prep);
+                sleep_millisec(200);
+            } else {
+                hwMap.redAutoClawJoint3.setPosition(TeleopConstants.autoClaw3Open);
+                sleep_millisec(200);
+
+                hwMap.redAutoClawJoint2.setPosition(TeleopConstants.autoClaw2Prep);
+                sleep_millisec(200);
+
+                hwMap.redAutoClawJoint1.setPosition(TeleopConstants.autoClaw1Extended);
+                sleep_millisec(200);
+            }
         }
         else {
-            hwMap.redAutoClawJoint1.setPosition(TeleopConstants.autoClaw1Extended_blue);
-            sleep_millisec(200);
+            if(first) {
+                hwMap.redAutoClawJoint1.setPosition(TeleopConstants.autoClaw1Extended_blue);
+                sleep_millisec(200);
 
-            hwMap.redAutoClawJoint3.setPosition(TeleopConstants.autoClaw3Open_blue);
-            sleep_millisec(200);
+                hwMap.redAutoClawJoint3.setPosition(TeleopConstants.autoClaw3Open_blue);
+                sleep_millisec(200);
 
-            hwMap.redAutoClawJoint2.setPosition(TeleopConstants.autoClaw2Prep_blue);
-            sleep_millisec(200);
+                hwMap.redAutoClawJoint2.setPosition(TeleopConstants.autoClaw2Prep_blue);
+                sleep_millisec(200);
+            } else {
+                hwMap.redAutoClawJoint3.setPosition(TeleopConstants.autoClaw3Open_blue);
+                sleep_millisec(200);
+
+                hwMap.redAutoClawJoint2.setPosition(TeleopConstants.autoClaw2Prep_blue);
+                sleep_millisec(200);
+
+                hwMap.redAutoClawJoint1.setPosition(TeleopConstants.autoClaw1Extended_blue);
+                sleep_millisec(200);
+            }
         }
 
     }

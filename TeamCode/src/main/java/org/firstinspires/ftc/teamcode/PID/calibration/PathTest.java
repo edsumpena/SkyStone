@@ -77,7 +77,7 @@ public class PathTest extends LinearOpMode {
                     VuforiaCamLocalizer.VuforiaCameraChoice.PHONE_BACK);
         }
         path = new Path(hwMap, this, _drive, hardwareMap, null, telemetry);
-        path.RedQuary(skystonePositions, vuLocalizer);
+        path.BlueQuary(skystonePositions, vuLocalizer);
         //path.BlueQuary(skystonePositions, vuLocalizer);
         RobotLogger.dd(TAG, "----------done --------------------- unit test for path (RED QUARY)");
     }
