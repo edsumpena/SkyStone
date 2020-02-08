@@ -240,10 +240,7 @@ public class Path {
             transferReset();
             initIntakeClaw();
             init();
-            if (isRed)
-                prepGrab(FieldPosition.RED_QUARY);    //*******
-            else
-                prepGrab(FieldPosition.BLUE_QUARY);    //*******
+            prepGrab(true);    //*******
 
         }
         // step 1;
@@ -324,10 +321,7 @@ public class Path {
             RobotLogger.dd(TAG, "Calibrate before grab 2nd stone! Vuforia local info: " + t.toString());
         }
         if (DriveConstantsPID.ENABLE_ARM_ACTIONS) {
-            if (isRed)
-                prepGrab(FieldPosition.RED_QUARY); //*******
-            else
-                prepGrab(FieldPosition.BLUE_QUARY);
+            prepGrab(false); //*******
         }
 
         sleep_millisec(100);
@@ -645,15 +639,26 @@ public class Path {
         t.start();
     }
 
-    private void prepGrab(FieldPosition fieldPosition) {
-        hwMap.redAutoClawJoint1.setPosition(TeleopConstants.autoClaw1Extended);
-        sleep_millisec(200);
+    private void prepGrab(boolean starting) {
+        if(starting) {
+            hwMap.redAutoClawJoint1.setPosition(TeleopConstants.autoClaw1Extended);
+            sleep_millisec(200);
 
-        hwMap.redAutoClawJoint3.setPosition(TeleopConstants.autoClaw3Open);
-        sleep_millisec(200);
+            hwMap.redAutoClawJoint3.setPosition(TeleopConstants.autoClaw3Open);
+            sleep_millisec(200);
 
-        hwMap.redAutoClawJoint2.setPosition(TeleopConstants.autoClaw2Prep);
-        sleep_millisec(200);
+            hwMap.redAutoClawJoint2.setPosition(TeleopConstants.autoClaw2Prep);
+            sleep_millisec(200);
+        } else {
+            hwMap.redAutoClawJoint3.setPosition(TeleopConstants.autoClaw3Open);
+            sleep_millisec(200);
+
+            hwMap.redAutoClawJoint2.setPosition(TeleopConstants.autoClaw2Prep);
+            sleep_millisec(200);
+
+            hwMap.redAutoClawJoint1.setPosition(TeleopConstants.autoClaw1Extended);
+            sleep_millisec(200);
+        }
 
     }
 
