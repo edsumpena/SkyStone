@@ -22,6 +22,7 @@ import org.firstinspires.ftc.teamcode.PID.localizer.VuforiaCamLocalizer;
 import org.firstinspires.ftc.teamcode.PID.mecanum.SampleMecanumDriveBase;
 import org.firstinspires.ftc.teamcode.PID.mecanum.SampleMecanumDriveREV;
 import org.firstinspires.ftc.teamcode.PID.mecanum.SampleMecanumDriveREVOptimized;
+import org.firstinspires.ftc.teamcode.TeleOp.Teleop;
 import org.firstinspires.ftc.teamcode.TeleOp.TeleopConstants;
 
 import java.util.Arrays;
@@ -373,6 +374,34 @@ public class Path {
         _drive.followTrajectorySync(trajectory);
         step_count ++;
 
+        if(isRed){
+            hwMap.redAutoClawJoint3.setPosition(TeleopConstants.autoClaw3Init);
+            try{
+                Thread.sleep(200);
+            } catch (Exception e){}
+            hwMap.redAutoClawJoint2.setPosition(TeleopConstants.autoClaw2Init);
+            try{
+                Thread.sleep(200);
+            } catch (Exception e){}
+            hwMap.redAutoClawJoint1.setPosition(TeleopConstants.autoClaw1Retracted);
+            try{
+                Thread.sleep(200);
+            } catch (Exception e){}
+        } else {
+            hwMap.redAutoClawJoint3.setPosition(TeleopConstants.autoClaw3Init_blue);
+            try{
+                Thread.sleep(200);
+            } catch (Exception e){}
+            hwMap.redAutoClawJoint2.setPosition(TeleopConstants.autoClaw2Init_blue);
+            try{
+                Thread.sleep(200);
+            } catch (Exception e){}
+            hwMap.redAutoClawJoint1.setPosition(TeleopConstants.autoClaw1Retracted_blue);
+            try{
+                Thread.sleep(200);
+            } catch (Exception e){}
+        }
+
         // step 6
         DriveBuilderReset(false, false, "step" + Integer.toString(step_count) + coordinates[step_count].toString() +
                 ", after drop and strafe");
@@ -398,34 +427,10 @@ public class Path {
         if (DriveConstantsPID.ENABLE_ARM_ACTIONS) {
             hwMap.foundationLock.setPosition(TeleopConstants.foundationLockUnlock);
             hwMap.transferLock.setPosition(TeleopConstants.transferLockPosOut);
-
-            if(isRed){
-                hwMap.redAutoClawJoint3.setPosition(TeleopConstants.autoClaw3Init);
-                try{
-                    Thread.sleep(200);
-                } catch (Exception e){}
-                hwMap.redAutoClawJoint2.setPosition(TeleopConstants.autoClaw2Init);
-                try{
-                    Thread.sleep(200);
-                } catch (Exception e){}
-                hwMap.redAutoClawJoint1.setPosition(TeleopConstants.autoClaw1Retracted);
-                try{
-                    Thread.sleep(200);
-                } catch (Exception e){}
-            } else {
-                hwMap.redAutoClawJoint3.setPosition(TeleopConstants.autoClaw3Init_blue);
-                try{
-                    Thread.sleep(200);
-                } catch (Exception e){}
-                hwMap.redAutoClawJoint2.setPosition(TeleopConstants.autoClaw2Init_blue);
-                try{
-                    Thread.sleep(200);
-                } catch (Exception e){}
-                hwMap.redAutoClawJoint1.setPosition(TeleopConstants.autoClaw1Retracted_blue);
-                try{
-                    Thread.sleep(200);
-                } catch (Exception e){}
-            }
+            hwMap.clawServo2.setPosition(TeleopConstants.clawServo2PosAuto);
+            try{
+                Thread.sleep(200);
+            } catch (Exception e){}
         }
 
         sleep_millisec(100);
@@ -762,7 +767,7 @@ public class Path {
         if (FieldPosition.RED_QUARY == fieldPosition) {
 
             hwMap.redAutoClawJoint1.setPosition(TeleopConstants.autoClaw1Drop);
-            sleep_millisec(400);
+            sleep_millisec(600);
 
             hwMap.redAutoClawJoint2.setPosition(TeleopConstants.autoClaw2Grabbing);
             sleep_millisec(200);
@@ -783,7 +788,7 @@ public class Path {
         {
 
             hwMap.redAutoClawJoint1.setPosition(TeleopConstants.autoClaw1Drop_blue);
-            sleep_millisec(400);
+            sleep_millisec(600);
 
             hwMap.redAutoClawJoint2.setPosition(TeleopConstants.autoClaw2Grabbing_blue);
             sleep_millisec(200);
@@ -886,7 +891,7 @@ public class Path {
         Thread thread = new Thread() {
             public void run() {
                 //hwMap.parkingServo.setPosition(TeleopConstants.parkingServoPosLock);
-                hwMap.foundationLock.setPosition(TeleopConstants.foundationLockLock);
+                hwMap.foundationLock.setPosition(TeleopConstants.foundationLockInit);
                 hwMap.transferLock.setPosition(TeleopConstants.transferLockPosPlatform);
             }
         };

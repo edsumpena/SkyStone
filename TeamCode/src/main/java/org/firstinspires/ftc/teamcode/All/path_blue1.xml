@@ -47,7 +47,7 @@
       <!--not using X-->
       <x>0</x>
       <!--_drive.getPoseEstimate().getY() + coordinates[step_count].getY())-->
-      <y>-9.5</y>
+      <y>-8.5</y>
       <h>0.0</h>
    </movestep>
 
@@ -61,8 +61,8 @@
 
    <movestep drive_type = "8, spline, after drop foundation, to back to parking, absulate XY, not delta">
       <!--not delta -->
-      <x>-5.0</x>
-      <y>20.0</y>
+      <x>0.0</x>
+      <y>60.0</y>
       <h>180.0</h>
    </movestep>
 </pathXY>

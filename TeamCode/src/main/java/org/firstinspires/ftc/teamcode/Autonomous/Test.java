@@ -13,9 +13,14 @@ import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
 import org.firstinspires.ftc.robotcore.external.navigation.VuforiaLocalizer;
 import org.firstinspires.ftc.robotcore.external.tfod.Recognition;
 import org.firstinspires.ftc.robotcore.external.tfod.TFObjectDetector;
+import org.firstinspires.ftc.teamcode.All.DriveConstant;
 import org.firstinspires.ftc.teamcode.All.FourWheelMecanumDrivetrain;
 import org.firstinspires.ftc.teamcode.All.HardwareMap;
 import org.firstinspires.ftc.teamcode.Autonomous.Vision.Align;
+import org.firstinspires.ftc.teamcode.Experimental.PathfinderApp.RunTrajectoryFromString;
+import org.firstinspires.ftc.teamcode.Experimental.PathfinderApp.TrajectoryStringConverter;
+import org.firstinspires.ftc.teamcode.PID.mecanum.SampleMecanumDriveBase;
+import org.firstinspires.ftc.teamcode.PID.mecanum.SampleMecanumDriveREVOptimized;
 
 import java.util.List;
 
@@ -49,34 +54,17 @@ public class Test extends LinearOpMode {
         hwMap.frontRight.setDirection(DcMotorSimple.Direction.REVERSE);
         hwMap.backRight.setDirection(DcMotorSimple.Direction.REVERSE);
 
-        telemetry.addData("STATUS", "Initializing TensorFlow...");
-        telemetry.update();
+        SampleMecanumDriveBase drive = new SampleMecanumDriveREVOptimized(hardwareMap, false);
+
+        RunTrajectoryFromString run = new RunTrajectoryFromString(drive);
 
         drivetrain.resetEncoders();
-        initVuforia();
-
-        if (ClassFactory.getInstance().canCreateTFObjectDetector()) {
-            initTfod();
-        } else {
-            telemetry.addData("Sorry!", "This device is not compatible with TFOD");
-        }
-
-        if (tfod != null) {
-            tfod.activate();
-        }
-
-        telemetry.addData("STATUS", "Done!");
-        telemetry.update();
 
         waitForStart();
-        sendData();
 
-        align.setPower(0, 0.2);
-        align.skystoneRed(6);
+        String trajectory = DriveConstant.trajectoryString;
 
-        if (tfod != null) {
-            tfod.shutdown();
-        }
+        run.runTrajectory(trajectory);
 
     }
 
