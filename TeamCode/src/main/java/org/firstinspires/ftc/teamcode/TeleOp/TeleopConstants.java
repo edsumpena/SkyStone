@@ -42,7 +42,7 @@ public class TeleopConstants {
 
 
     public static double autoClaw1Retracted_blue = 0.95;
-    public static double autoClaw1Drop_blue = 0.73;
+    public static double autoClaw1Drop_blue = 0.7;
     public static double autoClaw1Stone_blue = 0.23;
     public static double autoClaw1Extended_blue = 0.44;
 

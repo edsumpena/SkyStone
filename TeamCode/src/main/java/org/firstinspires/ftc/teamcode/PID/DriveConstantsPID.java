@@ -40,7 +40,7 @@ import org.w3c.dom.Element;
 @Config
 public class DriveConstantsPID {
 
-    public static final boolean RUN_USING_PARAMTER_FROM_PROPERTIES = true;
+    public static final boolean RUN_USING_PARAMTER_FROM_PROPERTIES = false;
 
     public static boolean RUN_USING_ODOMETRY_WHEEL = false;
     public static boolean RUN_USING_IMU_LOCALIZER = true;
