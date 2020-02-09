@@ -62,9 +62,9 @@ public class TeleopConstants {
     public static double autoClaw3Closed = 0.5709;
     public static double autoClaw3Open = 0.3669;
 
-    public static double autoClaw3Init_blue = 0.071297;
-    public static double autoClaw3Closed_blue = 0.3694;
-    public static double autoClaw3Open_blue = 0.607;
+    public static double autoClaw3Init_blue = 0.3029;
+    public static double autoClaw3Closed_blue = 0.5532;
+    public static double autoClaw3Open_blue = 0.7528;
 
     public static double parkingServoPosUnlock = 0.4959;
     public static double parkingServoPosLock = 0.3815;

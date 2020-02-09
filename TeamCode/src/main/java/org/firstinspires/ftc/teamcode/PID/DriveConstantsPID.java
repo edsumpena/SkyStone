@@ -52,7 +52,7 @@ public class DriveConstantsPID {
     public static double imuPollingInterval = 10;
 
     public static boolean ENABLE_LOGGING = false;
-    public static double TEST_SKY_STONE_POSITION = 2;
+    public static double TEST_SKY_STONE_POSITION = 3;
     public static boolean ENABLE_ARM_ACTIONS = true;
     public static double TEST_PAUSE_TIME = 1;  // milli-seconds;
 
