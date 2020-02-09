@@ -419,9 +419,9 @@ public class Path {
                     _drive.getExternalHeading() + 2 * PI;
 
             if (theta > PI)
-                _drive.turnSync(-(_drive.getExternalHeading() - 3 * PI / 2) + PI / 6);
+                _drive.turnSync(-(_drive.getExternalHeading() - 3 * PI / 2));
             else
-                _drive.turnSync(-(_drive.getExternalHeading() + 2 * PI - 3 * PI / 2) + PI / 6);
+                _drive.turnSync(-(_drive.getExternalHeading() + 2 * PI - 3 * PI / 2));
         }
 
         if (DriveConstantsPID.ENABLE_ARM_ACTIONS) {
@@ -770,7 +770,7 @@ public class Path {
             sleep_millisec(600);
 
             hwMap.redAutoClawJoint2.setPosition(TeleopConstants.autoClaw2Grabbing);
-            sleep_millisec(200);
+            sleep_millisec(400);
 
             hwMap.redAutoClawJoint3.setPosition(TeleopConstants.autoClaw3Open);
             sleep_millisec(200);
@@ -786,7 +786,6 @@ public class Path {
         }
         else
         {
-
             hwMap.redAutoClawJoint1.setPosition(TeleopConstants.autoClaw1Drop_blue);
             sleep_millisec(600);
 

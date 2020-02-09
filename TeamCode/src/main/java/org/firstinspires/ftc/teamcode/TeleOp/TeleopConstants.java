@@ -38,7 +38,7 @@ public class TeleopConstants {
     public static double intakeInitPosReset = 0.3108;
 
     public static double autoClaw1Retracted = 0; // stove away
-    public static double autoClaw1Drop = 0.26; // dropping onto foundation
+    public static double autoClaw1Drop = 0.32; // dropping onto foundation
     public static double autoClaw1Stone = 0.7; // store behind robot
     public static double autoClaw1Extended = 0.5; // move to get stone
 
