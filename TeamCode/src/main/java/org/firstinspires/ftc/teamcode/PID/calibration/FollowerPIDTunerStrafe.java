@@ -40,17 +40,17 @@ public class FollowerPIDTunerStrafe extends LinearOpMode {
         while (!isStopRequested()) {
             if (_drive == null) {
                 if (DriveConstantsPID.USING_BULK_READ == false)
-                    _drive = new SampleMecanumDriveREV(hardwareMap, DriveConstantsPID.USING_STRAFE_DIAGNAL);
+                    _drive = new SampleMecanumDriveREV(hardwareMap, DriveConstantsPID.USING_STRAFE_DIAGONAL);
                 else
-                    _drive = new SampleMecanumDriveREVOptimized(hardwareMap, DriveConstantsPID.USING_STRAFE_DIAGNAL);
+                    _drive = new SampleMecanumDriveREVOptimized(hardwareMap, DriveConstantsPID.USING_STRAFE_DIAGONAL);
                 _drive.setBrakeonZeroPower(DriveConstantsPID.BRAKE_ON_ZERO);
                 _drive.setPoseEstimate(new Pose2d(0, 0, _drive.getExternalHeading()));
             }
             Pose2d currentPos = _drive.getPoseEstimate();
 
-            if (DriveConstantsPID.USING_STRAFE_DIAGNAL == true) {
+            if (DriveConstantsPID.USING_STRAFE_DIAGONAL == true) {
                 if (DriveConstantsPID.RESET_FOLLOWER)
-                    _drive.resetFollowerWithParameters(DriveConstantsPID.USING_STRAFE_DIAGNAL, false);
+                    _drive.resetFollowerWithParameters(DriveConstantsPID.USING_STRAFE_DIAGONAL, false);
 
                 _drive.followTrajectorySync(
                         _drive.trajectoryBuilder()
@@ -59,7 +59,7 @@ public class FollowerPIDTunerStrafe extends LinearOpMode {
             }
             else {
                 if (DriveConstantsPID.RESET_FOLLOWER)
-                    _drive.resetFollowerWithParameters(DriveConstantsPID.USING_STRAFE_DIAGNAL, false);
+                    _drive.resetFollowerWithParameters(DriveConstantsPID.USING_STRAFE_DIAGONAL, false);
 
                 _drive.followTrajectorySync(
                         _drive.trajectoryBuilder()
@@ -74,7 +74,7 @@ public class FollowerPIDTunerStrafe extends LinearOpMode {
             Path.sleep_millisec(2000);
 
 
-            if (DriveConstantsPID.USING_STRAFE_DIAGNAL == true) {
+            if (DriveConstantsPID.USING_STRAFE_DIAGONAL == true) {
                 //drive.resetFollowerWithParameters(true);
                 _drive.followTrajectorySync(
                         _drive.trajectoryBuilder()

@@ -72,7 +72,7 @@ public class Path {
         Trajectory trajectory;
         Pose2d currentPos = _drive.getPoseEstimate();
         TrajectoryBuilder  builder = null;
-        if (DriveConstantsPID.USING_STRAFE_DIAGNAL)
+        if (DriveConstantsPID.USING_STRAFE_DIAGONAL)
             builder = new TrajectoryBuilder(currentPos, DriveConstantsPID.STRAFE_BASE_CONSTRAINTS);
         else
             builder = new TrajectoryBuilder(currentPos, DriveConstantsPID.BASE_CONSTRAINTS);
@@ -249,7 +249,7 @@ public class Path {
         }
         // step 1;
 
-        DriveBuilderReset(DriveConstantsPID.USING_STRAFE_DIAGNAL, false,
+        DriveBuilderReset(DriveConstantsPID.USING_STRAFE_DIAGONAL, false,
                 "step" + Integer.toString(step_count) + coordinates[step_count].toString() + ", after prepare, start");
         if (first_skystone_location != 1) {
             builder = builder

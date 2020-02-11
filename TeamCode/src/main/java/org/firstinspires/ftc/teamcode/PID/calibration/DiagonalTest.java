@@ -40,9 +40,9 @@ public class DiagonalTest extends LinearOpMode {
 
         if (_drive == null) {
             if (DriveConstantsPID.USING_BULK_READ == false)
-                _drive = new SampleMecanumDriveREV(hardwareMap, DriveConstantsPID.USING_STRAFE_DIAGNAL);
+                _drive = new SampleMecanumDriveREV(hardwareMap, DriveConstantsPID.USING_STRAFE_DIAGONAL);
             else
-                _drive = new SampleMecanumDriveREVOptimized(hardwareMap, DriveConstantsPID.USING_STRAFE_DIAGNAL);
+                _drive = new SampleMecanumDriveREVOptimized(hardwareMap, DriveConstantsPID.USING_STRAFE_DIAGONAL);
 
             _drive.setBrakeonZeroPower(DriveConstantsPID.BRAKE_ON_ZERO);
             _drive.setPoseEstimate(new Pose2d(0, 0, _drive.getExternalHeading()));
@@ -82,7 +82,7 @@ public class DiagonalTest extends LinearOpMode {
             Path.sleep_millisec(2000);
 
             if (DriveConstantsPID.RESET_FOLLOWER)
-                _drive.resetFollowerWithParameters(DriveConstantsPID.USING_STRAFE_DIAGNAL, false);
+                _drive.resetFollowerWithParameters(DriveConstantsPID.USING_STRAFE_DIAGONAL, false);
 
             if (DriveConstantsPID.DIAGONAL_SPLIT)
                 Path.StrafeDiagonalHelper(_drive, new Vector2d(0, 0));
@@ -97,7 +97,7 @@ public class DiagonalTest extends LinearOpMode {
             error_pose = _drive.follower.getLastError();
             RobotLogger.dd(TAG, "currentPos %s, errorPos %s", currentPos.toString(), error_pose.toString());
             if (DriveConstantsPID.RESET_FOLLOWER)
-                _drive.resetFollowerWithParameters(DriveConstantsPID.USING_STRAFE_DIAGNAL, false);
+                _drive.resetFollowerWithParameters(DriveConstantsPID.USING_STRAFE_DIAGONAL, false);
 
             Path.sleep_millisec(5000);
         }
