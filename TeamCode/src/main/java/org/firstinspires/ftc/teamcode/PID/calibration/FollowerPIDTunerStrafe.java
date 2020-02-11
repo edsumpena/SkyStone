@@ -9,6 +9,7 @@ import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
 import org.firstinspires.ftc.teamcode.All.DriveConstant;
+import org.firstinspires.ftc.teamcode.Autonomous.Path;
 import org.firstinspires.ftc.teamcode.PID.DriveConstantsPID;
 import org.firstinspires.ftc.teamcode.PID.RobotLogger;
 import org.firstinspires.ftc.teamcode.PID.mecanum.SampleMecanumDriveBase;
@@ -39,9 +40,9 @@ public class FollowerPIDTunerStrafe extends LinearOpMode {
         while (!isStopRequested()) {
             if (_drive == null) {
                 if (DriveConstantsPID.USING_BULK_READ == false)
-                    _drive = new SampleMecanumDriveREV(hardwareMap, true);
+                    _drive = new SampleMecanumDriveREV(hardwareMap, DriveConstantsPID.USING_STRAFE_DIAGNAL);
                 else
-                    _drive = new SampleMecanumDriveREVOptimized(hardwareMap, true);
+                    _drive = new SampleMecanumDriveREVOptimized(hardwareMap, DriveConstantsPID.USING_STRAFE_DIAGNAL);
                 _drive.setBrakeonZeroPower(DriveConstantsPID.BRAKE_ON_ZERO);
                 _drive.setPoseEstimate(new Pose2d(0, 0, _drive.getExternalHeading()));
             }
@@ -49,7 +50,7 @@ public class FollowerPIDTunerStrafe extends LinearOpMode {
 
             if (DriveConstantsPID.USING_STRAFE_DIAGNAL == true) {
                 if (DriveConstantsPID.RESET_FOLLOWER)
-                    _drive.resetFollowerWithParameters(true, false);
+                    _drive.resetFollowerWithParameters(DriveConstantsPID.USING_STRAFE_DIAGNAL, false);
 
                 _drive.followTrajectorySync(
                         _drive.trajectoryBuilder()
@@ -58,7 +59,7 @@ public class FollowerPIDTunerStrafe extends LinearOpMode {
             }
             else {
                 if (DriveConstantsPID.RESET_FOLLOWER)
-                    _drive.resetFollowerWithParameters(false, false);
+                    _drive.resetFollowerWithParameters(DriveConstantsPID.USING_STRAFE_DIAGNAL, false);
 
                 _drive.followTrajectorySync(
                         _drive.trajectoryBuilder()
@@ -70,9 +71,8 @@ public class FollowerPIDTunerStrafe extends LinearOpMode {
             Pose2d error_pose = _drive.follower.getLastError();
             RobotLogger.dd(TAG, "currentPos %s, errorPos %s",currentPos.toString(), error_pose.toString());
             //drive.turnSync(Math.toRadians(90));
-            try{
-                Thread.sleep(2000);
-            } catch(Exception e){}
+            Path.sleep_millisec(2000);
+
 
             if (DriveConstantsPID.USING_STRAFE_DIAGNAL == true) {
                 //drive.resetFollowerWithParameters(true);
@@ -92,9 +92,7 @@ public class FollowerPIDTunerStrafe extends LinearOpMode {
             error_pose = _drive.follower.getLastError();
             RobotLogger.dd(TAG, "currentPos %s, errorPos %s",currentPos.toString(), error_pose.toString());
 
-            try{
-                Thread.sleep(2000);
-            } catch(Exception e){}
+            Path.sleep_millisec(2000);
 
         }
     }

@@ -30,9 +30,9 @@ public class ManualStrafeTest extends LinearOpMode {
         DISTANCE = DriveConstantsPID.TEST_DISTANCE;
         SampleMecanumDriveBase drive = null;
         if (DriveConstantsPID.USING_BULK_READ == false)
-            drive = new SampleMecanumDriveREV(hardwareMap, false);
+            drive = new SampleMecanumDriveREV(hardwareMap, DriveConstantsPID.USING_STRAFE_DIAGNAL);
         else
-            drive = new SampleMecanumDriveREVOptimized(hardwareMap, false);
+            drive = new SampleMecanumDriveREVOptimized(hardwareMap, DriveConstantsPID.USING_STRAFE_DIAGNAL);
 
         drive.setBrakeonZeroPower(DriveConstantsPID.BRAKE_ON_ZERO);
         RobotLog.dd(TAG, "trajectoryBuilder forward, DISTANCE: "+Double.toString(DISTANCE));

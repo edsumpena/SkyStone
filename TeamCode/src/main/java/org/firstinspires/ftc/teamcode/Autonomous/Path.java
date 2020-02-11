@@ -68,7 +68,7 @@ public class Path {
         this.telemetry = telemetry;
         //vu = new VuforiaCamLocalizer(hardwareMap);
     }
-    private void StrafeDiagonalHelper(SampleMecanumDriveBase _drive, Vector2d dest) {
+    public static void StrafeDiagonalHelper(SampleMecanumDriveBase _drive, Vector2d dest) {
         Trajectory trajectory;
         Pose2d currentPos = _drive.getPoseEstimate();
         TrajectoryBuilder  builder = null;
@@ -249,8 +249,8 @@ public class Path {
         }
         // step 1;
 
-        DriveBuilderReset(true, false, "step" + Integer.toString(step_count) + coordinates[step_count].toString() +
-                ", after prepare, start");
+        DriveBuilderReset(DriveConstantsPID.USING_STRAFE_DIAGNAL, false,
+                "step" + Integer.toString(step_count) + coordinates[step_count].toString() + ", after prepare, start");
         if (first_skystone_location != 1) {
             builder = builder
                     .setReversed(false).strafeTo(new Vector2d(coordinates[step_count].getX(), coordinates[step_count].getY()));
@@ -258,7 +258,7 @@ public class Path {
             _drive.followTrajectorySync(trajectory);
         }
         else {
-            StrafeDiagonalHelper(_drive, new Vector2d(coordinates[step_count].getX(), coordinates[step_count].getY()));
+            Path.StrafeDiagonalHelper(_drive, new Vector2d(coordinates[step_count].getX(), coordinates[step_count].getY()));
         }
         step_count ++;
 
