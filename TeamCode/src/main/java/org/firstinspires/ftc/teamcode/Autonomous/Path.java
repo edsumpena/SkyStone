@@ -496,6 +496,10 @@ public class Path {
     public void RedQuary(int[] skystonePositions, VuforiaCamLocalizer vuLocalizer) {
         String tmp = "path_red_.xml";
         first_skystone_location = skystonePositions[0];
+        if (first_skystone_location > 3) {
+            first_skystone_location = 3;
+            RobotLogger.dd(TAG, "detected wrong, force skystone location to be [3, 6]");
+        }
         path_file = tmp.substring(0, 8) + Integer.toString(skystonePositions[0])
                 + tmp.substring(9);
         RobotLogger.dd(TAG, "to read XY coordinates from " + path_file);
@@ -537,6 +541,10 @@ public class Path {
     public void BlueQuary(int[] skystonePositions, VuforiaCamLocalizer vuLocalizer) {    // (-x, y)
         String tmp = "path_blue_.xml";
         first_skystone_location = skystonePositions[0];
+        if (first_skystone_location > 3) {
+            first_skystone_location = 3;
+            RobotLogger.dd(TAG, "detected wrong, force skystone location to be [3, 6]");
+        }
         path_file = tmp.substring(0, 9) + Integer.toString(skystonePositions[0])
                 + tmp.substring(10);
         RobotLogger.dd(TAG, "to read XY coordinates from " + path_file);
