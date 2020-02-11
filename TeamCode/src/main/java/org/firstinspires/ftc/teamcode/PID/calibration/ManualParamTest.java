@@ -8,6 +8,7 @@ import com.acmerobotics.roadrunner.localization.Localizer;
 
 import org.firstinspires.ftc.teamcode.All.HardwareMap;
 import org.firstinspires.ftc.teamcode.Autonomous.FieldPosition;
+import org.firstinspires.ftc.teamcode.Autonomous.Path;
 import org.firstinspires.ftc.teamcode.PID.DriveConstantsPID;
 import org.firstinspires.ftc.teamcode.PID.RobotLogger;
 import org.firstinspires.ftc.teamcode.PID.localizer.IMUBufferReader;
@@ -39,6 +40,7 @@ public class ManualParamTest extends LinearOpMode {
     private String TAG = "ManualParamTest";
     Localizer localizer = null;
     private HardwareMap hwMap;
+    private FieldPosition side = FieldPosition.RED_QUARY;
 
     private void sleep_millisec(int c)
     {
@@ -49,81 +51,7 @@ public class ManualParamTest extends LinearOpMode {
         }
     }
     //IMUBufferReader imu = IMUBufferReader.getSingle_instance(hardwareMap);
-    private void grabStone(FieldPosition fieldPosition) {
-        hwMap.redAutoClawJoint2.setPosition(TeleopConstants.autoClaw2Grabbing);
-        sleep_millisec(400);
 
-        hwMap.redAutoClawJoint3.setPosition(TeleopConstants.autoClaw3Closed);
-        sleep_millisec(400);
-
-        hwMap.redAutoClawJoint2.setPosition(TeleopConstants.autoClaw2PickUp);
-        sleep_millisec(200);
-
-        hwMap.redAutoClawJoint1.setPosition(TeleopConstants.autoClaw1Stone);
-        sleep_millisec(200);
-
-    }
-    private void transferReset() {
-        Thread thread = new Thread() {
-            public void run() {
-                hwMap.transferHorn.setPosition(TeleopConstants.transferHornPosReady);
-                //hwMap.innerTransfer.setPosition(TeleopConstants.innerTransferPosBlock);
-            }
-        };
-    }
-    private void initIntakeClaw() {
-        Thread thread = new Thread() {
-            public void run() {
-                hwMap.clawInit.setPosition(TeleopConstants.clawInitPosCapstone);
-                hwMap.clawServo2.setPosition(0.9336);
-
-                sleep_millisec(2800);
-
-
-                //hwMap.clawServo2.setPosition(TeleopConstants.clawServo2Block + 0.08);
-                //resetLift(TeleopConstants.liftPower);
-                sleep_millisec(300);
-
-                hwMap.innerTransfer.setPosition(TeleopConstants.intakeInitPosRight);
-                sleep_millisec(500);
-
-                hwMap.innerTransfer.setPosition(TeleopConstants.intakeInitPosLeft);
-                //intake(1);
-
-                sleep_millisec(500);
-
-                hwMap.innerTransfer.setPosition(TeleopConstants.intakeInitPosReset);
-            }
-        };
-
-        Thread t = new Thread(){
-            public void run(){
-                //hwMap.clawServo2.setPosition(0.9336);
-                sleep_millisec(2600);
-
-                //hwMap.clawInit.setPosition(TeleopConstants.clawInitPosReset);
-                hwMap.clawInit.setPosition(TeleopConstants.clawInitPosReset);
-
-                sleep_millisec(600);
-
-
-                hwMap.clawInit.setPosition(TeleopConstants.clawInitPosCapstone);
-            }
-        };
-        thread.start();
-        t.start();
-    }
-    private void prepGrab(FieldPosition fieldPosition) {
-        hwMap.redAutoClawJoint1.setPosition(TeleopConstants.autoClaw1Extended);
-        sleep_millisec(200);
-
-        hwMap.redAutoClawJoint3.setPosition(TeleopConstants.autoClaw3Open);
-        sleep_millisec(200);
-
-        hwMap.redAutoClawJoint2.setPosition(TeleopConstants.autoClaw2Prep);
-        sleep_millisec(200);
-
-    }
     @Override
     public void runOpMode() throws InterruptedException {
         DriveConstantsPID.updateConstantsFromProperties();
@@ -147,11 +75,7 @@ public class ManualParamTest extends LinearOpMode {
         waitForStart();
 
         if (DriveConstantsPID.ENABLE_ARM_ACTIONS) {
-            transferReset();
-            initIntakeClaw();
-            init();
-            prepGrab(FieldPosition.RED_QUARY);    //*******
-
+            Path.initGrab(hwMap, side);
         }
 
         VuforiaCamLocalizer vu = VuforiaCamLocalizer.getSingle_instance(hardwareMap, VuforiaCamLocalizer.VuforiaCameraChoice.PHONE_BACK);
@@ -183,7 +107,7 @@ public class ManualParamTest extends LinearOpMode {
             if (v_double != Double.MAX_VALUE) {
                 int v_int = (int) v_double;
                 if (v_int != 0) {
-                    grabStone(FieldPosition.RED_QUARY);
+                    Path.grabStone(hwMap, side);
                 }
             }
             Thread.sleep(polling_interval);

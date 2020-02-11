@@ -8,6 +8,7 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.util.RobotLog;
 
 import org.firstinspires.ftc.teamcode.All.DriveConstant;
+import org.firstinspires.ftc.teamcode.Autonomous.Path;
 import org.firstinspires.ftc.teamcode.PID.DriveConstantsPID;
 import org.firstinspires.ftc.teamcode.PID.mecanum.SampleMecanumDriveBase;
 import org.firstinspires.ftc.teamcode.PID.mecanum.SampleMecanumDriveREV;
@@ -59,9 +60,7 @@ public class FollowerPIDTunerStraight extends LinearOpMode {
             Pose2d error_pose = drive.follower.getLastError();
             RobotLog.dd(TAG, "currentPos %s, errorPos %s",currentPos.toString(), error_pose.toString());
             //drive.turnSync(Math.toRadians(90));
-            try{
-                Thread.sleep(2000);
-            } catch(Exception e){}
+            Path.sleep_millisec(2000);
 
             if (DriveConstantsPID.RESET_FOLLOWER)
                 drive.resetFollowerWithParameters(false, false);
@@ -74,10 +73,7 @@ public class FollowerPIDTunerStraight extends LinearOpMode {
             currentPos = drive.getPoseEstimate();
             error_pose = drive.follower.getLastError();
             RobotLog.dd(TAG, "currentPos %s, errorPos %s",currentPos.toString(), error_pose.toString());
-            try{
-                Thread.sleep(2000);
-            } catch(Exception e){}
-
+            Path.sleep_millisec(2000);
         }
     }
 }
