@@ -6,9 +6,12 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.Servo;
 
+import org.firstinspires.ftc.robotcore.internal.system.AppUtil;
+import org.firstinspires.ftc.teamcode.All.DriveConstant;
 import org.firstinspires.ftc.teamcode.All.FourWheelMecanumDrivetrain;
 import org.firstinspires.ftc.teamcode.All.HardwareMap;
 import org.firstinspires.ftc.teamcode.All.Lift;
+import org.firstinspires.ftc.teamcode.Autonomous.FieldPosition;
 import org.firstinspires.ftc.teamcode.TeleOp.ToggleButtons.GamepadButtons;
 import org.firstinspires.ftc.teamcode.TeleOp.ToggleButtons.OnOffButton;
 
@@ -114,9 +117,10 @@ public class Teleop extends LinearOpMode {
 
         telemetry.addData("Status", "Ready");
         hwMap.clawInit.setPosition(TeleopConstants.clawInitPosCapstone);
+
         //hwMap.redAutoClawJoint1.setPosition(TeleopConstants.autoClaw1TeleOp);
         //hwMap.redAutoClawJoint2.setPosition(TeleopConstants.autoClaw2Stowed);
-        //hwMap.parkingServo.setPosition(TeleopConstants.parkingServoPosLock);
+        hwMap.parkingServo.setPosition(TeleopConstants.parkingServoPosLock);
 
         waitForStart();
 
@@ -126,6 +130,35 @@ public class Teleop extends LinearOpMode {
         parkingLoop();
         armDelayHandler();
         initIntakeClawArm();
+
+        String val = DriveConstant.getString(AppUtil.ROOT_FOLDER + "/FIRST/PrevRunPath.txt");
+        if(val.equalsIgnoreCase(FieldPosition.RED_QUARY.toString()) || val.equalsIgnoreCase(FieldPosition.RED_FOUNDATION_PARK.toString())) {
+            hwMap.redAutoClawJoint3.setPosition(TeleopConstants.autoClaw3Init);
+            try{
+                Thread.sleep(200);
+            } catch (Exception e){}
+            hwMap.redAutoClawJoint2.setPosition(TeleopConstants.autoClaw2Init);
+            try{
+                Thread.sleep(200);
+            } catch (Exception e){}
+            hwMap.redAutoClawJoint1.setPosition(TeleopConstants.autoClaw1Retracted);
+            try{
+                Thread.sleep(200);
+            } catch (Exception e){}
+        } else if(val.equalsIgnoreCase(FieldPosition.BLUE_QUARY.toString()) || val.equalsIgnoreCase(FieldPosition.BLUE_FOUNDATION_PARK.toString())) {
+            hwMap.redAutoClawJoint3.setPosition(TeleopConstants.autoClaw3Init_blue);
+            try{
+                Thread.sleep(200);
+            } catch (Exception e){}
+            hwMap.redAutoClawJoint2.setPosition(TeleopConstants.autoClaw2Init_blue);
+            try{
+                Thread.sleep(200);
+            } catch (Exception e){}
+            hwMap.redAutoClawJoint1.setPosition(TeleopConstants.autoClaw1Retracted_blue);
+            try{
+                Thread.sleep(200);
+            } catch (Exception e){}
+        }
 
         while (opModeIsActive()) {
 
@@ -542,7 +575,7 @@ public class Teleop extends LinearOpMode {
         Thread parkingServ = new Thread(){
             public void run(){
                 while(opModeIsActive()){
-                    /*if(gamepad2.right_trigger >= 0.5){
+                    if(gamepad2.right_trigger >= 0.5){
                         if(gamepad2.x && !dummy){
                             if(!parking) {
                                 //hwMap.redAutoClawJoint1.setPosition(TeleopConstants.autoClaw1Up - 0.08);
@@ -563,7 +596,7 @@ public class Teleop extends LinearOpMode {
                         } else if(!gamepad2.x && dummy){
                             dummy = false;
                         }
-                    }*/
+                    }
 
                     if(gamepad2.left_trigger >= 0.5 && !transferHornDummy){
                         if(!transHornFlag) {

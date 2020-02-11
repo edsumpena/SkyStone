@@ -472,9 +472,9 @@ public class Path {
             hwMap.transferLock.setPosition(TeleopConstants.transferLockPosOut);
         }
 
-        sleep_millisec(100);
+        sleep_millisec(300);
 
-        DriveBuilderReset(false, false, "step" + Integer.toString(step_count) + coordinates[step_count].toString() +
+        /*DriveBuilderReset(false, false, "step" + Integer.toString(step_count) + coordinates[step_count].toString() +
                 ", spline, back to parking");
         //builder = new TrajectoryBuilder(_drive.getPoseEstimate(), DriveConstantsPID.BASE_CONSTRAINTS);
         builder = builder
@@ -490,7 +490,7 @@ public class Path {
                 o += p2d.toString() + ", ";
             telemetry.addData("Pose2d", o);
             telemetry.update();
-        }
+        }*/
         return 0;
     }
     public void RedQuary(int[] skystonePositions, VuforiaCamLocalizer vuLocalizer) {
@@ -510,28 +510,12 @@ public class Path {
         initIntakeClaw();
         sleep_millisec(5000);
 
+        DriveBuilderReset(false, false, "step");
+        builder = builder.forward(24);
+        trajectory = builder.build();   //x - 2.812, y + 7.984
+        _drive.followTrajectorySync(trajectory);
 
         intake(0);
-
-        sleep_millisec(15000);
-
-
-        hwMap.foundationLock.setPosition(TeleopConstants.foundationLockUnlock);
-        hwMap.transferLock.setPosition(TeleopConstants.transferLockPosOut);
-
-        sleep_millisec(10000);
-
-
-        /*try {
-            Thread.sleep(18000);
-        } catch (Exception e) {
-        }
-        straightDrive.getLocalizer().setPoseEstimate(startingPos);
-        straightDrive.getLocalizer().update();
-        builder = new TrajectoryBuilder(straightDrive.getPoseEstimate(), DriveConstantsPID.BASE_CONSTRAINTS);
-        builder = builder.strafeRight(6).setReversed(false).forward(28);
-        trajectory = builder.build();
-        straightDrive.followTrajectorySync(trajectory);*/
     }
 
     public void BlueQuary(int[] skystonePositions, VuforiaCamLocalizer vuLocalizer) {    // (-x, y)
@@ -546,31 +530,15 @@ public class Path {
     }
 
     public void BlueFoundationPark() {
-        //hwMap.parkingServo.setPosition(TeleopConstants.parkingServoPosLock);
+        hwMap.parkingServo.setPosition(TeleopConstants.parkingServoPosLock);
         transferReset();
         initIntakeClaw();
         sleep_millisec(5000);
 
-        intake(0);
-        sleep_millisec(15000);
-
-
-        hwMap.foundationLock.setPosition(TeleopConstants.foundationLockUnlock);
-        hwMap.transferLock.setPosition(TeleopConstants.transferLockPosOut);
-
-        sleep_millisec(10000);
-
-        /*try {
-            Thread.sleep(18000);
-        } catch (Exception e) {
-        }
-        straightDrive.getLocalizer().setPoseEstimate(startingPos);
-        straightDrive.getLocalizer().update();
-        builder = new TrajectoryBuilder(straightDrive.getPoseEstimate(), DriveConstantsPID.BASE_CONSTRAINTS);
-        builder = builder.strafeLeft(6).setReversed(false).forward(28);
-        trajectory = builder.build();
-        straightDrive.followTrajectorySync(trajectory);
-        intake(0);*/
+        DriveBuilderReset(false, false, "step");
+        builder = builder.forward(24);
+        trajectory = builder.build();   //x - 2.812, y + 7.984
+        _drive.followTrajectorySync(trajectory);
     }
 
     public void BlueFoundationDrag() {
@@ -688,6 +656,9 @@ public class Path {
     private void prepGrab(FieldPosition fieldPosition, boolean first) {
         if (FieldPosition.RED_QUARY == fieldPosition) {
             if(first) {
+                hwMap.redAutoClawJoint2.setPosition(0.85); //TODO Servo Test
+                sleep_millisec(200);
+
                 hwMap.redAutoClawJoint1.setPosition(TeleopConstants.autoClaw1Extended);
                 sleep_millisec(200);
 
@@ -709,6 +680,9 @@ public class Path {
         }
         else {
             if(first) {
+                hwMap.redAutoClawJoint2.setPosition(0.117);
+                sleep_millisec(200);
+
                 hwMap.redAutoClawJoint1.setPosition(TeleopConstants.autoClaw1Extended_blue);
                 sleep_millisec(200);
 
@@ -889,7 +863,7 @@ public class Path {
     private void init() {
         Thread thread = new Thread() {
             public void run() {
-                //hwMap.parkingServo.setPosition(TeleopConstants.parkingServoPosLock);
+                hwMap.parkingServo.setPosition(TeleopConstants.parkingServoPosLock);
                 hwMap.foundationLock.setPosition(TeleopConstants.foundationLockInit);
                 hwMap.transferLock.setPosition(TeleopConstants.transferLockPosPlatform);
             }

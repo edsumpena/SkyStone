@@ -1,0 +1,40 @@
+{
+  "project_info": {
+    "project_number": "849969019717",
+    "firebase_url": "https://ftc-path-loader.firebaseio.com",
+    "project_id": "ftc-path-loader",
+    "storage_bucket": "ftc-path-loader.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:849969019717:android:47d93f2cca9cb16f16dc2c",
+        "android_client_info": {
+          "package_name": "org.firstinspires.ftc.robotcontroller"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "849969019717-a2c33498afu3kfvdsm597nfi6608n62o.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCdKHytkL7iAG8zumzB812hDYXB4JBPUg4"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "849969019717-a2c33498afu3kfvdsm597nfi6608n62o.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
