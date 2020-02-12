@@ -20,12 +20,51 @@ public class RunTrajectoryFromString {
     private SampleMecanumDriveBase rev;
     private TrajectoryBuilder builder;
     private Trajectory trajectory;
+    private Movement[] movements;
+    private String traj;
 
-    public RunTrajectoryFromString(SampleMecanumDriveBase drive){
+    public RunTrajectoryFromString(SampleMecanumDriveBase drive, String traj){
         rev = drive;
+        this.traj = traj;
+
+        try{
+            data = TrajectoryStringConverter.generateP2dFromString(traj);
+            options = TrajectoryStringConverter.generateMoveOptionsFromString(traj);
+        } catch (Exception e){
+            throw new UnknownFormatConversionException("Failed to convert string to trajectory!");
+        }
+
+        movements = new Movement[data.size() + 1];
     }
 
-    public void runTrajectory(String traj){
+    public void setTrajectory(String traj){
+        this.traj = traj;
+
+        try{
+            data = TrajectoryStringConverter.generateP2dFromString(traj);
+            options = TrajectoryStringConverter.generateMoveOptionsFromString(traj);
+        } catch (Exception e){
+            throw new UnknownFormatConversionException("Failed to convert string to trajectory!");
+        }
+
+        movements = new Movement[data.size() + 1];
+    }
+
+    public int getMovementSize(){
+        return movements != null ? movements.length : 0;
+    }
+
+    public void setMovements(int index, Movement movement){
+        if(movements != null)
+            if(index < movements.length)
+                movements[index] = movement;
+            else
+                throw new IndexOutOfBoundsException("Index: " + index + " is OutOfBounds for Size: " + movements.length);
+        else
+            throw new NullPointerException("Movements array is null!");
+    }
+
+    public void runTrajectory(){
         try{
             data = TrajectoryStringConverter.generateP2dFromString(traj);
             options = TrajectoryStringConverter.generateMoveOptionsFromString(traj);
@@ -35,6 +74,9 @@ public class RunTrajectoryFromString {
         rev.getLocalizer().setPoseEstimate(data.get(0));
 
         for(int i = 1; i < data.size(); i++){
+            if(movements != null && movements[i] != null && data.size() + 1 >= movements.length)
+                movements[i - 1].run();
+
             DriveBuilderReset(options.get(i) == MoveOptions.StrafeTo);
             switch(options.get(i)){
                 case LineTo_Forward:
@@ -56,6 +98,9 @@ public class RunTrajectoryFromString {
             trajectory = builder.build();   //x - 2.812, y + 7.984
                 rev.followTrajectorySync(trajectory);
         }
+
+        if(movements != null && data.size() + 1 >= movements.length)
+            movements[data.size() - 1].run();
     }
 
     private void DriveBuilderReset(boolean isStrafe) {
