@@ -98,7 +98,8 @@ public class Path {
 
             firstStop = new Vector2d(new_x, current_y);
             RobotLogger.dd(TAG, "added one line to stop: " + firstStop.toString());
-            builder.setReversed(false).lineTo(firstStop).strafeTo(dest);
+            boolean dir = (firstStop.getX() - current_x)<0?true:false;
+            builder.setReversed(dir).lineTo(firstStop).strafeTo(dest);
         }
         else if (Math.abs(delta_x) < Math.abs(delta_y)){
             RobotLogger.dd(TAG, "x < y, strafe first and then line");
