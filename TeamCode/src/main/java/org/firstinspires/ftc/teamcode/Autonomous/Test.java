@@ -55,16 +55,15 @@ public class Test extends LinearOpMode {
         hwMap.backRight.setDirection(DcMotorSimple.Direction.REVERSE);
 
         SampleMecanumDriveBase drive = new SampleMecanumDriveREVOptimized(hardwareMap, false);
-
-        RunTrajectoryFromString run = new RunTrajectoryFromString(drive);
+        String trajectory = DriveConstant.trajectoryString;
+        
+        RunTrajectoryFromString run = new RunTrajectoryFromString(drive, trajectory);
 
         drivetrain.resetEncoders();
 
         waitForStart();
 
-        String trajectory = DriveConstant.trajectoryString;
-
-        run.runTrajectory(trajectory);
+        run.runTrajectory();
 
     }
 
