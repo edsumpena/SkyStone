@@ -712,6 +712,8 @@ public class Path {
 
             hwMap.redAutoClawJoint1.setPosition(TeleopConstants.autoClaw1Stone);
             sleep_millisec(200);
+
+
         }
         else{
             hwMap.redAutoClawJoint2.setPosition(TeleopConstants.autoClaw2Grabbing_blue);
@@ -858,7 +860,7 @@ public class Path {
         Thread thread = new Thread() {
             public void run() {
                 //hwMap.parkingServo.setPosition(TeleopConstants.parkingServoPosLock);
-                hwMap.foundationLock.setPosition(TeleopConstants.foundationLockUnlock);
+                //hwMap.foundationLock.setPosition(TeleopConstants.foundationLockUnlock);
                 hwMap.transferLock.setPosition(TeleopConstants.transferLockPosPlatform);
             }
         };
