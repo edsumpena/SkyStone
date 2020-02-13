@@ -13,6 +13,7 @@ adb shell setprop debug.ftc.vuforia 1
 adb shell setprop debug.ftc.bulk 1
 adb shell setprop debug.ftc.imu 1
 adb shell setprop debug.ftc.resetfollow 1
+adb shell setprop debug.ftc.forceOdom 1
 adb shell setprop debug.ftc.imuInterval 10
 rem ---------------- odometry parameters -----------------
 adb shell setprop debug.ftc.odom 0

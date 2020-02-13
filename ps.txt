@@ -1,1 +1,0 @@
-u0_a155      10793   724 2251208 384256 0                   0 S com.qualcomm.ftcrobotcontroller
