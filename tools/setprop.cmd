@@ -9,14 +9,16 @@ adb shell setprop debug.ftc.logging 1
 adb shell setprop debug.ftc.enable_arm 1
 adb shell setprop debug.ftc.skystonePos 3
 adb shell setprop debug.ftc.pause 1
-adb shell setprop debug.ftc.vuforia 0
+adb shell setprop debug.ftc.vuforia 1
 adb shell setprop debug.ftc.bulk 1
 adb shell setprop debug.ftc.imu 1
 adb shell setprop debug.ftc.resetfollow 1
 adb shell setprop debug.ftc.imuInterval 10
 rem ---------------- odometry parameters -----------------
 adb shell setprop debug.ftc.odom 0
-adb shell setprop debug.ftc.odoTicksPerRev 1565
+adb shell setprop debug.ftc.odoTicksPerRevLeft 1565
+adb shell setprop debug.ftc.odoTicksPerRevRight 1565
+adb shell setprop debug.ftc.odoTicksPerRevFront 1565
 adb shell setprop debug.ftc.odomTrackwidth 14.8
 adb shell setprop debug.ftc.odomForwardOffset -5.5
 rem ------------------

@@ -23,6 +23,7 @@ import org.firstinspires.ftc.teamcode.Autonomous.Vision.Detect;
 import org.firstinspires.ftc.teamcode.PID.DriveConstantsPID;
 import org.firstinspires.ftc.teamcode.PID.RobotLogger;
 import org.firstinspires.ftc.teamcode.PID.localizer.VuforiaCamLocalizer;
+import org.firstinspires.ftc.teamcode.PID.localizer.VuforiaCameraChoice;
 import org.firstinspires.ftc.teamcode.PID.mecanum.SampleMecanumDriveBase;
 import org.firstinspires.ftc.teamcode.PID.mecanum.SampleMecanumDriveREV;
 import org.firstinspires.ftc.teamcode.PID.mecanum.SampleMecanumDriveREVOptimized;
@@ -210,7 +211,7 @@ public class MainAutonomous extends LinearOpMode {
 
         if (DriveConstantsPID.USE_VUFORIA_LOCALIZER) {
             vuLocalizer = VuforiaCamLocalizer.getSingle_instance(hardwareMap,
-                    VuforiaCamLocalizer.VuforiaCameraChoice.PHONE_BACK);
+                    VuforiaCameraChoice.PHONE_BACK, true);
         }
         if (opModeIsActive() && fieldPosition != null) {
             if(skystonePositions != null || fieldPosition == FieldPosition.RED_FOUNDATION_PARK || fieldPosition == FieldPosition.BLUE_FOUNDATION_PARK) {
