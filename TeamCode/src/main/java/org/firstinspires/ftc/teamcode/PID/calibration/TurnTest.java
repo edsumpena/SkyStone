@@ -19,7 +19,7 @@ import org.firstinspires.ftc.teamcode.PID.mecanum.SampleMecanumDriveREVOptimized
  */
 @Config
 @Autonomous(name = "TurnTest", group = "drive")
-//@Disabled
+@Disabled
 public class TurnTest extends LinearOpMode {
     public static double ANGLE = 180; // deg
     private PIDCoefficients coefficients;

@@ -8,6 +8,7 @@ import android.support.annotation.NonNull;
 
 import com.acmerobotics.dashboard.config.Config;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.util.RobotLog;
 
@@ -22,6 +23,7 @@ import java.util.List;
  */
 @Config
 @Autonomous(group = "drive")
+@Disabled
 public class PhoneIMUTest extends LinearOpMode {
     private static String TAG = "PhoneIMUTest";
 

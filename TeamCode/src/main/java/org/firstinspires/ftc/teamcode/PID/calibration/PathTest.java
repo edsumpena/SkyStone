@@ -18,6 +18,7 @@ import org.firstinspires.ftc.teamcode.Autonomous.Path;
 import org.firstinspires.ftc.teamcode.PID.DriveConstantsPID;
 import org.firstinspires.ftc.teamcode.PID.RobotLogger;
 import org.firstinspires.ftc.teamcode.PID.localizer.VuforiaCamLocalizer;
+import org.firstinspires.ftc.teamcode.PID.localizer.VuforiaCameraChoice;
 import org.firstinspires.ftc.teamcode.PID.mecanum.SampleMecanumDriveBase;
 import org.firstinspires.ftc.teamcode.PID.mecanum.SampleMecanumDriveREV;
 import org.firstinspires.ftc.teamcode.PID.mecanum.SampleMecanumDriveREVOptimized;
@@ -74,7 +75,7 @@ public class PathTest extends LinearOpMode {
 
         if (DriveConstantsPID.USE_VUFORIA_LOCALIZER) {
             vuLocalizer = VuforiaCamLocalizer.getSingle_instance(hardwareMap,
-                    VuforiaCamLocalizer.VuforiaCameraChoice.PHONE_BACK);
+                    VuforiaCameraChoice.PHONE_BACK, true);
         }
         path = new Path(hwMap, this, _drive, hardwareMap, null, telemetry);
         path.RedQuary(skystonePositions, vuLocalizer);
