@@ -1,6 +1,5 @@
 <?xml version = "1.0"?>
 <pathXY>
-
    <movestep drive_type = "0, start_position">
       <!--step 0 is always the starting position, with valid heading -->
       <x>-34.752</x>
@@ -12,36 +11,36 @@
       <!--wallSkyStoneX, yCoordMvmtPlane -->
       <!--X-coordinate of the Skystone closest to the wall-->
       <!--Y-coordinate value which the robot moves back and forth on-->
-      <x>-52.0</x>
-      <y>-29</y>
+      <x>-58.0</x>
+      <y>-32</y>
       <h>0.0</h>
    </movestep>
    <!--X-coordinate of the foundation-->
    <movestep drive_type = "2, line to foundation to drop">
-      <x>44.0</x>
-      <y>-29</y>
+      <x>48.0</x>
+      <y>-32</y>
       <h>0.0</h>
    </movestep>
 
    <movestep drive_type = "3, reverse true, line to, straight back to stones">
       <!--X-coordinate of the Skystone furthest away from the wall-->
       <x>-33.0</x>
-      <y>-29</y>
+      <y>-32</y>
       <h>0.0</h>
    </movestep>
 
    <movestep drive_type = "4, line to, line to foundation">
       <!--X-coordinate of the foundation-->
-      <x>38</x>
+      <x>44.0</x>
       <!--not using -20, to compensate Y direction off -->
-      <y>-29.0</y>
+      <y>-32.0</y>
       <h>0.0</h>
    </movestep>
 
    <movestep drive_type = "5, strafe, after drop 2nd, strafe away from foundation">
       <!---(-7, -10)-->
-      <x>31</x>
-      <y>-28.0</y>
+      <x>43.0</x>
+      <y>-36.0</y>
       <h>0.0</h>
    </movestep>
 
@@ -49,7 +48,7 @@
       <!--not using X-->
       <x>0</x>
       <!--_drive.getPoseEstimate().getY() + coordinates[step_count].getY())-->
-      <y>13.0</y>
+      <y>9.0</y>
       <h>0.0</h>
    </movestep>
 
@@ -57,7 +56,7 @@
       <!--drive.getPoseEstimate().getX() - coordinates[step_count].getX()-->
       <x>12.0</x>
       <!--_drive.getPoseEstimate().getY() - coordinates[step_count].getY()-->
-      <y>26.0</y>
+      <y>28.0</y>
       <h>180.0</h>
    </movestep>
 

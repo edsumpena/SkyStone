@@ -7,6 +7,7 @@ import com.acmerobotics.roadrunner.trajectory.TrajectoryBuilder;
 import com.qualcomm.robotcore.util.RobotLog;
 
 import org.firstinspires.ftc.teamcode.PID.DriveConstantsPID;
+import org.firstinspires.ftc.teamcode.PID.mecanum.SampleMecanumDriveBase;
 import org.firstinspires.ftc.teamcode.PID.mecanum.SampleMecanumDriveREV;
 import org.firstinspires.ftc.teamcode.PID.mecanum.SampleMecanumDriveREVOptimized;
 
@@ -16,23 +17,16 @@ import java.util.UnknownFormatConversionException;
 public class RunTrajectoryFromString {
     private ArrayList<Pose2d> data;
     private ArrayList<MoveOptions> options;
-    private SampleMecanumDriveREV rev;
-    private SampleMecanumDriveREVOptimized revBulk;
-    private boolean usingBulk;
+    private SampleMecanumDriveBase rev;
     private TrajectoryBuilder builder;
     private Trajectory trajectory;
+    private Movement[] movements;
+    private String traj;
 
-    public RunTrajectoryFromString(SampleMecanumDriveREV drive, Pose2d currentPos){
+    public RunTrajectoryFromString(SampleMecanumDriveBase drive, String traj){
         rev = drive;
-        usingBulk = false;
-    }
+        this.traj = traj;
 
-    public RunTrajectoryFromString(SampleMecanumDriveREVOptimized drive, Pose2d currentPos){
-        revBulk = drive;
-        usingBulk = true;
-    }
-
-    public void runTrajectory(String traj){
         try{
             data = TrajectoryStringConverter.generateP2dFromString(traj);
             options = TrajectoryStringConverter.generateMoveOptionsFromString(traj);
@@ -40,12 +34,49 @@ public class RunTrajectoryFromString {
             throw new UnknownFormatConversionException("Failed to convert string to trajectory!");
         }
 
-        if(usingBulk)
-            revBulk.getLocalizer().setPoseEstimate(data.get(0));
+        movements = new Movement[data.size() + 1];
+    }
+
+    public void setTrajectory(String traj){
+        this.traj = traj;
+
+        try{
+            data = TrajectoryStringConverter.generateP2dFromString(traj);
+            options = TrajectoryStringConverter.generateMoveOptionsFromString(traj);
+        } catch (Exception e){
+            throw new UnknownFormatConversionException("Failed to convert string to trajectory!");
+        }
+
+        movements = new Movement[data.size() + 1];
+    }
+
+    public int getMovementSize(){
+        return movements != null ? movements.length : 0;
+    }
+
+    public void setMovements(int index, Movement movement){
+        if(movements != null)
+            if(index < movements.length)
+                movements[index] = movement;
+            else
+                throw new IndexOutOfBoundsException("Index: " + index + " is OutOfBounds for Size: " + movements.length);
         else
-            rev.getLocalizer().setPoseEstimate(data.get(0));
+            throw new NullPointerException("Movements array is null!");
+    }
+
+    public void runTrajectory(){
+        try{
+            data = TrajectoryStringConverter.generateP2dFromString(traj);
+            options = TrajectoryStringConverter.generateMoveOptionsFromString(traj);
+        } catch (Exception e){
+            throw new UnknownFormatConversionException("Failed to convert string to trajectory!");
+        }
+        rev.getLocalizer().setPoseEstimate(data.get(0));
 
         for(int i = 1; i < data.size(); i++){
+            if(movements != null && movements[i] != null && data.size() + 1 >= movements.length)
+                movements[i - 1].run();
+
             DriveBuilderReset(options.get(i) == MoveOptions.StrafeTo);
             switch(options.get(i)){
                 case LineTo_Forward:
@@ -65,34 +96,14 @@ public class RunTrajectoryFromString {
                     break;
             }
             trajectory = builder.build();   //x - 2.812, y + 7.984
-
-            if(usingBulk)
-                revBulk.followTrajectorySync(trajectory);
-            else
                 rev.followTrajectorySync(trajectory);
         }
+
+        if(movements != null && data.size() + 1 >= movements.length)
+            movements[data.size() - 1].run();
     }
 
     private void DriveBuilderReset(boolean isStrafe) {
-        if(usingBulk) {
-            Pose2d currentPos = revBulk.getPoseEstimate();
-            //Pose2d newPos = currentPos;
-            //Pose2d error_pose = revBulk.follower.getLastError();
-            //RobotLog.dd("TrajectoryRunner", "start new step: %s, count[%d], currentPos %s, errorPos %s",
-            //        label, step_count, currentPos.toString(), error_pose.toString());
-
-            revBulk.resetFollowerWithParameters(isStrafe, false);
-
-            //_drive = new SampleMecanumDriveREV(hardwareMap, isStrafe, init_imu);
-            revBulk.getLocalizer().setPoseEstimate(currentPos);
-            revBulk.getLocalizer().update();
-            if (!isStrafe) {
-                builder = new TrajectoryBuilder(revBulk.getPoseEstimate(), DriveConstantsPID.BASE_CONSTRAINTS);
-            } else {
-                builder = new TrajectoryBuilder(revBulk.getPoseEstimate(), DriveConstantsPID.STRAFE_BASE_CONSTRAINTS);
-            }
-            RobotLog.dd("TrajectoryRunner", "drive and builder created, initialized with pose: " + revBulk.getPoseEstimate().toString());
-        } else {
             Pose2d currentPos = rev.getPoseEstimate();
             //Pose2d newPos = currentPos;
             //Pose2d error_pose = revBulk.follower.getLastError();
@@ -110,6 +121,5 @@ public class RunTrajectoryFromString {
                 builder = new TrajectoryBuilder(rev.getPoseEstimate(), DriveConstantsPID.STRAFE_BASE_CONSTRAINTS);
             }
             RobotLog.dd("TrajectoryRunner", "drive and builder created, initialized with pose: " + rev.getPoseEstimate().toString());
-        }
     }
 }

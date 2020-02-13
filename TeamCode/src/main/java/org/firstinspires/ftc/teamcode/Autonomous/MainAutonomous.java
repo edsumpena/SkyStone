@@ -15,6 +15,8 @@ import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
 import org.firstinspires.ftc.robotcore.external.navigation.VuforiaLocalizer;
 import org.firstinspires.ftc.robotcore.external.tfod.Recognition;
 import org.firstinspires.ftc.robotcore.external.tfod.TFObjectDetector;
+import org.firstinspires.ftc.robotcore.internal.system.AppUtil;
+import org.firstinspires.ftc.teamcode.All.DriveConstant;
 import org.firstinspires.ftc.teamcode.All.FourWheelMecanumDrivetrain;
 import org.firstinspires.ftc.teamcode.All.HardwareMap;
 import org.firstinspires.ftc.teamcode.Autonomous.Vision.Detect;
@@ -156,6 +158,8 @@ public class MainAutonomous extends LinearOpMode {
                         tfod.activate();
                     }
 
+                    DriveConstant.writeSerializedObject(AppUtil.ROOT_FOLDER + "/FIRST/PrevRunPath.txt", fieldPosition.toString());
+
                     telemetry.addData("STATUS", "Done!");
                     telemetry.update();
                 }
@@ -209,17 +213,21 @@ public class MainAutonomous extends LinearOpMode {
                     VuforiaCamLocalizer.VuforiaCameraChoice.PHONE_BACK);
         }
         if (opModeIsActive() && fieldPosition != null) {
-            if(skystonePositions != null) {
+            if(skystonePositions != null || fieldPosition == FieldPosition.RED_FOUNDATION_PARK || fieldPosition == FieldPosition.BLUE_FOUNDATION_PARK) {
                 sendData();
                 //resetLiftEncoder();
                 switch (fieldPosition) {
                     case RED_QUARY:
+                        if(skystonePositions[0] > 3)
+                            skystonePositions = new int[]{3, 6};
                         path.RedQuary(skystonePositions, vuLocalizer);
                         break;
                     case RED_FOUNDATION_PARK:
                         path.RedFoundationPark();
                         break;
                     case BLUE_QUARY:
+                        if(skystonePositions[0] > 3)
+                            skystonePositions = new int[]{3, 6};
                         path.BlueQuary(skystonePositions, vuLocalizer);
                         break;
                     case BLUE_FOUNDATION_PARK:

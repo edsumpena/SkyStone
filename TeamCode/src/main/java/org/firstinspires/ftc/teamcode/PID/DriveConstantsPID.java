@@ -40,15 +40,18 @@ import org.w3c.dom.Element;
 @Config
 public class DriveConstantsPID {
 
-    public static final boolean RUN_USING_PARAMTER_FROM_PROPERTIES = true;
+    public static final boolean RUN_USING_PARAMTER_FROM_PROPERTIES = false;
 
     public static boolean RUN_USING_ODOMETRY_WHEEL = false;
     public static boolean RUN_USING_IMU_LOCALIZER = true;
     public static boolean BRAKE_ON_ZERO = true;
     public static boolean USING_BULK_READ = true;
-    public static boolean USING_STRAFE_DIAGNAL = true;
+    public static boolean USING_STRAFE_DIAGONAL = true;
+    public static boolean DIAGONAL_SPLIT = true;
     public static boolean RESET_FOLLOWER = true;
-    public static double odoEncoderTicksPerRev = 1565.0;
+    public static double odoEncoderTicksPerRevLeft = 1565.0;
+    public static double odoEncoderTicksPerRevRight = 1565.0;
+    public static double odoEncoderTicksPerRevFront = 1565.0;
     public static double imuPollingInterval = 10;
 
     public static boolean ENABLE_LOGGING = false;
@@ -245,7 +248,8 @@ public class DriveConstantsPID {
         RobotLog.dd(TAG, "enable ARM actions (disable for path test)? : " + Integer.toString(ENABLE_ARM_ACTIONS?1:0));
         RobotLog.dd(TAG, "IMU polling interval? : " + Double.toString(imuPollingInterval));
         RobotLog.dd(TAG, "correcting drv in automonous? : " + Integer.toString(drvCorrection?1:0));
-        RobotLog.dd(TAG, "using STRAFE in diagonal move? : " + Integer.toString(USING_STRAFE_DIAGNAL?1:0));
+        RobotLog.dd(TAG, "using STRAFE in diagonal move? : " + Integer.toString(USING_STRAFE_DIAGONAL?1:0));
+        RobotLog.dd(TAG, "split in diagonal move? : " + Integer.toString(DIAGONAL_SPLIT?1:0));
         RobotLog.dd(TAG, "reset follower? : " + Integer.toString(RESET_FOLLOWER?1:0));
         RobotLog.dd(TAG, "using Vuforia in localizer (override IMU and odom)? : " + Integer.toString(USE_VUFORIA_LOCALIZER?1:0));
         RobotLog.dd(TAG, "Driving wheel width? : " + Double.toString(TRACK_WIDTH));
@@ -254,7 +258,9 @@ public class DriveConstantsPID {
         RobotLog.dd(TAG, "recreate drive? : " + Integer.toString(RECREATE_DRIVE_AND_BUILDER?1:0));
         RobotLog.dd(TAG, "Odometry wheel width? : " + Double.toString(ODOMETRY_TRACK_WIDTH));
         RobotLog.dd(TAG, "Odometry forward offset? " + Double.toString(ODOMERY_FORWARD_OFFSET));
-        RobotLog.dd(TAG, "Odometry EncoderTicksPerRev? " + Double.toString(odoEncoderTicksPerRev));
+        RobotLog.dd(TAG, "Odometry EncoderTicksPerRevLeft? " + Double.toString(odoEncoderTicksPerRevLeft));
+        RobotLog.dd(TAG, "Odometry EncoderTicksPerRevRight? " + Double.toString(odoEncoderTicksPerRevRight));
+        RobotLog.dd(TAG, "Odometry EncoderTicksPerRevFront? " + Double.toString(odoEncoderTicksPerRevFront));
         RobotLog.dd(TAG, "Strafing paramters: ");
         RobotLog.dd(TAG, "xTransitional PID   txP: "+Double.toString(stxP) + " txI: "+Double.toString(stxI) + " txD: " + Double.toString(stxD));
         RobotLog.dd(TAG, "yTransitional PID   tyP: "+Double.toString(styP) + " tyI: "+Double.toString(styI) + " tyD: " + Double.toString(styD));
@@ -320,7 +326,12 @@ public class DriveConstantsPID {
         v_double = (int) getTeamCodePropertyValue("debug.ftc.strafeDiag");
         if (v_double != Double.MAX_VALUE) {
             v_int = (int) v_double;
-            USING_STRAFE_DIAGNAL = (v_int==0)?false:true;
+            USING_STRAFE_DIAGONAL = (v_int==0)?false:true;
+        }
+        v_double = (int) getTeamCodePropertyValue("debug.ftc.diagsplit");
+        if (v_double != Double.MAX_VALUE) {
+            v_int = (int) v_double;
+            DIAGONAL_SPLIT = (v_int==0)?false:true;
         }
         v_double = (int) getTeamCodePropertyValue("debug.ftc.resetfollow");
         if (v_double != Double.MAX_VALUE) {
@@ -475,9 +486,16 @@ public class DriveConstantsPID {
         v_double = getTeamCodePropertyValue("debug.ftc.rear_ratio");
         if (v_double != Double.MAX_VALUE)
             rear_ratio = v_double;
-        v_double = getTeamCodePropertyValue("debug.ftc.odoTicksPerRev");
+        v_double = getTeamCodePropertyValue("debug.ftc.odoTicksPerRevLeft");
         if (v_double != Double.MAX_VALUE)
-            odoEncoderTicksPerRev = v_double;
+            odoEncoderTicksPerRevLeft = v_double;
+        v_double = getTeamCodePropertyValue("debug.ftc.odoTicksPerRevRight");
+        if (v_double != Double.MAX_VALUE)
+            odoEncoderTicksPerRevRight = v_double;
+        v_double = getTeamCodePropertyValue("debug.ftc.odoTicksPerRevFront");
+        if (v_double != Double.MAX_VALUE)
+            odoEncoderTicksPerRevFront = v_double;
+
         v_double = getTeamCodePropertyValue("debug.ftc.distance");
         if (v_double != 0 && v_double != Double.MAX_VALUE)
         {
@@ -503,7 +521,9 @@ public class DriveConstantsPID {
             RUN_USING_ODOMETRY_WHEEL = true;
             RUN_USING_IMU_LOCALIZER = false;
             BRAKE_ON_ZERO = false;
-            odoEncoderTicksPerRev = 1540.0;
+            odoEncoderTicksPerRevLeft = 1540.0;
+            odoEncoderTicksPerRevRight = 1540.0;
+            odoEncoderTicksPerRevFront = 1540.0;
             txP = 0.5; //translational x/y co-efficients
             txI = 0;
             txD = 0.11;

@@ -1,6 +1,7 @@
 @echo off
 @echo cmd logfilename ps_name
-mv %1.log %1_old.log
+del %1_old.log
+rename %1.log %1_old.log
 adb logcat -c
 start setprop.cmd 1
 IF "%2"==""  (

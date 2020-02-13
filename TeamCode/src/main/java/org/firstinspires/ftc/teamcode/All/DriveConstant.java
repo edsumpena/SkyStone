@@ -21,6 +21,11 @@ public class DriveConstant {
     public static double MOTOR_GEAR_RATIO = 2.0 / 1.0;     //@TODO Change the gear ratios [Encoder gear / Wheel gear] 24/40?
     public static double ODOMETRY_GEAR_RATIO = 1.0 / 1.0;
 
+    public static String trajectoryString = "Trajectory>>LineTo_Forward:{-34.56,-63.582,0.0},StrafeTo:{-28.578,-22.597,0.0}," +
+            "LineTo_Forward:{45.415,-22.597,0.0},LineTo_Forward:{-7.532,-22.597,0.0},LineTo_Forward:{45.415,-22.597,0.0}," +
+            "StrafeTo:{41.428,-28.578,0.0},LineTo_Reversed:{41.428,-9.526,0.0},SplineTo_Forward:{25.477,-34.56,0.0}," +
+            "SplineTo_Forward:{6.425,-28.578,0.0}||";
+
 
     public static void writeFile(String filePath, String data) {
         try {
@@ -38,7 +43,7 @@ public class DriveConstant {
     public static void writeSerializedObject(String filePath, Object data) {
         try {
             File folder = new File(filePath.substring(0, filePath.lastIndexOf("/") + 1));
-            folder.mkdirs();
+            new File(filePath).delete();
             ObjectOutputStream outputStreamWriter = new ObjectOutputStream(new FileOutputStream(new File(filePath), true));
             outputStreamWriter.writeObject(data);
             outputStreamWriter.close();
@@ -55,6 +60,21 @@ public class DriveConstant {
             folder.mkdirs();
             ObjectInputStream outputStreamReader = new ObjectInputStream(new FileInputStream(new File(filePath)));
             output = outputStreamReader.readObject();
+            outputStreamReader.close();
+        }
+        catch (Exception e) {
+            e.printStackTrace();
+        }
+        return output;
+    }
+
+    public static String getString(String filePath){
+        String output = null;
+        try {
+            File folder = new File(filePath.substring(0, filePath.lastIndexOf("/") + 1));
+            folder.mkdirs();
+            ObjectInputStream outputStreamReader = new ObjectInputStream(new FileInputStream(new File(filePath)));
+            output = outputStreamReader.readObject().toString();
             outputStreamReader.close();
         }
         catch (Exception e) {
