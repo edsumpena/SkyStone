@@ -7,10 +7,10 @@ adb push TeamCode\src\main\java\org\firstinspires\ftc\teamcode\All\path_blue3.xm
 
 adb shell setprop debug.ftc.logging 1
 adb shell setprop debug.ftc.enable_arm 1
-adb shell setprop debug.ftc.skystonePos 3
+adb shell setprop debug.ftc.skystonePos 1
 adb shell setprop debug.ftc.pause 1
-adb shell setprop debug.ftc.vuforia 1
-adb shell setprop debug.ftc.bulk 1
+adb shell setprop debug.ftc.vuforia 0
+adb shell setprop debug.ftc.bulk 0
 adb shell setprop debug.ftc.imu 1
 adb shell setprop debug.ftc.resetfollow 1
 adb shell setprop debug.ftc.forceOdom 1
