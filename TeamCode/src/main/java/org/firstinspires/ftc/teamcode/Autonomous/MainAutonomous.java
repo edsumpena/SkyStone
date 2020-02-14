@@ -123,10 +123,14 @@ public class MainAutonomous extends LinearOpMode {
             if (initialize) {
                 telemetry.addData("STATUS", "Calibrating IMU...");
                 telemetry.update();
-                if (DriveConstantsPID.USING_BULK_READ == false)
+                if (DriveConstantsPID.USING_BULK_READ == false) {
                     straightDrive = new SampleMecanumDriveREV(hardwareMap, false);
-                else
+                    strafeDrive = new SampleMecanumDriveREV(hardwareMap, true);
+                }
+                else {
                     straightDrive = new SampleMecanumDriveREVOptimized(hardwareMap, false);
+                    strafeDrive = new SampleMecanumDriveREVOptimized(hardwareMap, true);
+                }
                 /*
                 strafeDrive = new SampleMecanumDriveREV(hardwareMap, true);
                 imu = hardwareMap.get(BNO055IMU.class, "imu");
@@ -136,7 +140,7 @@ public class MainAutonomous extends LinearOpMode {
                 */
                 telemetry.addData("STATUS", "Done!");
                 telemetry.update();
-                path = new Path(hwMap, this, straightDrive, hardwareMap, imu, telemetry);
+                path = new Path(hwMap, this, straightDrive, strafeDrive, hardwareMap, imu, telemetry);
 
                 if (fieldPosition == FieldPosition.RED_QUARY || fieldPosition == FieldPosition.BLUE_QUARY) {
                     telemetry.addData("STATUS", "Initializing TensorFlow...");

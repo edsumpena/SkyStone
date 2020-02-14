@@ -34,7 +34,7 @@ public class PathTest extends LinearOpMode {
     private BaseTrajectoryBuilder builder, strafe_builder;
     private Pose2d current_pose;
     private String TAG = "PathTest";
-    private SampleMecanumDriveBase _drive = null;
+    private SampleMecanumDriveBase _drive = null, _strafeDrive = null;
     private HardwareMap hwMap;
     private Path path;
     private FieldPosition fieldPosition = null;
@@ -59,10 +59,14 @@ public class PathTest extends LinearOpMode {
         RobotLogger.dd(TAG, "XY array len: " + Integer.toString(t.length));
 
 
-        if (DriveConstantsPID.USING_BULK_READ == false)
+        if (DriveConstantsPID.USING_BULK_READ == false) {
             _drive = new SampleMecanumDriveREV(hardwareMap, false);
-        else
+            _strafeDrive = new SampleMecanumDriveREV(hardwareMap, true);
+        }
+        else {
             _drive = new SampleMecanumDriveREVOptimized(hardwareMap, false);
+            _strafeDrive = new SampleMecanumDriveREVOptimized(hardwareMap, true);
+        }
 
         RobotLogger.dd(TAG, "unit test for path (RED QUARY), ARM actions?" + Integer.toString(DriveConstantsPID.ENABLE_ARM_ACTIONS?1:0));
         Pose2d startingPos = new Pose2d(new Vector2d(-34.752, -63.936), Math.toRadians(0));
@@ -77,7 +81,7 @@ public class PathTest extends LinearOpMode {
             vuLocalizer = VuforiaCamLocalizer.getSingle_instance(hardwareMap,
                     VuforiaCameraChoice.PHONE_BACK, true);
         }
-        path = new Path(hwMap, this, _drive, hardwareMap, null, telemetry);
+        path = new Path(hwMap, this, _drive, _strafeDrive, hardwareMap, null, telemetry);
         path.RedQuary(skystonePositions, vuLocalizer);
         //path.BlueQuary(skystonePositions, vuLocalizer);
         RobotLogger.dd(TAG, "----------done --------------------- unit test for path (RED QUARY)");

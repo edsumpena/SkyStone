@@ -39,10 +39,12 @@ public class SampleMecanumDriveREVOptimized extends SampleMecanumDriveBase {
     private List<ExpansionHubMotor> motors;
     private IMUBufferReader imuReader;
     private float lastIMU = 0;
+    private boolean isStrafe = false;
 
     private String TAG = "SampleMecanumDriveREVOptimized";
     public SampleMecanumDriveREVOptimized(HardwareMap hardwareMap, boolean strafe) {
         super(strafe);
+        isStrafe = strafe;
         create_instance(hardwareMap);
     }
 
@@ -91,7 +93,11 @@ public class SampleMecanumDriveREVOptimized extends SampleMecanumDriveBase {
 
         imuReader = IMUBufferReader.getSingle_instance(hardwareMap);
 
-        if (DriveConstantsPID.RUN_USING_ODOMETRY_WHEEL) {
+        if (((DriveConstantsPID.RUN_USING_ODOMETRY_WHEEL) && (! isStrafe)) ||
+                ((DriveConstantsPID.forceOdomInStrafe) && ( isStrafe)) ||  // new condition !!!
+                ((DriveConstantsPID.RUN_USING_ODOMETRY_WHEEL) && ( isStrafe))
+            )
+        {
             RobotLogger.dd(TAG, "to setLocalizer to StandardTrackingWheelLocalizer");
             setLocalizer(new StandardTrackingWheelLocalizer(hardwareMap));
         }
