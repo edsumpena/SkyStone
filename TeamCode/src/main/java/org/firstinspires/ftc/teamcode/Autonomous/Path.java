@@ -54,13 +54,12 @@ public class Path {
     public Path(HardwareMap hwMap, LinearOpMode opMode, SampleMecanumDriveBase straightDrive, SampleMecanumDriveBase strafeDrive,
                 com.qualcomm.robotcore.hardware.HardwareMap hardwareMap, BNO055IMU imu, Telemetry telemetry) {
         this.straightDrive = straightDrive;
-        this.strafeDrive = straightDrive;
+        this.strafeDrive = strafeDrive;
         //this.startingPos = startingPos;
         this.hwMap = hwMap;
         this.opMode = opMode;
         this.hardwareMap = hardwareMap;
         align = new Align(hwMap, opMode, DcMotor.ZeroPowerBehavior.BRAKE);
-
 
         _drive = straightDrive;
         this.imu = imu;
@@ -140,6 +139,7 @@ public class Path {
         }
 
         if ((DriveConstantsPID.forceOdomInStrafe) && isStrafe) {
+            RobotLogger.dd(TAG, "force odom for strafe");
             _drive = strafeDrive;
         }
         else
@@ -398,7 +398,7 @@ public class Path {
             hwMap.transferLock.setPosition(TeleopConstants.transferLockPosUp);
         }
         sleep_millisec(400);
-        DriveBuilderReset(false, false, "step" + Integer.toString(step_count) + coordinates[step_count].toString() +
+        DriveBuilderReset(true, false, "step" + Integer.toString(step_count) + coordinates[step_count].toString() +
                 ", after drop fundation,, to spline ");
         builder.setReversed(false)
                 .splineTo(new Pose2d(new Vector2d(_drive.getPoseEstimate().getX() - coordinates[step_count].getX(),
