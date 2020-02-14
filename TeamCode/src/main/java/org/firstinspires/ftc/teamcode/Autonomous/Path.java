@@ -34,9 +34,8 @@ import static org.firstinspires.ftc.teamcode.PID.DriveConstantsPID.rear_ratio;
 
 public class Path {
     private Pose2d startingPos;
-    private SampleMecanumDriveBase straightDrive;
-    private SampleMecanumDriveBase strafeDrive;
-    private SampleMecanumDriveBase _drive;
+    private SampleMecanumDriveBase straightDrive, strafeDrive;
+    private SampleMecanumDriveBase _drive; // default drive;
     private int step_count = 0;
     private BaseTrajectoryBuilder builder;
     private Trajectory trajectory;
@@ -52,7 +51,7 @@ public class Path {
     private String path_file;
     private int first_skystone_location = 0;
 
-    public Path(HardwareMap hwMap, LinearOpMode opMode, SampleMecanumDriveBase straightDrive,
+    public Path(HardwareMap hwMap, LinearOpMode opMode, SampleMecanumDriveBase straightDrive, SampleMecanumDriveBase strafeDrive,
                 com.qualcomm.robotcore.hardware.HardwareMap hardwareMap, BNO055IMU imu, Telemetry telemetry) {
         this.straightDrive = straightDrive;
         this.strafeDrive = straightDrive;
@@ -139,61 +138,14 @@ public class Path {
         if (DriveConstantsPID.ENABLE_ARM_ACTIONS == false){
             sleep_millisec((int) DriveConstantsPID.TEST_PAUSE_TIME);
         }
-        /*
-        if (DriveConstantsPID.drvCorrection)
-        {
-            boolean done = false;
-            if ((abs(error_pose.getX())>1.5))// && (abs(error_pose.getX())>abs(error_pose.getY())))
-            {
-                RobotLogger.dd(TAG, "pose correction by straight move");
-                _drive.resetFollowerWithParameters(false, false);
-                _drive.followTrajectorySync(
-                        _drive.trajectoryBuilder()
-                                .setReversed((error_pose.getX()>0)?false:true)
-                                .lineTo(new Vector2d(newPos.getX() + error_pose.getX(), newPos.getY()))
-                                .build());
-                done = true;
-                newPos = _drive.getPoseEstimate();
-                RobotLogger.dd(TAG, "after pose correction: currentPos %s, errorPos %s",
-                        newPos.toString(), _drive.follower.getLastError().toString());
-            }
-            if ((abs(error_pose.getY())>1.5))// && (abs(error_pose.getX())<abs(error_pose.getY())))
-            {
-                RobotLogger.dd(TAG, "pose correction by strafing");
-                _drive.resetFollowerWithParameters(true, false);
-                _drive.followTrajectorySync(
-                        _drive.trajectoryBuilder()
-                                .setReversed(false)
-                                .strafeTo(new Vector2d(newPos.getX(), newPos.getY() + error_pose.getY()))
-                                .build());
-                done = true;
-                newPos = _drive.getPoseEstimate();
-                RobotLogger.dd(TAG, "after pose correction: currentPos %s, errorPos %s",
-                        newPos.toString(), _drive.follower.getLastError().toString());
-            }
 
-            if (Math.toDegrees(error_pose.getHeading())>10)
-            {
-                RobotLog.dd(TAG, "correct heading by turning");
-                _drive.resetFollowerWithParameters(false, false);
-                _drive.turnSync(error_pose.getHeading());
-                done = true;
-                newPos = _drive.getPoseEstimate();
-            }
-            if (done) {
-                currentPos = newPos;
-            }
-        }
-         */
-        //RobotLogger.dd(TAG, "vuforia localization info: %s", vu.getPoseEstimate().toString());
-
-        if (DriveConstantsPID.RECREATE_DRIVE_AND_BUILDER) {
-            if (DriveConstantsPID.USING_BULK_READ)
-                _drive = new SampleMecanumDriveREVOptimized(hardwareMap, isStrafe);
-            else
-                _drive = new SampleMecanumDriveREV(hardwareMap, isStrafe);
+        if ((DriveConstantsPID.forceOdomInStrafe) && isStrafe) {
+            _drive = strafeDrive;
         }
         else
+            _drive = straightDrive;
+
+        if (DriveConstantsPID.RESET_FOLLOWER)
             _drive.resetFollowerWithParameters(isStrafe, false);
 
         //_drive = new SampleMecanumDriveREV(hardwareMap, isStrafe, init_imu);
