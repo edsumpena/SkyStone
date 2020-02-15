@@ -38,11 +38,11 @@ import java.util.List;
  */
 
 @TeleOp(name = "RetrainedSkystoneDetection", group = "Linear Opmode")
-@Disabled
+//@Disabled
 public class CustomTensorFlowObjectDetection extends LinearOpMode {
-    private static final String TFOD_MODEL_ASSET = "melanoma.tflite";  //"skystoneTFOD_v2_[105-15].tflite";    //Set model (see above for file names)
-    private static final String LABEL_FIRST_ELEMENT = "benign";   //"skystone";
-    private static final String LABEL_SECOND_ELEMENT = "malignant";  //"stone";
+    private static final String TFOD_MODEL_ASSET = "skystoneTFOD_v2_[105-15].tflite";  //"skystoneTFOD_v2_[105-15].tflite";    //Set model (see above for file names)
+    private static final String LABEL_FIRST_ELEMENT = "skystone";   //"skystone";
+    private static final String LABEL_SECOND_ELEMENT = "stone";  //"stone";
     private static final String VUFORIA_KEY =
             "ARjSEzX/////AAABmTyfc/uSOUjluYpQyDMk15tX0Mf3zESzZKo6V7Y0O/qtPvPQOVben+DaABjfl4m5YNOhGW1HuHywuYGMHpJ5/uXY6L8Mu93OdlOYwwVzeYBhHZx9le+rUMr7NtQO/zWEHajiZ6Jmx7K+A+UmRZMpCmr//dMQdlcuyHmPagFERkl4fdP0UKsRxANaHpwfQcY3npBkmgE8XsmK4zuFEmzfN2/FV0Cns/tiTfXtx1WaFD0YWYfkTHRyNwhmuBxY6MXNmaG8VlLwJcoanBFmor2PVBaRYZ9pnJ4TJU5w25h1lAFAFPbLTz1RT/UB3sHT5CeG0bMyM4mTYLi9SHPOUQjmIomxp9D7R39j8g5G7hiKr2JP";  //Variable Place--Remember to insert key here
 
@@ -117,10 +117,10 @@ public class CustomTensorFlowObjectDetection extends LinearOpMode {
                             telemetry.addData("**Height", objHeightpx);
                             telemetry.addData("**Width", objWidthpx);
                             telemetry.addData("**Distance to Object", distanceToObj);
-                            telemetry.addData("**Estimated Angle", TFODCalc.getAngleOfStone(objWidthpx,
-                                    distanceToObj).get(0));
+                            //telemetry.addData("**Estimated Angle", TFODCalc.getAngleOfStone(objWidthpx,
+                            //        distanceToObj).get(0));
 
-                            double min = TFODCalc.getAngleOfStone(objWidthpx, distanceToObj).get(1);
+                            /*double min = TFODCalc.getAngleOfStone(objWidthpx, distanceToObj).get(1);
                             double max = TFODCalc.getAngleOfStone(objWidthpx, distanceToObj).get(2);
                             double zeroDegreeWidth = TFODCalc.getAngleOfStone(objWidthpx, distanceToObj).get(3);
                             double offsetWidth = TFODCalc.getAngleOfStone(objWidthpx, distanceToObj).get(4);
@@ -131,9 +131,9 @@ public class CustomTensorFlowObjectDetection extends LinearOpMode {
                             telemetry.addData("Predicted 0° Stone Width", zeroDegreeWidth);
                             telemetry.addData("Auto-adjusted Domain-Predicted 0° Stone Width", offsetWidth);
                             telemetry.addData("Auto-adjusted Domain-Predicted 0° Stone Width Delta",
-                                    Math.round((deltaWidth) * 1000.0) / 1000.0);
+                                    Math.round((deltaWidth) * 1000.0) / 1000.0);*/
                             telemetry.addData("Position",
-                                    Arrays.toString(detect.getSkystonePositionsRed(updatedRecognitions, imgWidth)));
+                                    Arrays.toString(detect.getSkystonePositionsBlue(updatedRecognitions, imgWidth)));
                             telemetry.addData("","----------------------------");
 
                             objIndex += 1;
@@ -182,7 +182,7 @@ public class CustomTensorFlowObjectDetection extends LinearOpMode {
         int tfodMonitorViewId = hardwareMap.appContext.getResources().getIdentifier(
                 "tfodMonitorViewId", "id", hardwareMap.appContext.getPackageName());
         TFObjectDetector.Parameters tfodParameters = new TFObjectDetector.Parameters(tfodMonitorViewId);
-        tfodParameters.minimumConfidence = 0.6;
+        tfodParameters.minimumConfidence = 0.75;
 
         tfod = ClassFactory.getInstance().createTFObjectDetector(tfodParameters, vuforia);
         tfod.loadModelFromAsset(TFOD_MODEL_ASSET, LABEL_FIRST_ELEMENT, LABEL_SECOND_ELEMENT);
