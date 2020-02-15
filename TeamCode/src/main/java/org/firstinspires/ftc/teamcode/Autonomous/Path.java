@@ -64,10 +64,11 @@ public class Path {
         this.telemetry = telemetry;
         //vu = new VuforiaCamLocalizer(hardwareMap);
     }
+
     public static void StrafeDiagonalHelper(SampleMecanumDriveBase _drive, Vector2d dest) {
         Trajectory trajectory;
         Pose2d currentPos = _drive.getPoseEstimate();
-        TrajectoryBuilder  builder = null;
+        TrajectoryBuilder builder = null;
         if (DriveConstantsPID.USING_STRAFE_DIAGONAL)
             builder = new TrajectoryBuilder(currentPos, DriveConstantsPID.STRAFE_BASE_CONSTRAINTS);
         else
@@ -80,7 +81,7 @@ public class Path {
         double delta_x = dest.getX() - current_x;
         double delta_y = dest.getY() - current_y;
 
-        RobotLogger.dd(TAG, "StrafeDiagonalHelper, currentPos %s, errorPos %s",currentPos.toString(), error_pose.toString());
+        RobotLogger.dd(TAG, "StrafeDiagonalHelper, currentPos %s, errorPos %s", currentPos.toString(), error_pose.toString());
         RobotLogger.dd(TAG, "StrafeDiagonalHelper, xy: %s", dest.toString());
         Vector2d firstStop;
         if (Math.abs(delta_x) > Math.abs(delta_y)) {
@@ -94,10 +95,9 @@ public class Path {
 
             firstStop = new Vector2d(new_x, current_y);
             RobotLogger.dd(TAG, "added one line to stop: " + firstStop.toString());
-            boolean dir = (firstStop.getX() - current_x)<0?true:false;
+            boolean dir = (firstStop.getX() - current_x) < 0 ? true : false;
             builder.setReversed(dir).lineTo(firstStop).strafeTo(dest);
-        }
-        else if (Math.abs(delta_x) < Math.abs(delta_y)){
+        } else if (Math.abs(delta_x) < Math.abs(delta_y)) {
             RobotLogger.dd(TAG, "x < y, strafe first and then line");
             double square_offset = Math.abs(delta_x);
             double new_y = 0;
@@ -109,9 +109,7 @@ public class Path {
             firstStop = new Vector2d(dest.getX(), new_y);
             RobotLogger.dd(TAG, "added one strafe stop: " + firstStop.toString());
             builder.setReversed(false).strafeTo(firstStop).strafeTo(dest);
-        }
-        else
-        {
+        } else {
             //double y_offset = delta_y - delta_x;
             builder.setReversed(false).strafeTo(dest);
         }
@@ -120,8 +118,9 @@ public class Path {
 
         currentPos = _drive.getPoseEstimate();
         error_pose = _drive.follower.getLastError();
-        RobotLogger.dd(TAG, "StrafeDiagonalHelper, currentPos %s, errorPos %s",currentPos.toString(), error_pose.toString());
+        RobotLogger.dd(TAG, "StrafeDiagonalHelper, currentPos %s, errorPos %s", currentPos.toString(), error_pose.toString());
     }
+
     /*
     input: last pose from previous move;
     return: drive instance;
@@ -132,15 +131,14 @@ public class Path {
         Pose2d error_pose = _drive.follower.getLastError();
         RobotLog.dd(TAG, "start new step: %s, count[%d], currentPos %s, errorPos %s",
                 label, step_count, currentPos.toString(), error_pose.toString());
-        if (DriveConstantsPID.ENABLE_ARM_ACTIONS == false){
+        if (DriveConstantsPID.ENABLE_ARM_ACTIONS == false) {
             sleep_millisec((int) DriveConstantsPID.TEST_PAUSE_TIME);
         }
 
         if ((DriveConstantsPID.forceOdomInStrafe) && isStrafe) {
             RobotLogger.dd(TAG, "force odom for strafe");
             _drive = strafeDrive;
-        }
-        else
+        } else
             _drive = straightDrive;
 
         if (DriveConstantsPID.RESET_FOLLOWER)
@@ -158,25 +156,25 @@ public class Path {
         return _drive;
     }
 
-    public static void sleep_millisec(int c)
-    {
+    public static void sleep_millisec(int c) {
         try {
             Thread.sleep(c);
         } catch (Exception e) {
             e.printStackTrace();
         }
     }
+
     public static void initGrab(HardwareMap hw, FieldPosition side) {
         transferReset(hw);
         initIntakeClaw(hw);
         init(hw);
         prepGrab(hw, side, true);    //*******
     }
+
     private int FollowPathFromXMLFile(Pose2d coordinates[], VuforiaCamLocalizer vLocal, boolean isRed) {
         Pose2d error_pose;
         int xy_len = coordinates.length;
-        if (xy_len == 0)
-        {
+        if (xy_len == 0) {
             telemetry.addData("read path XY failure: ", path_file);
             telemetry.update();
             RobotLogger.dd(TAG, "failed to read xml file");
@@ -187,7 +185,7 @@ public class Path {
 
         startingPos = coordinates[step_count];
         RobotLogger.dd(TAG, "step" + Integer.toString(step_count) + coordinates[step_count].toString());
-        step_count ++;
+        step_count++;
 
         _drive.setPoseEstimate(startingPos);
         //_drive.getLocalizer().setPoseEstimate(startingPos);
@@ -196,7 +194,7 @@ public class Path {
         double theta;
 
         if (DriveConstantsPID.ENABLE_ARM_ACTIONS) {
-            initGrab(hwMap, isRed?FieldPosition.RED_QUARY:FieldPosition.BLUE_QUARY);
+            initGrab(hwMap, isRed ? FieldPosition.RED_QUARY : FieldPosition.BLUE_QUARY);
         }
         // step 1;
 
@@ -208,11 +206,10 @@ public class Path {
             trajectory = builder.build();   //x - 2.812, y + 7.984
             if (opMode.opModeIsActive())
                 _drive.followTrajectorySync(trajectory);
-        }
-        else {
+        } else {
             Path.StrafeDiagonalHelper(_drive, new Vector2d(coordinates[step_count].getX(), coordinates[step_count].getY()));
         }
-        step_count ++;
+        step_count++;
 
         if (vLocal != null) {
             Pose2d t = vLocal.getPoseEstimate();
@@ -224,6 +221,13 @@ public class Path {
                 grabStone(hwMap, FieldPosition.RED_QUARY);   //*******
             else
                 grabStone(hwMap, FieldPosition.BLUE_QUARY);
+        }
+
+        if (DriveConstantsPID.ENABLE_ARM_ACTIONS) {
+            if (isRed)
+                dropStone(hwMap, FieldPosition.RED_QUARY, true); //*******
+            else
+                dropStone(hwMap, FieldPosition.BLUE_QUARY, true);
         }
 
         // step 2;
@@ -242,19 +246,13 @@ public class Path {
         trajectory = builder.build();   //x - 2.812, y + 7.984
         if (opMode.opModeIsActive())
             _drive.followTrajectorySync(trajectory);
-        step_count ++;
+        step_count++;
 
         if (vLocal != null) {
             Pose2d t = vLocal.getPoseEstimate();
             RobotLogger.dd(TAG, "Calibrate before drop stone! Vuforia local info: " + t.toString());
         }
         RobotLog.dd(TAG, "step2.5, after straight");
-        if (DriveConstantsPID.ENABLE_ARM_ACTIONS) {
-            if (isRed)
-                dropStone(hwMap, FieldPosition.RED_QUARY); //*******
-            else
-                dropStone(hwMap, FieldPosition.BLUE_QUARY);
-        }
 
 
         // step 3;
@@ -273,7 +271,7 @@ public class Path {
         trajectory = builder.build();   //x - 2.812, y + 7.984
         if (opMode.opModeIsActive())
             _drive.followTrajectorySync(trajectory);
-        step_count ++;
+        step_count++;
         if (vLocal != null) {
             Pose2d t = vLocal.getPoseEstimate();
             RobotLogger.dd(TAG, "Calibrate before grab 2nd stone! Vuforia local info: " + t.toString());
@@ -293,6 +291,13 @@ public class Path {
                 grabStone(hwMap, FieldPosition.BLUE_QUARY);
         }
 
+        if (DriveConstantsPID.ENABLE_ARM_ACTIONS) {
+            if (isRed)
+                dropStone(hwMap, FieldPosition.RED_QUARY, false);   //*******
+            else
+                dropStone(hwMap, FieldPosition.BLUE_QUARY, false);
+        }
+
         // step 4;
         error_pose = _drive.follower.getLastError();
         DriveBuilderReset(false, false, "step" + Integer.toString(step_count) + coordinates[step_count].toString() +
@@ -307,19 +312,13 @@ public class Path {
         trajectory = builder.build();   //x - 2.812, y + 7.984
         if (opMode.opModeIsActive())
             _drive.followTrajectorySync(trajectory);
-        step_count ++;
+        step_count++;
 
         if (vLocal != null) {
             Pose2d t = vLocal.getPoseEstimate();
             RobotLogger.dd(TAG, "Calibrate before drop 2nd stone! Vuforia local info: " + t.toString());
         }
         RobotLog.dd(TAG, "step4.5, after straight move, to drop");
-        if (DriveConstantsPID.ENABLE_ARM_ACTIONS) {
-            if (isRed)
-                dropStone(hwMap, FieldPosition.RED_QUARY);   //*******
-            else
-                dropStone(hwMap, FieldPosition.BLUE_QUARY);
-        }
 
         // step 5
         DriveBuilderReset(true, false, "step" + Integer.toString(step_count) + coordinates[step_count].toString() +
@@ -330,10 +329,10 @@ public class Path {
         trajectory = builder.build();   //x - 2.812, y + 7.984
         if (opMode.opModeIsActive())
             _drive.followTrajectorySync(trajectory);
-        step_count ++;
+        step_count++;
 
-        if (opMode.opModeIsActive()) {
-            if(isRed){
+        /*if (opMode.opModeIsActive()) {
+            if (isRed) {
                 hwMap.redAutoClawJoint3.setPosition(TeleopConstants.autoClaw3Init);
                 sleep_millisec(200);
                 hwMap.redAutoClawJoint2.setPosition(TeleopConstants.autoClaw2Init);
@@ -351,14 +350,14 @@ public class Path {
                 hwMap.redAutoClawJoint1.setPosition(TeleopConstants.autoClaw1Retracted_blue);
                 sleep_millisec(200);
 
-        }
-        }
+            }
+        }*/
 
         // step 6
         DriveBuilderReset(false, false, "step" + Integer.toString(step_count) + coordinates[step_count].toString() +
                 ", after drop and strafe");
 
-        if(!isRed) {
+        if (!isRed) {
             theta = _drive.getExternalHeading() >= 0 ? _drive.getExternalHeading() :
                     _drive.getExternalHeading() + 2 * PI;
 
@@ -398,7 +397,7 @@ public class Path {
         trajectory = builder.build();   //x - 2.812, y + 7.984
         if (opMode.opModeIsActive())
             _drive.followTrajectorySync(trajectory);
-        step_count ++;
+        step_count++;
 
         // step 7
         if (DriveConstantsPID.ENABLE_ARM_ACTIONS) {
@@ -419,7 +418,7 @@ public class Path {
         trajectory = builder.build();   //x - 2.812, y + 7.984
         if (opMode.opModeIsActive())
             _drive.followTrajectorySync(trajectory);
-        step_count ++;
+        step_count++;
 
         // step 8
         if (DriveConstantsPID.ENABLE_ARM_ACTIONS) {
@@ -438,17 +437,18 @@ public class Path {
         trajectory = builder.build();   //x - 2.812, y + 7.984
         if (opMode.opModeIsActive())
             _drive.followTrajectorySync(trajectory);
-        step_count ++;
+        step_count++;
 
-        while(opMode.opModeIsActive()){
+        while (opMode.opModeIsActive()) {
             String o = "";
-            for(Pose2d p2d : coordinates)
+            for (Pose2d p2d : coordinates)
                 o += p2d.toString() + ", ";
             telemetry.addData("Pose2d", o);
             telemetry.update();
         }
         return 0;
     }
+
     public void RedQuary(int[] skystonePositions, VuforiaCamLocalizer vuLocalizer) {
         String tmp = "path_red_.xml";
         first_skystone_location = skystonePositions[0];
@@ -597,8 +597,8 @@ public class Path {
             }
         };
 
-        Thread t = new Thread(){
-            public void run(){
+        Thread t = new Thread() {
+            public void run() {
                 //hwMap.clawServo2.setPosition(0.9336);
                 sleep_millisec(2600);
 
@@ -617,18 +617,23 @@ public class Path {
 
     public static void prepGrab(HardwareMap hw, FieldPosition fieldPosition, boolean first) {
         if (FieldPosition.RED_QUARY == fieldPosition) {
-            if(first) {
-                hw.redAutoClawJoint2.setPosition(0.85); //TODO Servo Test
-                sleep_millisec(200);
+            if (first) {
+                Thread t = new Thread() {
+                    public void run() {
+                        hw.redAutoClawJoint2.setPosition(0.85); //TODO Servo Test
+                        sleep_millisec(200);
 
-                hw.redAutoClawJoint1.setPosition(TeleopConstants.autoClaw1Extended);
-                sleep_millisec(200);
+                        hw.redAutoClawJoint1.setPosition(TeleopConstants.autoClaw1Extended);
+                        sleep_millisec(200);
 
-                hw.redAutoClawJoint3.setPosition(TeleopConstants.autoClaw3Open);
-                sleep_millisec(200);
+                        hw.redAutoClawJoint3.setPosition(TeleopConstants.autoClaw3Open);
+                        sleep_millisec(200);
 
-                hw.redAutoClawJoint2.setPosition(TeleopConstants.autoClaw2Prep);
-                sleep_millisec(200);
+                        hw.redAutoClawJoint2.setPosition(TeleopConstants.autoClaw2Prep);
+                        sleep_millisec(200);
+                    }
+                };
+                t.start();
             } else {
                 hw.redAutoClawJoint3.setPosition(TeleopConstants.autoClaw3Open);
                 sleep_millisec(200);
@@ -639,9 +644,8 @@ public class Path {
                 hw.redAutoClawJoint1.setPosition(TeleopConstants.autoClaw1Extended);
                 sleep_millisec(200);
             }
-        }
-        else {
-            if(first) {
+        } else {
+            if (first) {
                 hw.redAutoClawJoint2.setPosition(0.117);
                 sleep_millisec(200);
 
@@ -682,8 +686,7 @@ public class Path {
             sleep_millisec(200);
 
 
-        }
-        else{
+        } else {
             hw.redAutoClawJoint2.setPosition(TeleopConstants.autoClaw2Grabbing_blue);
             sleep_millisec(400);
 
@@ -699,49 +702,90 @@ public class Path {
         }
     }
 
-    public static void dropStone(HardwareMap hw, FieldPosition fieldPosition) {
+    public static void dropStone(HardwareMap hw, FieldPosition fieldPosition, boolean first) {
+        Thread t = new Thread() {
+            public void run() {
+                sleep_millisec(3000);
+                if (FieldPosition.RED_QUARY == fieldPosition) {
+                    if (first) {
+                        hw.redAutoClawJoint1.setPosition(TeleopConstants.autoClaw1Drop);
+                        sleep_millisec(600);
 
-        if (FieldPosition.RED_QUARY == fieldPosition) {
+                        hw.redAutoClawJoint2.setPosition(TeleopConstants.autoClaw2Grabbing);
+                        sleep_millisec(400);
 
-            hw.redAutoClawJoint1.setPosition(TeleopConstants.autoClaw1Drop);
-            sleep_millisec(600);
+                        hw.redAutoClawJoint3.setPosition(TeleopConstants.autoClaw3Open);
+                        sleep_millisec(200);
 
-            hw.redAutoClawJoint2.setPosition(TeleopConstants.autoClaw2Grabbing);
-            sleep_millisec(400);
+                        hw.redAutoClawJoint2.setPosition(TeleopConstants.autoClaw2PickUp);
+                        sleep_millisec(400);
 
-            hw.redAutoClawJoint3.setPosition(TeleopConstants.autoClaw3Open);
-            sleep_millisec(200);
+                        hw.redAutoClawJoint1.setPosition(TeleopConstants.autoClaw1Stone);
+                        sleep_millisec(200);
 
-            hw.redAutoClawJoint2.setPosition(TeleopConstants.autoClaw2PickUp);
-            sleep_millisec(400);
+                        hw.redAutoClawJoint3.setPosition(TeleopConstants.autoClaw3Init);
+                        sleep_millisec(200);
+                    } else {
+                        hw.redAutoClawJoint1.setPosition(TeleopConstants.autoClaw1Drop);
+                        sleep_millisec(600);
 
-            hw.redAutoClawJoint1.setPosition(TeleopConstants.autoClaw1Stone);
-            sleep_millisec(200);
+                        hw.redAutoClawJoint2.setPosition(TeleopConstants.autoClaw2Grabbing);
+                        sleep_millisec(400);
 
-            hw.redAutoClawJoint3.setPosition(TeleopConstants.autoClaw3Init);
-            sleep_millisec(200);
-        }
-        else
-        {
-            hw.redAutoClawJoint1.setPosition(TeleopConstants.autoClaw1Drop_blue);
-            sleep_millisec(600);
+                        hw.redAutoClawJoint3.setPosition(TeleopConstants.autoClaw3Open);
+                        sleep_millisec(200);
 
-            hw.redAutoClawJoint2.setPosition(TeleopConstants.autoClaw2Grabbing_blue);
-            sleep_millisec(200);
+                        hw.redAutoClawJoint2.setPosition(TeleopConstants.autoClaw2Init);
+                        sleep_millisec(400);
 
-            hw.redAutoClawJoint3.setPosition(TeleopConstants.autoClaw3Open_blue);
-            sleep_millisec(200);
+                        hw.redAutoClawJoint1.setPosition(TeleopConstants.autoClaw1Retracted);
+                        sleep_millisec(200);
 
-            hw.redAutoClawJoint2.setPosition(TeleopConstants.autoClaw2PickUp_blue);
-            sleep_millisec(400);
+                        hw.redAutoClawJoint3.setPosition(TeleopConstants.autoClaw3Init);
+                        sleep_millisec(200);
+                    }
+                } else {
+                    if(first) {
+                        hw.redAutoClawJoint1.setPosition(TeleopConstants.autoClaw1Drop_blue);
+                        sleep_millisec(600);
 
-            hw.redAutoClawJoint1.setPosition(TeleopConstants.autoClaw1Stone_blue);
-            sleep_millisec(200);
+                        hw.redAutoClawJoint2.setPosition(TeleopConstants.autoClaw2Grabbing_blue);
+                        sleep_millisec(200);
 
-            hw.redAutoClawJoint3.setPosition(TeleopConstants.autoClaw3Init_blue);
-            sleep_millisec(200);
-        }
+                        hw.redAutoClawJoint3.setPosition(TeleopConstants.autoClaw3Open_blue);
+                        sleep_millisec(200);
 
+                        hw.redAutoClawJoint2.setPosition(TeleopConstants.autoClaw2PickUp_blue);
+                        sleep_millisec(400);
+
+                        hw.redAutoClawJoint1.setPosition(TeleopConstants.autoClaw1Stone_blue);
+                        sleep_millisec(200);
+
+                        hw.redAutoClawJoint3.setPosition(TeleopConstants.autoClaw3Init_blue);
+                        sleep_millisec(200);
+                    } else {
+                        hw.redAutoClawJoint1.setPosition(TeleopConstants.autoClaw1Drop_blue);
+                        sleep_millisec(600);
+
+                        hw.redAutoClawJoint2.setPosition(TeleopConstants.autoClaw2Grabbing_blue);
+                        sleep_millisec(200);
+
+                        hw.redAutoClawJoint3.setPosition(TeleopConstants.autoClaw3Open_blue);
+                        sleep_millisec(200);
+
+                        hw.redAutoClawJoint2.setPosition(TeleopConstants.autoClaw2Init_blue);
+                        sleep_millisec(400);
+
+                        hw.redAutoClawJoint1.setPosition(TeleopConstants.autoClaw1Retracted_blue);
+                        sleep_millisec(200);
+
+                        hw.redAutoClawJoint3.setPosition(TeleopConstants.autoClaw3Init_blue);
+                        sleep_millisec(200);
+                    }
+                }
+            }
+        };
+        t.start();
     }
 
     public static void intake(HardwareMap hw, double power) {
@@ -753,7 +797,6 @@ public class Path {
         };
         thread.start();
     }
-
 
 
     public static void init(HardwareMap hw) {
