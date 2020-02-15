@@ -29,6 +29,7 @@
 
 package org.firstinspires.ftc.robotcontroller.external.samples;
 
+import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
@@ -49,12 +50,11 @@ import org.firstinspires.ftc.robotcore.external.tfod.Recognition;
  * IMPORTANT: In order to use this OpMode, you need to obtain your own Vuforia license key as
  * is explained below.
  */
-@TeleOp(name = "Concept: TensorFlow Object Detection", group = "Linear Opmode")
-@Disabled
+@Autonomous(name = "Phone TFOD Test", group = "Linear Opmode")
 public class ConceptTensorFlowObjectDetection extends LinearOpMode {
-    private static final String TFOD_MODEL_ASSET = "Skystone.tflite";
-    private static final String LABEL_FIRST_ELEMENT = "Skystone";
-    private static final String LABEL_SECOND_ELEMENT = "Stone";
+    private static final String TFOD_MODEL_ASSET = "skystoneTFOD_v2_[105-15].tflite";
+    private static final String LABEL_FIRST_ELEMENT = "skystone";
+    private static final String LABEL_SECOND_ELEMENT = "stone";
 
     /*
      * IMPORTANT: You need to obtain your own license key to use Vuforia. The string below with which

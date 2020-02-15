@@ -22,6 +22,7 @@ import org.firstinspires.ftc.teamcode.All.HardwareMap;
 import org.firstinspires.ftc.teamcode.Autonomous.Vision.Detect;
 import org.firstinspires.ftc.teamcode.PID.DriveConstantsPID;
 import org.firstinspires.ftc.teamcode.PID.RobotLogger;
+import org.firstinspires.ftc.teamcode.PID.localizer.TensorflowDetector;
 import org.firstinspires.ftc.teamcode.PID.localizer.VuforiaCamLocalizer;
 import org.firstinspires.ftc.teamcode.PID.localizer.VuforiaCameraChoice;
 import org.firstinspires.ftc.teamcode.PID.mecanum.SampleMecanumDriveBase;
@@ -45,7 +46,7 @@ public class MainAutonomous extends LinearOpMode {
     private FieldPosition fieldPosition = null;
     private HardwareMap hwMap;
     private double imgWidth;
-    private Detect detect;
+    private TensorflowDetector detect;
     private int[] skystonePositions;
     private Pose2d startingPos;
     private Path path;
@@ -54,6 +55,8 @@ public class MainAutonomous extends LinearOpMode {
     private boolean initialize = false;
     public BNO055IMU imu;
     private VuforiaCamLocalizer vuLocalizer = null;
+    private VuforiaCameraChoice camChoice;
+    private boolean madeCamChoice = false;
 
     private enum CameraController{
         WEBCAM, PHONECAM
@@ -62,7 +65,6 @@ public class MainAutonomous extends LinearOpMode {
     @Override
     public void runOpMode() {
         hwMap = new HardwareMap(hardwareMap);
-        detect = new Detect();
 
         FourWheelMecanumDrivetrain drivetrain = new FourWheelMecanumDrivetrain(hwMap);
 
@@ -80,6 +82,40 @@ public class MainAutonomous extends LinearOpMode {
         DriveConstantsPID.updateConstantsFromProperties();
 
         while (!isStarted() && !isStopRequested()) {
+            // Select camera
+            String [] camNames = new String[VuforiaCameraChoice.values().length];
+            int camIndex = 0;
+            boolean a = true;
+            boolean b = true;
+            if(camChoice == null) {
+                for (VuforiaCameraChoice c : VuforiaCameraChoice.values()) {
+                    camNames[camIndex] = c.name();
+                    camIndex++;
+                }
+                camIndex = 0;
+
+                while (madeCamChoice == false) {
+                    if (!gamepad1.a && a) {
+                        camIndex++;
+                    }
+                    if (!gamepad1.b && b) {
+                        camIndex--;
+                    }
+                    camIndex = ((camIndex % camNames.length + camNames.length) % camNames.length);
+                    a = gamepad1.a;
+                    b = gamepad1.b;
+
+                    telemetry.addData("SELECT CAMERA", "Press A and B on gamepad1 to move back and forth through" +
+                            "the list of values and Start to confirm the camera.");
+                    telemetry.addData("Current choice: ", camNames[camIndex]);
+                    telemetry.update();
+
+                    if (gamepad1.start){
+                        camChoice = VuforiaCameraChoice.values()[camIndex];
+                        madeCamChoice = true;
+                    }
+                }
+            }
 
             // Select starting position from user input
             if (fieldPosition == null) {
@@ -149,19 +185,11 @@ public class MainAutonomous extends LinearOpMode {
                     //drivetrain.resetEncoders();
 
                     //if(fieldPosition == FieldPosition.RED_QUARY)
-                        initVuforia(CameraController.WEBCAM);
+
+                    detect = new TensorflowDetector(hardwareMap, camChoice);
+
                     //else if(fieldPosition == FieldPosition.BLUE_QUARY)
                     //    initVuforia(CameraController.PHONECAM);
-
-                    if (ClassFactory.getInstance().canCreateTFObjectDetector()) {
-                        initTfod();
-                    } else {
-                        telemetry.addData("Sorry!", "This device is not compatible with TFOD");
-                    }
-
-                    if (tfod != null) {
-                        tfod.activate();
-                    }
 
                     DriveConstant.writeSerializedObject(AppUtil.ROOT_FOLDER + "/FIRST/PrevRunPath.txt", fieldPosition.toString());
 
@@ -178,7 +206,7 @@ public class MainAutonomous extends LinearOpMode {
         // begin tfod processing before starting -- use it to ascertain the positions of skystones in quarry
         while (!isStarted() && (fieldPosition == FieldPosition.BLUE_QUARY || fieldPosition == FieldPosition.RED_QUARY) &&
                 !isStopRequested()) {
-            List<Recognition> recognized = recognize();
+            List<Recognition> recognized = detect.recognize();
 
             if (recognized != null && fieldPosition == FieldPosition.BLUE_QUARY)
                 try {
@@ -200,15 +228,12 @@ public class MainAutonomous extends LinearOpMode {
             }
         }
 
-        if (isStopRequested() && tfod != null) {
-            tfod.shutdown();
-            tfod = null;
-        }
+        detect.stop();
 
         waitForStart();
         if (tfod != null) {
             RobotLogger.dd("", "to shutdown tensor flow");
-            tfod.shutdown();
+            detect = new TensorflowDetector(hardwareMap, camChoice);
             tfod = null;
             RobotLogger.dd("", "tensor flow is shutdown");
         }
@@ -300,19 +325,6 @@ public class MainAutonomous extends LinearOpMode {
         tfod.loadModelFromAsset(TFOD_MODEL_ASSET, LABEL_FIRST_ELEMENT, LABEL_SECOND_ELEMENT);
     }
 
-    public List<Recognition> recognize() {
-        List<Recognition> updatedRecognitions = null;
-        if (tfod != null) {
-            updatedRecognitions = tfod.getUpdatedRecognitions();
-            if (updatedRecognitions != null) {
-                telemetry.addData("# Object Detected", updatedRecognitions.size());
-                telemetry.update();
-                // step through the list of recognitions and display boundary info.
-            }
-        }
-        return updatedRecognitions;
-    }
-
     private void sendData() {
 
         // inject imu heading and tfod recognition into currently running path from another thread
@@ -320,7 +332,7 @@ public class MainAutonomous extends LinearOpMode {
         Thread update = new Thread() {
             public void run() {
                 while (opModeIsActive() && (tfod != null)) {
-                    path.updateTFODData(recognize());
+                    path.updateTFODData(detect.recognize());
                     path.updateHeading();
                     try {
                         Thread.sleep(500);
