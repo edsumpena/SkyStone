@@ -427,16 +427,17 @@ public class Path {
             hwMap.transferLock.setPosition(TeleopConstants.transferLockPosOut);
         }
 
-        sleep_millisec(300);
+        //sleep_millisec(300);
 
-        /*DriveBuilderReset(false, false, "step" + Integer.toString(step_count) + coordinates[step_count].toString() +
+        DriveBuilderReset(true, false, "step" + Integer.toString(step_count) + coordinates[step_count].toString() +
                 ", spline, back to parking");
         //builder = new TrajectoryBuilder(_drive.getPoseEstimate(), DriveConstantsPID.BASE_CONSTRAINTS);
         builder = builder
                 .setReversed(false).splineTo(new Pose2d(new Vector2d(coordinates[step_count].getX(),
                         coordinates[step_count].getY()), coordinates[step_count].getHeading()));
         trajectory = builder.build();   //x - 2.812, y + 7.984
-        _drive.followTrajectorySync(trajectory);
+        if (opMode.opModeIsActive())
+            _drive.followTrajectorySync(trajectory);
         step_count ++;
 
         while(opMode.opModeIsActive()){
@@ -445,7 +446,7 @@ public class Path {
                 o += p2d.toString() + ", ";
             telemetry.addData("Pose2d", o);
             telemetry.update();
-        }*/
+        }
         return 0;
     }
     public void RedQuary(int[] skystonePositions, VuforiaCamLocalizer vuLocalizer) {
