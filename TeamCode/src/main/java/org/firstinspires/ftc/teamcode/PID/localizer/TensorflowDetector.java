@@ -45,6 +45,7 @@ import org.firstinspires.ftc.robotcore.external.navigation.VuforiaTrackableDefau
 import org.firstinspires.ftc.robotcore.external.navigation.VuforiaTrackables;
 import org.firstinspires.ftc.robotcore.external.tfod.Recognition;
 import org.firstinspires.ftc.robotcore.external.tfod.TFObjectDetector;
+import org.firstinspires.ftc.teamcode.Autonomous.Vision.Detect;
 import org.firstinspires.ftc.teamcode.PID.RobotLogger;
 import org.jetbrains.annotations.NotNull;
 
@@ -91,7 +92,7 @@ import static org.firstinspires.ftc.robotcore.external.navigation.VuforiaLocaliz
 
 //@TeleOp(name="SKYSTONE Vuforia Nav", group ="Linear Opmode")
 //@Disabled
-public class TensorflowDetector  {
+public class TensorflowDetector {
     public static final int MAX_CAMERA_NUM = VuforiaCameraChoice.values().length;
     private static TensorflowDetector[] single_instance_per_camera = new TensorflowDetector[MAX_CAMERA_NUM];
     private VuforiaCameraChoice localCamera;
@@ -209,6 +210,8 @@ public class TensorflowDetector  {
         }
     }
 
+
+
     /**
      * Initialize the TensorFlow Object Detection engine.
      */
@@ -242,6 +245,15 @@ public class TensorflowDetector  {
         }
         single_instance_per_camera[localCamera.ordinal()] = null;
     }
+
+    public List<Recognition> recognize() {
+        List<Recognition> updatedRecognitions = null;
+        if (tfod != null) {
+            updatedRecognitions = tfod.getUpdatedRecognitions();
+        }
+        return updatedRecognitions;
+    }
+
     public void detectSkystone() {
         RobotLogger.dd(TAG, "to detectSkystone");
         if (tfod != null) {
@@ -264,8 +276,6 @@ public class TensorflowDetector  {
                 RobotLogger.dd(TAG, "none of Object Detected");
             }
         }
-    };
-
-
+    }
 }
 
