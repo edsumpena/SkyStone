@@ -15,7 +15,7 @@ public class Detect {
         TFODCalc.setHardwareProperties(43.30, 3.67f);
     }
     // TODO : consider using enum, or a single int - there are only three possibilities!
-    public int[] getSkystonePositionsBlue(List<Recognition> updatedRecognitions, double imageWidthPx) {    //Stones left -> right
+    public static int[] getSkystonePositionsBlue(List<Recognition> updatedRecognitions, double imageWidthPx) {    //Stones left -> right
         // TODO : consider using an associative array of some sort here - this is not the ideal data structure
 
         if (updatedRecognitions != null) {
@@ -88,7 +88,7 @@ public class Detect {
         return new int[]{-1, -1};
     }
 
-    public int[] getSkystonePositionsRed(List<Recognition> updatedRecognitions, double imageWidthPx) {     //Stones right -> left
+    public static int[] getSkystonePositionsRed(List<Recognition> updatedRecognitions, double imageWidthPx) {     //Stones right -> left
         if (updatedRecognitions != null) {
             int index = 0;
             double[] right = new double[updatedRecognitions.size() + 1];

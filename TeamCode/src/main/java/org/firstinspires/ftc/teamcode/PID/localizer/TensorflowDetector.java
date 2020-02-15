@@ -92,7 +92,7 @@ import static org.firstinspires.ftc.robotcore.external.navigation.VuforiaLocaliz
 
 //@TeleOp(name="SKYSTONE Vuforia Nav", group ="Linear Opmode")
 //@Disabled
-public class TensorflowDetector extends Detect {
+public class TensorflowDetector {
     public static final int MAX_CAMERA_NUM = VuforiaCameraChoice.values().length;
     private static TensorflowDetector[] single_instance_per_camera = new TensorflowDetector[MAX_CAMERA_NUM];
     private VuforiaCameraChoice localCamera;
@@ -211,13 +211,6 @@ public class TensorflowDetector extends Detect {
     }
 
 
-    public List<Recognition> recognize() {
-        List<Recognition> updatedRecognitions = null;
-        if (tfod != null) {
-            updatedRecognitions = tfod.getUpdatedRecognitions();
-        }
-        return updatedRecognitions;
-    }
 
     /**
      * Initialize the TensorFlow Object Detection engine.
@@ -253,5 +246,36 @@ public class TensorflowDetector extends Detect {
         single_instance_per_camera[localCamera.ordinal()] = null;
     }
 
+    public List<Recognition> recognize() {
+        List<Recognition> updatedRecognitions = null;
+        if (tfod != null) {
+            updatedRecognitions = tfod.getUpdatedRecognitions();
+        }
+        return updatedRecognitions;
+    }
+
+    public void detectSkystone() {
+        RobotLogger.dd(TAG, "to detectSkystone");
+        if (tfod != null) {
+            // getUpdatedRecognitions() will return null if no new information is available since
+            // the last time that call was made.
+            List<Recognition> updatedRecognitions = tfod.getUpdatedRecognitions();
+            if (updatedRecognitions != null) {
+                RobotLogger.dd(TAG, "# Object Detected %d", updatedRecognitions.size());
+                // step through the list of recognitions and display boundary info.
+                int i = 0;
+                for (Recognition recognition : updatedRecognitions) {
+                    RobotLogger.dd(TAG, String.format("label (%d)", i), recognition.getLabel());
+                    RobotLogger.dd(TAG, String.format("  left,top (%d)", i), "%.03f , %.03f",
+                            recognition.getLeft(), recognition.getTop());
+                    RobotLogger.dd(TAG, String.format("  right,bottom (%d)", i), "%.03f , %.03f",
+                            recognition.getRight(), recognition.getBottom());
+                }
+            }
+            else {
+                RobotLogger.dd(TAG, "none of Object Detected");
+            }
+        }
+    }
 }
 

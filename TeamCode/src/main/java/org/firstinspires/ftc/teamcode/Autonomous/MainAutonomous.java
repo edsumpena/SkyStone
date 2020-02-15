@@ -35,18 +35,9 @@ import java.util.List;
 @Autonomous(name = "Autonomous", group = "LinearOpMode")
 //@Disabled
 public class MainAutonomous extends LinearOpMode {
-    private static final String TFOD_MODEL_ASSET = "skystoneTFOD_v2_[105-15].tflite";
-    private static final String LABEL_FIRST_ELEMENT = "skystone";
-    private static final String LABEL_SECOND_ELEMENT = "stone";
-
-    // TODO : move vuforia key to separate file -- this is pretty i l l e g a l
-    private static final String VUFORIA_KEY = "ARjSEzX/////AAABmTyfc/uSOUjluYpQyDMk15tX0Mf3zESzZKo6V7Y0O/qtPvPQOVben+DaABjfl4m5YNOhGW1HuHywuYGMHpJ5/uXY6L8Mu93OdlOYwwVzeYBhHZx9le+rUMr7NtQO/zWEHajiZ6Jmx7K+A+UmRZMpCmr//dMQdlcuyHmPagFERkl4fdP0UKsRxANaHpwfQcY3npBkmgE8XsmK4zuFEmzfN2/FV0Cns/tiTfXtx1WaFD0YWYfkTHRyNwhmuBxY6MXNmaG8VlLwJcoanBFmor2PVBaRYZ9pnJ4TJU5w25h1lAFAFPbLTz1RT/UB3sHT5CeG0bMyM4mTYLi9SHPOUQjmIomxp9D7R39j8g5G7hiKr2JP";
-    private VuforiaLocalizer vuforia;
-    private TFObjectDetector tfod;
     private FieldPosition fieldPosition = null;
     private HardwareMap hwMap;
     private double imgWidth;
-    private TensorflowDetector detect;
     private int[] skystonePositions;
     private Pose2d startingPos;
     private Path path;
@@ -56,11 +47,7 @@ public class MainAutonomous extends LinearOpMode {
     public BNO055IMU imu;
     private VuforiaCamLocalizer vuLocalizer = null;
     private VuforiaCameraChoice camChoice;
-    private boolean madeCamChoice = false;
-
-    private enum CameraController{
-        WEBCAM, PHONECAM
-    }
+    private TensorflowDetector tfDetector;
 
     @Override
     public void runOpMode() {
@@ -80,43 +67,8 @@ public class MainAutonomous extends LinearOpMode {
         hwMap.backRight.setDirection(DcMotorSimple.Direction.REVERSE);
 
         DriveConstantsPID.updateConstantsFromProperties();
-
+        camChoice = VuforiaCameraChoice.HUB_USB;  // default one;
         while (!isStarted() && !isStopRequested()) {
-            // Select camera
-            String [] camNames = new String[VuforiaCameraChoice.values().length];
-            int camIndex = 0;
-            boolean a = true;
-            boolean b = true;
-            if(camChoice == null) {
-                for (VuforiaCameraChoice c : VuforiaCameraChoice.values()) {
-                    camNames[camIndex] = c.name();
-                    camIndex++;
-                }
-                camIndex = 0;
-
-                while (madeCamChoice == false) {
-                    if (!gamepad1.a && a) {
-                        camIndex++;
-                    }
-                    if (!gamepad1.b && b) {
-                        camIndex--;
-                    }
-                    camIndex = ((camIndex % camNames.length + camNames.length) % camNames.length);
-                    a = gamepad1.a;
-                    b = gamepad1.b;
-
-                    telemetry.addData("SELECT CAMERA", "Press A and B on gamepad1 to move back and forth through" +
-                            "the list of values and Start to confirm the camera.");
-                    telemetry.addData("Current choice: ", camNames[camIndex]);
-                    telemetry.update();
-
-                    if (gamepad1.start){
-                        camChoice = VuforiaCameraChoice.values()[camIndex];
-                        madeCamChoice = true;
-                    }
-                }
-            }
-
             // Select starting position from user input
             if (fieldPosition == null) {
                 telemetry.addData("SELECT STARTING LOCATION", "Press one of the following buttons below to " +
@@ -138,9 +90,11 @@ public class MainAutonomous extends LinearOpMode {
                 } else if (gamepad1.y) {
                     fieldPosition = FieldPosition.RED_QUARY;
                     startingPos = new Pose2d(new Vector2d(-34.752, -63.936), Math.toRadians(0));
+                    //camChoice = VuforiaCameraChoice.PHONE_FRONT;  // default one;
                 } else if (gamepad1.x) {
                     fieldPosition = FieldPosition.BLUE_QUARY;
                     startingPos = new Pose2d(new Vector2d(-34.752, 63.936), Math.toRadians(0));
+                    //camChoice = VuforiaCameraChoice.PHONE_FRONT;  // default one;
                 } else if(gamepad1.right_bumper){
                     fieldPosition = FieldPosition.BLUE_FOUNDATION_DRAG;
                     startingPos = new Pose2d(new Vector2d(20.736, 63.936), Math.toRadians(270));
@@ -159,6 +113,7 @@ public class MainAutonomous extends LinearOpMode {
             if (initialize) {
                 telemetry.addData("STATUS", "Calibrating IMU...");
                 telemetry.update();
+
                 if (DriveConstantsPID.USING_BULK_READ == false) {
                     straightDrive = new SampleMecanumDriveREV(hardwareMap, false);
                     strafeDrive = new SampleMecanumDriveREV(hardwareMap, true);
@@ -186,7 +141,7 @@ public class MainAutonomous extends LinearOpMode {
 
                     //if(fieldPosition == FieldPosition.RED_QUARY)
 
-                    detect = new TensorflowDetector(hardwareMap, camChoice);
+                    tfDetector = new TensorflowDetector(hardwareMap, camChoice);
 
                     //else if(fieldPosition == FieldPosition.BLUE_QUARY)
                     //    initVuforia(CameraController.PHONECAM);
@@ -206,15 +161,15 @@ public class MainAutonomous extends LinearOpMode {
         // begin tfod processing before starting -- use it to ascertain the positions of skystones in quarry
         while (!isStarted() && (fieldPosition == FieldPosition.BLUE_QUARY || fieldPosition == FieldPosition.RED_QUARY) &&
                 !isStopRequested()) {
-            List<Recognition> recognized = detect.recognize();
+            List<Recognition> recognized = tfDetector.recognize();
 
             if (recognized != null && fieldPosition == FieldPosition.BLUE_QUARY)
                 try {
-                    skystonePositions = detect.getSkystonePositionsBlue(recognized, imgWidth);
+                    skystonePositions = Detect.getSkystonePositionsBlue(recognized, imgWidth);
                 } catch (Exception e){ e.printStackTrace(); }
             else if (recognized != null && fieldPosition == FieldPosition.RED_QUARY)
                 try{
-                    skystonePositions = detect.getSkystonePositionsRed(recognized, imgWidth);
+                    skystonePositions = Detect.getSkystonePositionsRed(recognized, imgWidth);
                 } catch (Exception e){ e.printStackTrace(); }
 
             telemetry.addData("SKYSTONE POSITIONS", Arrays.toString(skystonePositions));
@@ -228,13 +183,11 @@ public class MainAutonomous extends LinearOpMode {
             }
         }
 
-        detect.stop();
-
         waitForStart();
-        if (tfod != null) {
+        if (tfDetector != null) {
             RobotLogger.dd("", "to shutdown tensor flow");
-            detect = new TensorflowDetector(hardwareMap, camChoice);
-            tfod = null;
+            tfDetector.stop();
+            tfDetector = null;
             RobotLogger.dd("", "tensor flow is shutdown");
         }
 
@@ -284,46 +237,7 @@ public class MainAutonomous extends LinearOpMode {
 
     }
 
-    private void initVuforia(CameraController controller) {
-        /*
-         * Configure Vuforia by creating a Parameter object, and passing it to the Vuforia engine.
-         */
-        VuforiaLocalizer.Parameters parameters = new VuforiaLocalizer.Parameters();
 
-        parameters.vuforiaLicenseKey = VUFORIA_KEY;
-
-        if(controller == CameraController.WEBCAM)
-            parameters.cameraName = hardwareMap.get(WebcamName.class, "WebcamFront");
-
-        //  Instantiate the Vuforia engine
-        vuforia = ClassFactory.getInstance().createVuforia(parameters);
-
-        Vuforia.setFrameFormat(PIXEL_FORMAT.RGB565, true); //enables RGB565 format for the image
-        vuforia.setFrameQueueCapacity(1); //tells VuforiaLocalizer to only store one frame at a time
-
-        VuforiaLocalizer.CloseableFrame frame = null;
-
-        try {
-            frame = vuforia.getFrameQueue().take(); //takes the frame at the head of the queue
-            imgWidth = frame.getImage(0).getWidth();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-
-        // Loading trackables is not necessary for the TensorFlow Object Detection engine.
-    }
-
-    /**
-     * Initialize the TensorFlow Object Detection engine.
-     */
-    private void initTfod() {
-        int tfodMonitorViewId = hardwareMap.appContext.getResources().getIdentifier(
-                "tfodMonitorViewId", "id", hardwareMap.appContext.getPackageName());
-        TFObjectDetector.Parameters tfodParameters = new TFObjectDetector.Parameters(tfodMonitorViewId);
-        tfodParameters.minimumConfidence = 0.67;
-        tfod = ClassFactory.getInstance().createTFObjectDetector(tfodParameters, vuforia);
-        tfod.loadModelFromAsset(TFOD_MODEL_ASSET, LABEL_FIRST_ELEMENT, LABEL_SECOND_ELEMENT);
-    }
 
     private void sendData() {
 
@@ -331,15 +245,15 @@ public class MainAutonomous extends LinearOpMode {
 
         Thread update = new Thread() {
             public void run() {
-                while (opModeIsActive() && (tfod != null)) {
-                    path.updateTFODData(detect.recognize());
+                while (opModeIsActive() && (tfDetector != null)) {
+                    path.updateTFODData(tfDetector.recognize());
                     path.updateHeading();
                     try {
                         Thread.sleep(500);
                     } catch (Exception e) {
                     }
-                    if (isStopRequested() && tfod != null)
-                        tfod.shutdown();
+                    if (isStopRequested() && tfDetector != null)
+                        tfDetector.stop();
                 }
             }
         };
