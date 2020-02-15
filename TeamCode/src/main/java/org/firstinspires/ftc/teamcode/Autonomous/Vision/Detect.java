@@ -1,5 +1,7 @@
 package org.firstinspires.ftc.teamcode.Autonomous.Vision;
 
+import com.qualcomm.robotcore.util.RobotLog;
+
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.tfod.Recognition;
 import org.firstinspires.ftc.teamcode.Tensorflow.TFODCalc;
@@ -239,6 +241,7 @@ public class Detect {
 
         for (int i = 0; i < stones.size(); i++)
             if (isOutlier(data, stones.get(i).getTop())) {
+                RobotLog.dd("NOTICE", stones.get(i).getTop() + ", Is Removed");
                 stones.remove(i);
                 i -= 1;
             }
