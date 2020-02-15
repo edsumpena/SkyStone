@@ -3,6 +3,7 @@ package org.firstinspires.ftc.teamcode.PID.calibration;
 import com.acmerobotics.dashboard.config.Config;
 import com.qualcomm.hardware.bosch.BNO055IMU;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.util.RobotLog;
 
@@ -19,6 +20,7 @@ import org.firstinspires.ftc.teamcode.PID.mecanum.SampleMecanumDriveREV;
  */
 @Config
 @Autonomous(group = "drive")
+@Disabled
 public class GyroAccelerometerTest extends LinearOpMode {
     private BNO055IMU imu;
     private static String TAG = "GyroAccelerometer";

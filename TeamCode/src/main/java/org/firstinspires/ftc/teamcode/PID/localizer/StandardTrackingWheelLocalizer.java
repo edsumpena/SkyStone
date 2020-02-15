@@ -18,6 +18,7 @@ import org.openftc.revextensions2.ExpansionHubEx;
 import org.openftc.revextensions2.ExpansionHubMotor;
 import org.openftc.revextensions2.RevBulkData;
 
+import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -41,12 +42,9 @@ import static org.firstinspires.ftc.teamcode.PID.DriveConstantsPID.encoderTicksT
  */
 @Config
 public class  StandardTrackingWheelLocalizer extends ThreeTrackingWheelLocalizer {
-    public static double TICKS_PER_REV = 1560.0;
     public static double WHEEL_RADIUS = 1.25; // in
     public static double GEAR_RATIO = 1; // output (wheel) speed / input (encoder) speed
 
-    public static double LATERAL_DISTANCE = 15.5; // in; distance between the left and right wheels
-    public static double FORWARD_OFFSET = -5.49; // in; offset of the lateral wheel
     private String TAG = "StandardTrackingWheelLocalizer";
     private ExpansionHubEx hubMotors;
     //private ExpansionHubMotor leftEncoder, rightEncoder, frontEncoder;
@@ -55,6 +53,7 @@ public class  StandardTrackingWheelLocalizer extends ThreeTrackingWheelLocalizer
 
     //private DcMotor leftEncoder0, rightEncoder0, frontEncoder0;
     private List<DcMotor> motors;
+    private List<Double> odomTicksPerRev;
 
     private IMUBufferReader imuReader;
 
@@ -81,17 +80,20 @@ public class  StandardTrackingWheelLocalizer extends ThreeTrackingWheelLocalizer
 
         motors = Arrays.asList(leftEncoder, rightEncoder, frontEncoder);
 
+        odomTicksPerRev = Arrays.asList(DriveConstantsPID.odoEncoderTicksPerRevLeft,
+                DriveConstantsPID.odoEncoderTicksPerRevRight, DriveConstantsPID.odoEncoderTicksPerRevFront);
+
         for (DcMotor motor : motors) {
             motor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         }
         imuReader = IMUBufferReader.getSingle_instance(hardwareMap);
     }
 
-    public static double encoderTicksToInches(int ticks) {
+    public double encoderTicksToInches(int ticks, int index) {
         RobotLogger.dd("StandardTrackingWheelLocalizer", "encoderTicksToInches: " + " ticks: " +
                 Double.toString(ticks) + " inches: " + Double.toString(WHEEL_RADIUS * 2 * Math.PI *
-                GEAR_RATIO * ticks / DriveConstantsPID.odoEncoderTicksPerRev));
-        return WHEEL_RADIUS * 2 * Math.PI * GEAR_RATIO * ticks / DriveConstantsPID.odoEncoderTicksPerRev;
+                GEAR_RATIO * ticks / odomTicksPerRev.get(index)));
+        return WHEEL_RADIUS * 2 * Math.PI * GEAR_RATIO * ticks / odomTicksPerRev.get(index);
     }
 
     @NonNull
@@ -122,9 +124,9 @@ public class  StandardTrackingWheelLocalizer extends ThreeTrackingWheelLocalizer
         //RobotLogger.dd(TAG, "rightEncoder: " + y);
         //RobotLogger.dd(TAG, "frontEncoder: " + (-1)*z);
         return Arrays.asList(
-                encoderTicksToInches(x),
-                encoderTicksToInches(y),
-                encoderTicksToInches(-1*z)
+                encoderTicksToInches(x, 0),
+                encoderTicksToInches(y, 1),
+                encoderTicksToInches(-1*z, 2)
         );
     }
 
@@ -154,8 +156,8 @@ public class  StandardTrackingWheelLocalizer extends ThreeTrackingWheelLocalizer
             + Double.toString(s_poseEstimate.getHeading()));
         }
         else {
-            poseEstimate_new = s_poseEstimate;
             RobotLogger.dd(TAG, "not using IMU for heading");
+            poseEstimate_new = s_poseEstimate;
         }
         RobotLogger.dd(TAG, "poseEstimate: "+Double.toString(poseEstimate_new.getX()) + ", " + Double.toString(poseEstimate_new.getY()) + ", " +
                 Double.toString(poseEstimate_new.getHeading()));

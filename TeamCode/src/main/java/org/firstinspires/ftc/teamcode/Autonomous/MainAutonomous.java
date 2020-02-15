@@ -23,6 +23,7 @@ import org.firstinspires.ftc.teamcode.Autonomous.Vision.Detect;
 import org.firstinspires.ftc.teamcode.PID.DriveConstantsPID;
 import org.firstinspires.ftc.teamcode.PID.RobotLogger;
 import org.firstinspires.ftc.teamcode.PID.localizer.VuforiaCamLocalizer;
+import org.firstinspires.ftc.teamcode.PID.localizer.VuforiaCameraChoice;
 import org.firstinspires.ftc.teamcode.PID.mecanum.SampleMecanumDriveBase;
 import org.firstinspires.ftc.teamcode.PID.mecanum.SampleMecanumDriveREV;
 import org.firstinspires.ftc.teamcode.PID.mecanum.SampleMecanumDriveREVOptimized;
@@ -122,10 +123,14 @@ public class MainAutonomous extends LinearOpMode {
             if (initialize) {
                 telemetry.addData("STATUS", "Calibrating IMU...");
                 telemetry.update();
-                if (DriveConstantsPID.USING_BULK_READ == false)
+                if (DriveConstantsPID.USING_BULK_READ == false) {
                     straightDrive = new SampleMecanumDriveREV(hardwareMap, false);
-                else
+                    strafeDrive = new SampleMecanumDriveREV(hardwareMap, true);
+                }
+                else {
                     straightDrive = new SampleMecanumDriveREVOptimized(hardwareMap, false);
+                    strafeDrive = new SampleMecanumDriveREVOptimized(hardwareMap, true);
+                }
                 /*
                 strafeDrive = new SampleMecanumDriveREV(hardwareMap, true);
                 imu = hardwareMap.get(BNO055IMU.class, "imu");
@@ -135,7 +140,7 @@ public class MainAutonomous extends LinearOpMode {
                 */
                 telemetry.addData("STATUS", "Done!");
                 telemetry.update();
-                path = new Path(hwMap, this, straightDrive, hardwareMap, imu, telemetry);
+                path = new Path(hwMap, this, straightDrive, strafeDrive, hardwareMap, imu, telemetry);
 
                 if (fieldPosition == FieldPosition.RED_QUARY || fieldPosition == FieldPosition.BLUE_QUARY) {
                     telemetry.addData("STATUS", "Initializing TensorFlow...");
@@ -210,7 +215,7 @@ public class MainAutonomous extends LinearOpMode {
 
         if (DriveConstantsPID.USE_VUFORIA_LOCALIZER) {
             vuLocalizer = VuforiaCamLocalizer.getSingle_instance(hardwareMap,
-                    VuforiaCamLocalizer.VuforiaCameraChoice.PHONE_BACK);
+                    VuforiaCameraChoice.PHONE_BACK, true);
         }
         if (opModeIsActive() && fieldPosition != null) {
             if(skystonePositions != null || fieldPosition == FieldPosition.RED_FOUNDATION_PARK || fieldPosition == FieldPosition.BLUE_FOUNDATION_PARK) {
