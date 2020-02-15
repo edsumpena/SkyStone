@@ -195,6 +195,7 @@ public class MainAutonomous extends LinearOpMode {
             vuLocalizer = VuforiaCamLocalizer.getSingle_instance(hardwareMap,
                     VuforiaCameraChoice.PHONE_BACK, true);
         }
+        
         if (opModeIsActive() && fieldPosition != null) {
             if(skystonePositions != null || fieldPosition == FieldPosition.RED_FOUNDATION_PARK || fieldPosition == FieldPosition.BLUE_FOUNDATION_PARK) {
                 sendData();

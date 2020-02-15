@@ -46,7 +46,6 @@ public class Path {
     private com.qualcomm.robotcore.hardware.HardwareMap hardwareMap;
     private static String TAG = "AutonomousPath";
     private Pose2d currentPos;
-    private BNO055IMU imu;
     private Telemetry telemetry;
     private String path_file;
     private int first_skystone_location = 0;
@@ -62,7 +61,6 @@ public class Path {
         align = new Align(hwMap, opMode, DcMotor.ZeroPowerBehavior.BRAKE);
 
         _drive = straightDrive;
-        this.imu = imu;
         this.telemetry = telemetry;
         //vu = new VuforiaCamLocalizer(hardwareMap);
     }
@@ -208,7 +206,8 @@ public class Path {
             builder = builder
                     .setReversed(false).strafeTo(new Vector2d(coordinates[step_count].getX(), coordinates[step_count].getY()));
             trajectory = builder.build();   //x - 2.812, y + 7.984
-            _drive.followTrajectorySync(trajectory);
+            if (opMode.opModeIsActive())
+                _drive.followTrajectorySync(trajectory);
         }
         else {
             Path.StrafeDiagonalHelper(_drive, new Vector2d(coordinates[step_count].getX(), coordinates[step_count].getY()));
@@ -241,7 +240,8 @@ public class Path {
         builder = builder
                 .setReversed(false).lineTo(new Vector2d(coordinates[step_count].getX(), coordinates[step_count].getY()));
         trajectory = builder.build();   //x - 2.812, y + 7.984
-        _drive.followTrajectorySync(trajectory);
+        if (opMode.opModeIsActive())
+            _drive.followTrajectorySync(trajectory);
         step_count ++;
 
         if (vLocal != null) {
@@ -271,7 +271,8 @@ public class Path {
         builder = builder
                 .setReversed(true).lineTo((new Vector2d(coordinates[step_count].getX(), coordinates[step_count].getY())));
         trajectory = builder.build();   //x - 2.812, y + 7.984
-        _drive.followTrajectorySync(trajectory);
+        if (opMode.opModeIsActive())
+            _drive.followTrajectorySync(trajectory);
         step_count ++;
         if (vLocal != null) {
             Pose2d t = vLocal.getPoseEstimate();
@@ -304,7 +305,8 @@ public class Path {
         builder = builder
                 .setReversed(false).lineTo(new Vector2d(coordinates[step_count].getX(), coordinates[step_count].getY()));
         trajectory = builder.build();   //x - 2.812, y + 7.984
-        _drive.followTrajectorySync(trajectory);
+        if (opMode.opModeIsActive())
+            _drive.followTrajectorySync(trajectory);
         step_count ++;
 
         if (vLocal != null) {
@@ -326,27 +328,30 @@ public class Path {
                 .setReversed(false).strafeTo(new Vector2d(coordinates[step_count].getX(),
                         coordinates[step_count].getY()));
         trajectory = builder.build();   //x - 2.812, y + 7.984
-        _drive.followTrajectorySync(trajectory);
+        if (opMode.opModeIsActive())
+            _drive.followTrajectorySync(trajectory);
         step_count ++;
 
-        if(isRed){
-            hwMap.redAutoClawJoint3.setPosition(TeleopConstants.autoClaw3Init);
-            sleep_millisec(200);
-            hwMap.redAutoClawJoint2.setPosition(TeleopConstants.autoClaw2Init);
-            sleep_millisec(200);
+        if (opMode.opModeIsActive()) {
+            if(isRed){
+                hwMap.redAutoClawJoint3.setPosition(TeleopConstants.autoClaw3Init);
+                sleep_millisec(200);
+                hwMap.redAutoClawJoint2.setPosition(TeleopConstants.autoClaw2Init);
+                sleep_millisec(200);
 
-            hwMap.redAutoClawJoint1.setPosition(TeleopConstants.autoClaw1Retracted);
-            sleep_millisec(200);
-        } else {
-            hwMap.redAutoClawJoint3.setPosition(TeleopConstants.autoClaw3Init_blue);
-            sleep_millisec(200);
+                hwMap.redAutoClawJoint1.setPosition(TeleopConstants.autoClaw1Retracted);
+                sleep_millisec(200);
+            } else {
+                hwMap.redAutoClawJoint3.setPosition(TeleopConstants.autoClaw3Init_blue);
+                sleep_millisec(200);
 
-            hwMap.redAutoClawJoint2.setPosition(TeleopConstants.autoClaw2Init_blue);
-            sleep_millisec(200);
+                hwMap.redAutoClawJoint2.setPosition(TeleopConstants.autoClaw2Init_blue);
+                sleep_millisec(200);
 
-            hwMap.redAutoClawJoint1.setPosition(TeleopConstants.autoClaw1Retracted_blue);
-            sleep_millisec(200);
+                hwMap.redAutoClawJoint1.setPosition(TeleopConstants.autoClaw1Retracted_blue);
+                sleep_millisec(200);
 
+        }
         }
 
         // step 6
@@ -365,10 +370,12 @@ public class Path {
             theta = _drive.getExternalHeading() >= 0 ? _drive.getExternalHeading() :
                     _drive.getExternalHeading() + 2 * PI;
 
-            if (theta > PI)
-                _drive.turnSync(-(_drive.getExternalHeading() - 3 * PI / 2));
-            else
-                _drive.turnSync(-(_drive.getExternalHeading() + 2 * PI - 3 * PI / 2));
+            if (opMode.opModeIsActive()) {
+                if (theta > PI)
+                    _drive.turnSync(-(_drive.getExternalHeading() - 3 * PI / 2));
+                else
+                    _drive.turnSync(-(_drive.getExternalHeading() + 2 * PI - 3 * PI / 2));
+            }
         }
 
         if (DriveConstantsPID.ENABLE_ARM_ACTIONS) {
@@ -389,7 +396,8 @@ public class Path {
         //builder = builder.setReversed(true).lineTo(new Vector2d(coordinates[step_count].getX(),
         //        coordinates[step_count].getY()));
         trajectory = builder.build();   //x - 2.812, y + 7.984
-        _drive.followTrajectorySync(trajectory);
+        if (opMode.opModeIsActive())
+            _drive.followTrajectorySync(trajectory);
         step_count ++;
 
         // step 7
@@ -409,7 +417,8 @@ public class Path {
                         coordinates[step_count].getY()), coordinates[step_count].getHeading()));
          */
         trajectory = builder.build();   //x - 2.812, y + 7.984
-        _drive.followTrajectorySync(trajectory);
+        if (opMode.opModeIsActive())
+            _drive.followTrajectorySync(trajectory);
         step_count ++;
 
         // step 8
@@ -451,7 +460,8 @@ public class Path {
         RobotLogger.dd(TAG, "to read XY coordinates from " + path_file);
 
         Pose2d xys1[] = DriveConstantsPID.parsePathXY(path_file);
-        FollowPathFromXMLFile(xys1, vuLocalizer, true);
+        if (opMode.opModeIsActive())
+            FollowPathFromXMLFile(xys1, vuLocalizer, true);
     }
 
     public void RedFoundationPark() {
@@ -479,7 +489,8 @@ public class Path {
         RobotLogger.dd(TAG, "to read XY coordinates from " + path_file);
 
         Pose2d xys1[] = DriveConstantsPID.parsePathXY(path_file);
-        FollowPathFromXMLFile(xys1, vuLocalizer, false);
+        if (opMode.opModeIsActive())
+            FollowPathFromXMLFile(xys1, vuLocalizer, false);
     }
 
     public void BlueFoundationPark() {
