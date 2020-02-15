@@ -14,6 +14,7 @@ import org.firstinspires.ftc.teamcode.PID.RobotLogger;
 import org.firstinspires.ftc.teamcode.PID.localizer.IMUBufferReader;
 import org.firstinspires.ftc.teamcode.PID.localizer.StandardTrackingWheelLocalizer;
 import org.firstinspires.ftc.teamcode.PID.localizer.VuforiaCamLocalizer;
+import org.firstinspires.ftc.teamcode.PID.localizer.VuforiaCameraChoice;
 import org.firstinspires.ftc.teamcode.PID.mecanum.SampleMecanumDriveBase;
 import org.firstinspires.ftc.teamcode.PID.mecanum.SampleMecanumDriveREV;
 import org.firstinspires.ftc.teamcode.PID.mecanum.SampleMecanumDriveREVOptimized;
@@ -78,7 +79,7 @@ public class ManualParamTest extends LinearOpMode {
             Path.initGrab(hwMap, side);
         }
 
-        VuforiaCamLocalizer vu = VuforiaCamLocalizer.getSingle_instance(hardwareMap, VuforiaCamLocalizer.VuforiaCameraChoice.PHONE_BACK);
+        VuforiaCamLocalizer vu = VuforiaCamLocalizer.getSingle_instance(hardwareMap, VuforiaCameraChoice.PHONE_BACK, true);
         while (!isStopRequested()) {
             if (DriveConstantsPID.RUN_USING_ODOMETRY_WHEEL && (localizer!=null)) {
                 StandardTrackingWheelLocalizer t = (StandardTrackingWheelLocalizer)localizer; // @TODO

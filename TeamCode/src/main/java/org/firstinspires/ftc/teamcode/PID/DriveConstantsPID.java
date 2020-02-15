@@ -45,7 +45,7 @@ public class DriveConstantsPID {
     public static boolean RUN_USING_ODOMETRY_WHEEL = false;
     public static boolean RUN_USING_IMU_LOCALIZER = true;
     public static boolean BRAKE_ON_ZERO = true;
-    public static boolean USING_BULK_READ = true;
+    public static boolean USING_BULK_READ = false;
     public static boolean USING_STRAFE_DIAGONAL = true;
     public static boolean DIAGONAL_SPLIT = true;
     public static boolean RESET_FOLLOWER = true;
@@ -53,7 +53,7 @@ public class DriveConstantsPID {
     public static double odoEncoderTicksPerRevRight = 1565.0;
     public static double odoEncoderTicksPerRevFront = 1565.0;
     public static double imuPollingInterval = 10;
-
+    public static boolean forceOdomInStrafe = true;
     public static boolean ENABLE_LOGGING = false;
     public static double TEST_SKY_STONE_POSITION = 1;
     public static boolean ENABLE_ARM_ACTIONS = true;
@@ -249,6 +249,7 @@ public class DriveConstantsPID {
         RobotLog.dd(TAG, "IMU polling interval? : " + Double.toString(imuPollingInterval));
         RobotLog.dd(TAG, "correcting drv in automonous? : " + Integer.toString(drvCorrection?1:0));
         RobotLog.dd(TAG, "using STRAFE in diagonal move? : " + Integer.toString(USING_STRAFE_DIAGONAL?1:0));
+        RobotLog.dd(TAG, "using Odom  in strafe move? : " + Integer.toString(forceOdomInStrafe?1:0));
         RobotLog.dd(TAG, "split in diagonal move? : " + Integer.toString(DIAGONAL_SPLIT?1:0));
         RobotLog.dd(TAG, "reset follower? : " + Integer.toString(RESET_FOLLOWER?1:0));
         RobotLog.dd(TAG, "using Vuforia in localizer (override IMU and odom)? : " + Integer.toString(USE_VUFORIA_LOCALIZER?1:0));
@@ -317,6 +318,11 @@ public class DriveConstantsPID {
         if (v_double != Double.MAX_VALUE) {
             v_int = (int) v_double;
             RUN_USING_ODOMETRY_WHEEL = (v_int==0)?false:true;
+        }
+        v_double = (int) getTeamCodePropertyValue("debug.ftc.forceOdom");
+        if (v_double != Double.MAX_VALUE) {
+            v_int = (int) v_double;
+            forceOdomInStrafe = (v_int==0)?false:true;
         }
         v_double = (int) getTeamCodePropertyValue("debug.ftc.logging");
         if (v_double != Double.MAX_VALUE) {

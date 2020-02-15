@@ -55,7 +55,6 @@ import static org.firstinspires.ftc.robotcore.external.navigation.VuforiaLocaliz
 import static org.firstinspires.ftc.robotcore.external.navigation.VuforiaLocalizer.CameraDirection.FRONT;
 
 import com.qualcomm.robotcore.hardware.HardwareMap;
-import com.qualcomm.robotcore.util.RobotLog;
 import com.vuforia.Vuforia;
 
 /**
@@ -92,22 +91,11 @@ import com.vuforia.Vuforia;
 //@TeleOp(name="SKYSTONE Vuforia Nav", group ="Linear Opmode")
 //@Disabled
 public class VuforiaCamLocalizer implements Localizer {
-    public enum VuforiaCameraChoice
-    {
-        PHONE_BACK(0), PHONE_FRONT(1), HUB_USB(2);
-        private final int value;
-
-        private VuforiaCameraChoice(int value) {
-            this.value = value;
-        }
-
-        public int getValue() {
-            return value;
-        }
-    }
     public static final int MAX_CAMERA_NUM = VuforiaCameraChoice.values().length;
     private static VuforiaCamLocalizer[] single_instance_per_camera = new VuforiaCamLocalizer[MAX_CAMERA_NUM];
     private VuforiaCameraChoice localCamera;
+    private boolean PHONE_IS_PORTRAIT = true;
+
     // IMPORTANT:  For Phone Camera, set 1) the camera source and 2) the orientation, based on how your phone is mounted:
     // 1) Camera Source.  Valid choices are:  BACK (behind screen) or FRONT (selfie side)
     // 2) Phone Orientation. Choices are: PHONE_IS_PORTRAIT = true (portrait) or PHONE_IS_PORTRAIT = false (landscape)
@@ -170,12 +158,12 @@ public class VuforiaCamLocalizer implements Localizer {
 
     }
 
-    synchronized  public static VuforiaCamLocalizer getSingle_instance(HardwareMap hardwareMap, VuforiaCameraChoice camera_choice)
+    synchronized  public static VuforiaCamLocalizer getSingle_instance(HardwareMap hardwareMap, VuforiaCameraChoice camera_choice, boolean portrait)
     {
         VuforiaCamLocalizer obj = single_instance_per_camera[camera_choice.ordinal()];
         if ( obj == null) {
             RobotLogger.dd("VuforiaCamLocalizer", "created new localizer");
-            obj = new VuforiaCamLocalizer(hardwareMap, camera_choice);
+            obj = new VuforiaCamLocalizer(hardwareMap, camera_choice, portrait);
             single_instance_per_camera[camera_choice.ordinal()] = obj;
         }
         else
@@ -208,9 +196,9 @@ public class VuforiaCamLocalizer implements Localizer {
             poseEstimate = new Pose2d(0, 0, 0);
     }
 
-    public VuforiaCamLocalizer(HardwareMap hardwareMap, VuforiaCameraChoice camera_choice) {
+    public VuforiaCamLocalizer(HardwareMap hardwareMap, VuforiaCameraChoice camera_choice, boolean portrait) {
         localCamera = camera_choice;
-        boolean PHONE_IS_PORTRAIT = true;
+        PHONE_IS_PORTRAIT = portrait;
         VuforiaLocalizer.CameraDirection CAMERA_CHOICE;
 
         /*

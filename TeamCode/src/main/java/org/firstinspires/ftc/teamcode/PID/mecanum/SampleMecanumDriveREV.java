@@ -42,16 +42,18 @@ public class SampleMecanumDriveREV extends SampleMecanumDriveBase {
     private List<DcMotorEx> motors;
     private IMUBufferReader imuReader;
     private float lastIMU = 0;
+    private boolean isStrafe = false;
 
     private static String TAG = "SampleMecanumDriveREV";
 
     public SampleMecanumDriveREV(HardwareMap hardwareMap, boolean strafe) {
         super(strafe);
-        create_instance(hardwareMap, strafe);
+        isStrafe = strafe;
+        create_instance(hardwareMap);
     }
 
 
-    private void create_instance(HardwareMap hardwareMap, boolean strafe) {
+    private void create_instance(HardwareMap hardwareMap) {
         LynxModuleUtil.ensureMinimumFirmwareVersion(hardwareMap);
 
         // TODO: adjust the names of the following hardware devices to match your configuration
@@ -91,7 +93,11 @@ public class SampleMecanumDriveREV extends SampleMecanumDriveBase {
 
         imuReader = IMUBufferReader.getSingle_instance(hardwareMap);
 
-        if (DriveConstantsPID.RUN_USING_ODOMETRY_WHEEL == true) {
+        if (((DriveConstantsPID.RUN_USING_ODOMETRY_WHEEL) && (! isStrafe)) ||
+                ((DriveConstantsPID.forceOdomInStrafe) && ( isStrafe)) ||  // new condition !!!
+                ((DriveConstantsPID.RUN_USING_ODOMETRY_WHEEL) && ( isStrafe))
+        )
+        {
             RobotLogger.dd(TAG, "to setLocalizer to StandardTrackingWheelLocalizer");
             setLocalizer(new StandardTrackingWheelLocalizer(hardwareMap));
         } else {
