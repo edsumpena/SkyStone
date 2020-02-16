@@ -250,22 +250,21 @@ public class Detect {
     }
 
     private static boolean isOutlier(float[] data, float testCase) {
-        float[] vals = data;
         float[] lowerQuartile;
         float[] upperQuartile;
 
-        Arrays.sort(vals);
+        Arrays.sort(data);
 
-        if (vals.length % 2 == 0) {
-            lowerQuartile = Arrays.copyOfRange(vals, 0, vals.length / 2);
-            upperQuartile = Arrays.copyOfRange(vals, vals.length / 2, vals.length);
+        if (data.length % 2 == 0) {
+            lowerQuartile = Arrays.copyOfRange(data, 0, data.length / 2 - 1);
+            upperQuartile = Arrays.copyOfRange(data, data.length / 2, data.length - 1);
         } else {
-            lowerQuartile = Arrays.copyOfRange(vals, 0, vals.length / 2);
-            upperQuartile = Arrays.copyOfRange(vals, vals.length / 2 + 1, vals.length);
+            lowerQuartile = Arrays.copyOfRange(data, 0, data.length / 2);
+            upperQuartile = Arrays.copyOfRange(data, data.length / 2 + 2, data.length - 1);
         }
 
-        float q1 = getMedian(lowerQuartile);
-        float q3 = getMedian(upperQuartile);
+        double q1 = getMedian(lowerQuartile);
+        double q3 = getMedian(upperQuartile);
         double iqr = q3 - q1;
         double lowerBounds = q1 - 1.5 * iqr;
         double upperBounds = q3 + 1.5 * iqr;
@@ -273,9 +272,9 @@ public class Detect {
         return testCase <= lowerBounds || testCase >= upperBounds;
     }
 
-    private static float getMedian(float[] data) {
+    private static double getMedian(float[] data) {
         if (data.length % 2 == 0)
-            return Math.round((data[data.length / 2] + data[data.length / 2 - 1]) / 2d);
+            return (data[data.length / 2] + data[data.length / 2 - 1]) / 2d;
         else
             return data[data.length / 2];
     }
