@@ -27,7 +27,7 @@ public class Detect {
             for (Recognition r : updatedRecognitions)
                 skystoneIndex.add(new Stone(r.getLabel(), r.getLeft(), r.getTop(), r.getHeight(), r.getWidth()));
 
-            if(!skystoneIndex.isEmpty() && skystoneIndex.size() >= 2)
+            if (!skystoneIndex.isEmpty() && skystoneIndex.size() >= 2)
                 skystoneIndex = processData(skystoneIndex);
 
             switch (updatedRecognitions.size()) {
@@ -96,8 +96,8 @@ public class Detect {
             for (Recognition r : updatedRecognitions)
                 skystoneIndex.add(new Stone(r.getLabel(), r.getLeft(), r.getTop(), r.getHeight(), r.getWidth()));
 
-            if(!skystoneIndex.isEmpty() && skystoneIndex.size() >= 2)
-                skystoneIndex = processData(skystoneIndex);
+            if (!skystoneIndex.isEmpty() && skystoneIndex.size() >= 2)
+                //skystoneIndex = processData(skystoneIndex);
 
             switch (updatedRecognitions.size()) {
                 case 1:
@@ -239,21 +239,66 @@ public class Detect {
         for (int i = 0; i < stones.size(); i++)
             data[i] = stones.get(i).getTop();
 
+        RobotLog.dd("Current List (Pre-Remove processing)", stones.toString());
         for (int i = 0; i < stones.size(); i++)
-            if (isOutlier(data, stones.get(i).getTop())) {
-                RobotLog.dd("NOTICE", stones.get(i).getTop() + ", Is Removed");
+            if (stones.size() >= 3 && isOutlier(data, stones.get(i).getTop())) {
+                RobotLog.dd(">>>", stones.get(i) + " is filtered out from the list!");
                 stones.remove(i);
                 i -= 1;
             }
+        RobotLog.dd("Current List (Post-Remove processing)", stones.toString());
+
+        /*float[] centerDeltaX = new float[stones.size()];
+
+        for (int i = 0; i < stones.size() - 1; i++)
+            centerDeltaX[i] = Math.abs(stones.get(i).getCenter()[0] - stones.get(i + 1).getCenter()[0]);
+
+        RobotLog.dd("Current List (Pre-Imply processing)", stones.toString());
+        for (int i = 0; i < stones.size(); i++) {
+            if(isOutlier(centerDeltaX, centerDeltaX[i])){
+                double impledCenterX = (stones.get(i).getCenter()[0] + stones.get(i + 1).getCenter()[0]) / 2d;
+                Stone impliedStone = generateImpliedStone(stones, impledCenterX);
+                RobotLog.dd(">>>", "Stone CenterXs = [" + stones.get(i).getCenter()[0] + " - " + stones.get(i + 1).getCenter()[0] +
+                        "], Index = " + i + ", Delta = " + centerDeltaX[i] + ", Implied Center = " + impledCenterX);
+                RobotLog.dd("Implied Stone", impliedStone.toString());
+                stones.add(impliedStone);
+            }
+
+        }
+        RobotLog.dd("Current List (Post-Imply processing)", stones.toString());*/
 
         return stones;
+    }
+
+    private static Stone generateImpliedStone(ArrayList<Stone> stones, double centerX){
+        double avgCenterY = 0;
+        double avgHeight = 0;
+        double avgWidth = 0;
+        String label = containsLabel(stones, "skystone") ? "stone" : "skystone";
+
+        for(Stone s : stones) {
+            avgCenterY += s.getTop();
+            avgHeight += s.getHeight();
+            avgWidth += s.getWidth();
+        }
+
+        avgCenterY /= 4;
+        avgHeight /= 4;
+        avgWidth /= 4;
+
+        return new Stone(label, Math.round(centerX - avgWidth / 2d), Math.round(avgCenterY - avgHeight / 2d),
+                Math.round(avgHeight), Math.round(avgWidth));
     }
 
     private static boolean isOutlier(float[] data, float testCase) {
         float[] lowerQuartile;
         float[] upperQuartile;
 
+        RobotLog.dd("DATA", Arrays.toString(data));
+
         Arrays.sort(data);
+
+        RobotLog.dd("SORTED DATA", Arrays.toString(data));
 
         if (data.length % 2 == 0) {
             lowerQuartile = Arrays.copyOfRange(data, 0, data.length / 2 - 1);
@@ -268,6 +313,11 @@ public class Detect {
         double iqr = q3 - q1;
         double lowerBounds = q1 - 1.5 * iqr;
         double upperBounds = q3 + 1.5 * iqr;
+
+        RobotLog.dd("LowerQuartile", Arrays.toString(lowerQuartile));
+        RobotLog.dd("UpperQuartile", Arrays.toString(upperQuartile));
+        RobotLog.dd(">>>", "Q1 = " + q1 + ", Q3 = " + q3 + ", IQR = " + iqr +
+                ", {LowerBounds, UpperBounds} = {" + lowerBounds + ", " + upperBounds + "}, TestCase: " + testCase);
 
         return testCase <= lowerBounds || testCase >= upperBounds;
     }

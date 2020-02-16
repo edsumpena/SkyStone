@@ -188,14 +188,18 @@ public class Teleop extends LinearOpMode {
                 telemetry.addData("here1", "f");
                 telemetry.update();
 
+                //James's Version:
+
                 hwMap.clawServo1.setPosition(TeleopConstants.clawServo1Capstone);
-                hwMap.clawServo2.setPosition(TeleopConstants.clawServo2Capstone);
+                hwMap.clawServo2.setPosition(TeleopConstants.clawServo2CapstoneOld);
                 try{
                     Thread.sleep(200);
                 }catch(Exception e){
 
                 }
                 hwMap.innerTransfer.setPosition(TeleopConstants.innerTransferPosOpen);
+
+                //Old Version:
 
                 /*hwMap.innerTransfer.setPosition(TeleopConstants.innerTransferPosOpen);
                 hwMap.clawServo1.setPosition(TeleopConstants.clawServo1Capstone);
@@ -248,7 +252,7 @@ public class Teleop extends LinearOpMode {
                 blockerCapstone = false;
 
                 hwMap.clawServo1.setPosition(TeleopConstants.clawServo1Capstone);
-                hwMap.clawServo2.setPosition(TeleopConstants.clawServo2Capstone);
+                hwMap.clawServo2.setPosition(TeleopConstants.clawServo2CapstoneOld);
                 try{
                     Thread.sleep(200);
                 }catch(Exception e){
@@ -265,12 +269,17 @@ public class Teleop extends LinearOpMode {
                 } catch(Exception e){}*/
             }
 
-            if(gamepad2.dpad_down){
+            /*if(gamepad2.dpad_down){
                 hwMap.clawServo1.setPosition(TeleopConstants.clawServo1Capstone);
                 hwMap.clawServo2.setPosition(TeleopConstants.clawServo2Block);
                 try{
                     Thread.sleep(300);
                 } catch (Exception e){}
+            }*/
+
+            if(gamepad2.right_trigger >= 0.5){
+                hwMap.clawServo2.setPosition(TeleopConstants.clawServo2CapstoneNew);
+                hwMap.clawServo1.setPosition(TeleopConstants.clawServo1PosOpen);
             }
 
             //------------------------------===Driving/Strafing===------------------------------------------
