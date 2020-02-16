@@ -126,7 +126,7 @@ public class TensorflowDetector {
      * {@link #vuforia} is the variable we will use to store our instance of the Vuforia
      * localization engine.
      */
-    private VuforiaLocalizer vuforia = null;
+    private VuforiaLocalizerPlus vuforia = null;
 
     /**
      * {@link #tfod} is the variable we will use to store our instance of the TensorFlow Object
@@ -192,7 +192,8 @@ public class TensorflowDetector {
         }
 
         //  Instantiate the Vuforia engine
-        vuforia = ClassFactory.getInstance().createVuforia(parameters);
+        //vuforia = ClassFactory.getInstance().createVuforia(parameters);
+        vuforia = VuforiaLocalizerPlus.get_single_instance(parameters);
         // The TFObjectDetector uses the camera frames from the VuforiaLocalizer, so we create that
         // first.
         if (ClassFactory.getInstance().canCreateTFObjectDetector()) {
@@ -230,8 +231,9 @@ public class TensorflowDetector {
         if (tfod != null) {
             tfod.shutdown();
         }
-        if (Vuforia.isInitialized())
-            Vuforia.deinit();
+        //if (Vuforia.isInitialized())
+        //    Vuforia.deinit();
+        vuforia.close();
         vuforia = null;
         single_instance_per_camera[localCamera.ordinal()] = null;
 

@@ -49,11 +49,7 @@ public class TensorFlowTest extends LinearOpMode {
 
             for (int i = 0; i < 10; i ++ ) {
                 vTester.detectSkystone();
-                try {
-                    Thread.sleep(1000);
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
+                Path.sleep_millisec(200);
             }
             count ++;
             vTester.stop();
@@ -62,11 +58,7 @@ public class TensorFlowTest extends LinearOpMode {
 
             for (int i = 0; i < 10; i ++ ) {
                 vTester.detectSkystone();
-                try {
-                    Thread.sleep(1000);
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
+                Path.sleep_millisec(200);
             }
             count ++;
             vTester.stop();

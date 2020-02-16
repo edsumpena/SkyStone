@@ -141,7 +141,7 @@ public class MainAutonomous extends LinearOpMode {
 
                     //if(fieldPosition == FieldPosition.RED_QUARY)
 
-                    tfDetector = new TensorflowDetector(hardwareMap, camChoice);
+                    tfDetector = TensorflowDetector.getSingle_instance(hardwareMap, camChoice);
 
                     //else if(fieldPosition == FieldPosition.BLUE_QUARY)
                     //    initVuforia(CameraController.PHONECAM);
@@ -241,7 +241,6 @@ public class MainAutonomous extends LinearOpMode {
 
 
     private void sendData() {
-
         // inject imu heading and tfod recognition into currently running path from another thread
 
         Thread update = new Thread() {
