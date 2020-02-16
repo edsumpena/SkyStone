@@ -43,30 +43,31 @@ public class TensorFlowTest extends LinearOpMode {
         TensorflowDetector vTester = null;
 
         int count = 0;
-        while (!isStopRequested()) {
+        while (opModeIsActive()) {
             RobotLogger.dd(TAG, "looop %d", count);
-            vTester = TensorflowDetector.getSingle_instance(hardwareMap, VuforiaCameraChoice.PHONE_BACK);
+            if (opModeIsActive())
+                vTester = TensorflowDetector.getSingle_instance(hardwareMap, VuforiaCameraChoice.PHONE_BACK);
+            else break;
 
             for (int i = 0; i < 10; i ++ ) {
-                vTester.detectSkystone();
-                try {
-                    Thread.sleep(1000);
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
+                if (opModeIsActive())
+                    vTester.detectSkystone();
+                if (opModeIsActive())
+                    Path.sleep_millisec(200);
             }
             count ++;
             vTester.stop();
 
-            vTester = TensorflowDetector.getSingle_instance(hardwareMap, VuforiaCameraChoice.PHONE_FRONT);
+            if (opModeIsActive())
+                vTester = TensorflowDetector.getSingle_instance(hardwareMap, VuforiaCameraChoice.PHONE_FRONT);
+            else
+                break;
 
             for (int i = 0; i < 10; i ++ ) {
-                vTester.detectSkystone();
-                try {
-                    Thread.sleep(1000);
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
+                if (opModeIsActive())
+                    vTester.detectSkystone();
+                if (opModeIsActive())
+                    Path.sleep_millisec(200);
             }
             count ++;
             vTester.stop();

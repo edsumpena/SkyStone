@@ -46,7 +46,7 @@ public class MainAutonomous extends LinearOpMode {
     private boolean initialize = false;
     public BNO055IMU imu;
     private VuforiaCamLocalizer vuLocalizer = null;
-    private VuforiaCameraChoice camChoice;
+    private VuforiaCameraChoice camChoice = VuforiaCameraChoice.HUB_USB;  // default one;;
     private TensorflowDetector tfDetector;
 
     @Override
@@ -67,7 +67,7 @@ public class MainAutonomous extends LinearOpMode {
         hwMap.backRight.setDirection(DcMotorSimple.Direction.REVERSE);
 
         DriveConstantsPID.updateConstantsFromProperties();
-        camChoice = VuforiaCameraChoice.HUB_USB;  // default one;
+
         while (!isStarted() && !isStopRequested()) {
             // Select starting position from user input
             if (fieldPosition == null) {
@@ -141,7 +141,7 @@ public class MainAutonomous extends LinearOpMode {
 
                     //if(fieldPosition == FieldPosition.RED_QUARY)
 
-                    tfDetector = new TensorflowDetector(hardwareMap, camChoice);
+                    tfDetector = TensorflowDetector.getSingle_instance(hardwareMap, camChoice);
 
                     //else if(fieldPosition == FieldPosition.BLUE_QUARY)
                     //    initVuforia(CameraController.PHONECAM);
@@ -246,7 +246,6 @@ public class MainAutonomous extends LinearOpMode {
 
 
     private void sendData() {
-
         // inject imu heading and tfod recognition into currently running path from another thread
 
         Thread update = new Thread() {
