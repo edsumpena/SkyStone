@@ -370,16 +370,6 @@ public class Path {
                     _drive.turnSync(-(_drive.getExternalHeading() + 2 * PI - 3 * PI / 2));
             }
         }
-
-        if (DriveConstantsPID.ENABLE_ARM_ACTIONS) {
-            hwMap.foundationLock.setPosition(TeleopConstants.foundationLockUnlock);
-            hwMap.transferLock.setPosition(TeleopConstants.transferLockPosOut);
-            hwMap.clawServo2.setPosition(TeleopConstants.clawServo2PosAuto);
-            sleep_millisec(200);
-
-        }
-
-        sleep_millisec(100);
         // step 6
         DriveBuilderReset(false, false, "step" + Integer.toString(step_count) + coordinates[step_count].toString() +
                 ", after foundation unlock, to straight move closer to foundation");
@@ -415,7 +405,8 @@ public class Path {
         step_count++;
 
         // step 8
-        if (DriveConstantsPID.ENABLE_ARM_ACTIONS) {
+
+        if(DriveConstantsPID.ENABLE_ARM_ACTIONS){
             hwMap.foundationLock.setPosition(TeleopConstants.foundationLockUnlock);
             hwMap.transferLock.setPosition(TeleopConstants.transferLockPosOut);
         }
@@ -560,6 +551,9 @@ public class Path {
         Thread thread = new Thread() {
             public void run() {
                 hw.transferHorn.setPosition(TeleopConstants.transferHornPosPush);
+                sleep_millisec(200);
+                hw.liftOdometry.setPosition(TeleopConstants.liftOdometryDown);
+                sleep_millisec(200);
                 //hwMap.innerTransfer.setPosition(TeleopConstants.innerTransferPosBlock);
             }
         };
@@ -567,45 +561,31 @@ public class Path {
     }
 
     public static void initIntakeClaw(HardwareMap hw) {
-        Thread thread = new Thread() {
-            public void run() {
-                hw.clawInit.setPosition(TeleopConstants.clawInitPosCapstone);
-                hw.clawServo2.setPosition(0.9336);
-
-                sleep_millisec(2800);
-
-
-                //hwMap.clawServo2.setPosition(TeleopConstants.clawServo2Block + 0.08);
-                //resetLift(TeleopConstants.liftPower);
-                sleep_millisec(300);
-
-                hw.innerTransfer.setPosition(TeleopConstants.intakeInitPosRight);
-                sleep_millisec(500);
-
-                hw.innerTransfer.setPosition(TeleopConstants.intakeInitPosLeft);
-                //intake(1);
-
-                sleep_millisec(500);
-
-                hw.innerTransfer.setPosition(TeleopConstants.intakeInitPosReset);
-            }
-        };
-
         Thread t = new Thread() {
             public void run() {
                 //hwMap.clawServo2.setPosition(0.9336);
-                sleep_millisec(2600);
+                hw.clawServo1.setPosition(TeleopConstants.clawServo1PosClose);
+
+                sleep_millisec(600);
+
+                hw.clawServo2.setPosition(TeleopConstants.clawServo2PosClose);
+
+                sleep_millisec(600);
 
                 //hwMap.clawInit.setPosition(TeleopConstants.clawInitPosReset);
                 hw.clawInit.setPosition(TeleopConstants.clawInitPosReset);
 
-                sleep_millisec(600);
-
+                sleep_millisec(1000);
 
                 hw.clawInit.setPosition(TeleopConstants.clawInitPosCapstone);
+
+                sleep_millisec(600);
+
+                hw.clawServo2.setPosition(TeleopConstants.clawServo2PosClose);
+
+                sleep_millisec(200);
             }
         };
-        thread.start();
         t.start();
     }
 
@@ -706,7 +686,7 @@ public class Path {
     public static void dropStone(HardwareMap hw, FieldPosition fieldPosition, boolean first) {
         Thread t = new Thread() {
             public void run() {
-                sleep_millisec(2000);
+                sleep_millisec(2300);
                 if (FieldPosition.RED_QUARY == fieldPosition) {
                     if (first) {
                         hw.redAutoClawJoint1.setPosition(TeleopConstants.autoClaw1Drop);
@@ -743,6 +723,18 @@ public class Path {
                         sleep_millisec(200);
 
                         hw.redAutoClawJoint1.setPosition(TeleopConstants.autoClaw1Retracted);
+                        sleep_millisec(200);
+
+                        hw.clawServo2.setPosition(TeleopConstants.clawServo2PosOpen);
+                        sleep_millisec(200);
+
+                        hw.clawServo1.setPosition(TeleopConstants.clawServo1PosOpen);
+                        sleep_millisec(600);
+
+                        hw.foundationLock.setPosition(TeleopConstants.foundationLockUnlock);
+                        sleep_millisec(200);
+
+                        hw.transferLock.setPosition(TeleopConstants.transferLockPosOut);
                         sleep_millisec(200);
                     }
                 } else {
@@ -782,6 +774,15 @@ public class Path {
 
                         hw.redAutoClawJoint1.setPosition(TeleopConstants.autoClaw1Retracted_blue);
                         sleep_millisec(200);
+
+                        hw.clawServo2.setPosition(TeleopConstants.clawServo2PosOpen);
+                        sleep_millisec(600);
+
+                        hw.foundationLock.setPosition(TeleopConstants.foundationLockUnlock);
+                        sleep_millisec(200);
+
+                        hw.transferLock.setPosition(TeleopConstants.transferLockPosOut);
+                        sleep_millisec(200);
                     }
                 }
             }
@@ -804,9 +805,15 @@ public class Path {
         Thread thread = new Thread() {
             public void run() {
                 hw.parkingServo.setPosition(TeleopConstants.parkingServoPosLock);
+                sleep_millisec(200);
                 hw.foundationLock.setPosition(TeleopConstants.foundationLockInit);
-                hw.transferLock.setPosition(TeleopConstants.transferLockPosPlatform);
-                hw.innerTransfer.setPosition(TeleopConstants.innerTransferPosInit);
+                sleep_millisec(200);
+                hw.transferLock.setPosition(TeleopConstants.transferLockPosOut);
+                sleep_millisec(200);
+                hw.liftOdometry.setPosition(TeleopConstants.liftOdometryDown);
+                sleep_millisec(200);
+
+                //hw.innerTransfer.setPosition(TeleopConstants.innerTransferPosInit);
             }
         };
         thread.start();
