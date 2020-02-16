@@ -71,7 +71,7 @@ public class FollowerPIDTunerStrafe extends LinearOpMode {
             Pose2d error_pose = _drive.follower.getLastError();
             RobotLogger.dd(TAG, "currentPos %s, errorPos %s",currentPos.toString(), error_pose.toString());
             //drive.turnSync(Math.toRadians(90));
-            Path.sleep_millisec(2000);
+            Path.sleep_millisec_opmode(2000, this);
 
 
             if (DriveConstantsPID.USING_STRAFE_DIAGONAL == true) {
@@ -92,7 +92,7 @@ public class FollowerPIDTunerStrafe extends LinearOpMode {
             error_pose = _drive.follower.getLastError();
             RobotLogger.dd(TAG, "currentPos %s, errorPos %s",currentPos.toString(), error_pose.toString());
 
-            Path.sleep_millisec(2000);
+            Path.sleep_millisec_opmode(2000, this);
 
         }
     }

@@ -53,7 +53,7 @@ public class TensorFlowTest extends LinearOpMode {
                 if (opModeIsActive())
                     vTester.detectSkystone();
                 if (opModeIsActive())
-                    Path.sleep_millisec(200);
+                    Path.sleep_millisec_opmode(200, this);
             }
             count ++;
             vTester.stop();
@@ -67,7 +67,7 @@ public class TensorFlowTest extends LinearOpMode {
                 if (opModeIsActive())
                     vTester.detectSkystone();
                 if (opModeIsActive())
-                    Path.sleep_millisec(200);
+                    Path.sleep_millisec_opmode(200, this);
             }
             count ++;
             vTester.stop();

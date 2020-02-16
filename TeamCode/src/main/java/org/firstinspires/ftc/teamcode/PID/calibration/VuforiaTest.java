@@ -61,7 +61,7 @@ public class VuforiaTest extends LinearOpMode {
                     RobotLogger.dd(TAG, "vuforia localization: " + poseEstimate.toString());
                 }
                 if (opModeIsActive())
-                    Path.sleep_millisec(200);
+                    Path.sleep_millisec_opmode(200, this);
             }
             vLocalizer.stop();
 
@@ -80,7 +80,7 @@ public class VuforiaTest extends LinearOpMode {
                     RobotLogger.dd(TAG, "vuforia localization: " + poseEstimate.toString());
                 }
                 if (opModeIsActive())
-                    Path.sleep_millisec(200);
+                    Path.sleep_millisec_opmode(200, this);
             }
             vLocalizer.stop();
 

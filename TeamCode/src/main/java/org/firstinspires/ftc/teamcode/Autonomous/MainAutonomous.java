@@ -178,10 +178,7 @@ public class MainAutonomous extends LinearOpMode {
             telemetry.addData("Current (starting) Location", fieldPosition);
             telemetry.addData("Pose2d Estimate", startingPos);
             telemetry.update();
-            try {
-                Thread.sleep(200);
-            } catch (Exception e) {
-            }
+            Path.sleep_millisec_opmode(200, this);
         }
 
         if(isStopRequested())

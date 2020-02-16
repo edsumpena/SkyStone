@@ -60,7 +60,7 @@ public class FollowerPIDTunerStraight extends LinearOpMode {
             Pose2d error_pose = drive.follower.getLastError();
             RobotLog.dd(TAG, "currentPos %s, errorPos %s",currentPos.toString(), error_pose.toString());
             //drive.turnSync(Math.toRadians(90));
-            Path.sleep_millisec(2000);
+            Path.sleep_millisec_opmode(2000, this);
 
             if (DriveConstantsPID.RESET_FOLLOWER)
                 drive.resetFollowerWithParameters(false, false);

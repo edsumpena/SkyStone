@@ -132,7 +132,7 @@ public class Path {
         RobotLog.dd(TAG, "start new step: %s, count[%d], currentPos %s, errorPos %s",
                 label, step_count, currentPos.toString(), error_pose.toString());
         if (DriveConstantsPID.ENABLE_ARM_ACTIONS == false) {
-            sleep_millisec((int) DriveConstantsPID.TEST_PAUSE_TIME);
+            sleep_millisec_opmode((int) DriveConstantsPID.TEST_PAUSE_TIME, opMode);
         }
 
         if ((DriveConstantsPID.forceOdomInStrafe) && isStrafe) {
@@ -155,7 +155,15 @@ public class Path {
         RobotLog.dd(TAG, "drive and builder created, initialized with pose: " + _drive.getPoseEstimate().toString());
         return _drive;
     }
-
+    public static void sleep_millisec_opmode(int c, LinearOpMode mode) {
+        if (mode.opModeIsActive()) {
+            try {
+                Thread.sleep(c);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+    }
     public static void sleep_millisec(int c) {
         try {
             Thread.sleep(c);
@@ -200,14 +208,19 @@ public class Path {
 
         DriveBuilderReset(DriveConstantsPID.USING_STRAFE_DIAGONAL, false,
                 "step" + Integer.toString(step_count) + coordinates[step_count].toString() + ", after prepare, start");
-        if (first_skystone_location != 1) {
+        if (first_skystone_location == 2) {
             builder = builder
                     .setReversed(false).strafeTo(new Vector2d(coordinates[step_count].getX(), coordinates[step_count].getY()));
             trajectory = builder.build();   //x - 2.812, y + 7.984
             if (opMode.opModeIsActive())
                 _drive.followTrajectorySync(trajectory);
+            else
+                return -1;
         } else {
-            Path.StrafeDiagonalHelper(_drive, new Vector2d(coordinates[step_count].getX(), coordinates[step_count].getY()));
+            if (opMode.opModeIsActive())
+                Path.StrafeDiagonalHelper(_drive, new Vector2d(coordinates[step_count].getX(), coordinates[step_count].getY()));
+            else
+                return -1;
         }
         step_count++;
 
@@ -246,6 +259,8 @@ public class Path {
         trajectory = builder.build();   //x - 2.812, y + 7.984
         if (opMode.opModeIsActive())
             _drive.followTrajectorySync(trajectory);
+        else
+            return -1;
         step_count++;
 
         if (vLocal != null) {
@@ -283,7 +298,7 @@ public class Path {
             RobotLogger.dd(TAG, "Calibrate before grab 2nd stone! Vuforia local info: " + t.toString());
         }
 
-        sleep_millisec(100);
+        sleep_millisec_opmode(100, opMode);
 
         if (DriveConstantsPID.ENABLE_ARM_ACTIONS) {
             if (isRed)
@@ -350,20 +365,19 @@ public class Path {
         // step 6
         DriveBuilderReset(false, false, "step" + Integer.toString(step_count) + coordinates[step_count].toString() +
                 ", after drop and strafe");
+        if (opMode.opModeIsActive()) {
+            if (!isRed) {
+                theta = _drive.getExternalHeading() >= 0 ? _drive.getExternalHeading() :
+                        _drive.getExternalHeading() + 2 * PI;
 
-        if (!isRed) {
-            theta = _drive.getExternalHeading() >= 0 ? _drive.getExternalHeading() :
-                    _drive.getExternalHeading() + 2 * PI;
+                if (theta > PI)
+                    _drive.turnSync(2 * PI - (_drive.getExternalHeading() - PI / 2));
+                else
+                    _drive.turnSync(-(_drive.getExternalHeading() - PI / 2));
+            } else {
+                theta = _drive.getExternalHeading() >= 0 ? _drive.getExternalHeading() :
+                        _drive.getExternalHeading() + 2 * PI;
 
-            if (theta > PI)
-                _drive.turnSync(2 * PI - (_drive.getExternalHeading() - PI / 2));
-            else
-                _drive.turnSync(-(_drive.getExternalHeading() - PI / 2));
-        } else {
-            theta = _drive.getExternalHeading() >= 0 ? _drive.getExternalHeading() :
-                    _drive.getExternalHeading() + 2 * PI;
-
-            if (opMode.opModeIsActive()) {
                 if (theta > PI)
                     _drive.turnSync(-(_drive.getExternalHeading() - 3 * PI / 2));
                 else
@@ -375,11 +389,11 @@ public class Path {
             hwMap.foundationLock.setPosition(TeleopConstants.foundationLockUnlock);
             hwMap.transferLock.setPosition(TeleopConstants.transferLockPosOut);
             hwMap.clawServo2.setPosition(TeleopConstants.clawServo2PosAuto);
-            sleep_millisec(200);
+            sleep_millisec_opmode(200, opMode);
 
         }
 
-        sleep_millisec(100);
+        sleep_millisec_opmode(100, opMode);
         // step 6
         DriveBuilderReset(false, false, "step" + Integer.toString(step_count) + coordinates[step_count].toString() +
                 ", after foundation unlock, to straight move closer to foundation");
@@ -398,7 +412,7 @@ public class Path {
             hwMap.foundationLock.setPosition(TeleopConstants.foundationLockLock);
             hwMap.transferLock.setPosition(TeleopConstants.transferLockPosUp);
         }
-        sleep_millisec(400);
+        sleep_millisec_opmode(400, opMode);
         DriveBuilderReset(true, false, "step" + Integer.toString(step_count) + coordinates[step_count].toString() +
                 ", after drop fundation,, to spline ");
         builder.setReversed(false)
@@ -412,6 +426,8 @@ public class Path {
         trajectory = builder.build();   //x - 2.812, y + 7.984
         if (opMode.opModeIsActive())
             _drive.followTrajectorySync(trajectory);
+        else
+            return -1;
         step_count++;
 
         // step 8
@@ -420,7 +436,7 @@ public class Path {
             hwMap.transferLock.setPosition(TeleopConstants.transferLockPosOut);
         }
 
-        //sleep_millisec(300);
+        //sleep_millisec_opmode(300, opMode);
 
         DriveBuilderReset(true, false, "step" + Integer.toString(step_count) + coordinates[step_count].toString() +
                 ", spline, back to parking");
@@ -431,6 +447,8 @@ public class Path {
         trajectory = builder.build();   //x - 2.812, y + 7.984
         if (opMode.opModeIsActive())
             _drive.followTrajectorySync(trajectory);
+        else
+            return -1;
         step_count++;
 
         /*while (opMode.opModeIsActive()) {
