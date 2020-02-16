@@ -806,6 +806,7 @@ public class Path {
                 hw.parkingServo.setPosition(TeleopConstants.parkingServoPosLock);
                 hw.foundationLock.setPosition(TeleopConstants.foundationLockInit);
                 hw.transferLock.setPosition(TeleopConstants.transferLockPosPlatform);
+                hw.innerTransfer.setPosition(TeleopConstants.innerTransferPosInit);
             }
         };
         thread.start();

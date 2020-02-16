@@ -6,6 +6,7 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.Servo;
 
+import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.robotcore.internal.system.AppUtil;
 import org.firstinspires.ftc.teamcode.All.DriveConstant;
 import org.firstinspires.ftc.teamcode.All.FourWheelMecanumDrivetrain;
@@ -16,6 +17,7 @@ import org.firstinspires.ftc.teamcode.TeleOp.ToggleButtons.GamepadButtons;
 import org.firstinspires.ftc.teamcode.TeleOp.ToggleButtons.OnOffButton;
 
 import java.util.ArrayList;
+
 
 /*
  * -Gamepad A:
@@ -159,6 +161,7 @@ public class Teleop extends LinearOpMode {
                 Thread.sleep(200);
             } catch (Exception e){}
         }
+        hwMap.innerTransfer.setPosition(TeleopConstants.innerTransferPosInit);
 
         while (opModeIsActive()) {
 
@@ -172,7 +175,7 @@ public class Teleop extends LinearOpMode {
                 try{
                     Thread.sleep(200);
                 } catch (Exception e){}*/
-                hwMap.innerTransfer.setPosition(TeleopConstants.innerTransferPosOpen);
+                //hwMap.innerTransfer.setPosition(TeleopConstants.innerTransferPosOpen);
                 try{
                     Thread.sleep(200);
                 } catch (Exception e){}
@@ -182,8 +185,19 @@ public class Teleop extends LinearOpMode {
 
             if (gamepad2.dpad_up && !blockerCapstone) {
                 blockerCapstone = true;
+                telemetry.addData("here1", "f");
+                telemetry.update();
 
+                hwMap.clawServo1.setPosition(TeleopConstants.clawServo1Capstone);
+                hwMap.clawServo2.setPosition(TeleopConstants.clawServo2Capstone);
+                try{
+                    Thread.sleep(200);
+                }catch(Exception e){
+
+                }
                 hwMap.innerTransfer.setPosition(TeleopConstants.innerTransferPosOpen);
+
+                /*hwMap.innerTransfer.setPosition(TeleopConstants.innerTransferPosOpen);
                 hwMap.clawServo1.setPosition(TeleopConstants.clawServo1Capstone);
                 hwMap.transferHorn.setPosition(TeleopConstants.transferHornCapstone);
 
@@ -196,7 +210,7 @@ public class Teleop extends LinearOpMode {
 
                 try{
                     Thread.sleep(500);
-                } catch (Exception e){}*/
+                } catch (Exception e){}
 
                 hwMap.innerTransfer.setPosition(TeleopConstants.innerTransferPosClosed);
 
@@ -227,18 +241,28 @@ public class Teleop extends LinearOpMode {
 
                 try{
                     Thread.sleep(1000);
-                } catch (Exception e){}
+                } catch (Exception e){}*/
             } else if (!gamepad2.dpad_up && blockerCapstone) {
+                telemetry.addData("here2", "f");
+                telemetry.update();
                 blockerCapstone = false;
 
-                hwMap.transferHorn.setPosition(TeleopConstants.transferHornPosReady);
+                hwMap.clawServo1.setPosition(TeleopConstants.clawServo1Capstone);
+                hwMap.clawServo2.setPosition(TeleopConstants.clawServo2Capstone);
+                try{
+                    Thread.sleep(200);
+                }catch(Exception e){
+
+                }
+                hwMap.innerTransfer.setPosition(TeleopConstants.innerTransferPosOpen);
+                /*hwMap.transferHorn.setPosition(TeleopConstants.transferHornPosReady);
 
                 hwMap.innerTransfer.setPosition(TeleopConstants.innerTransferPosOpen);
                 hwMap.clawServo1.setPosition(TeleopConstants.clawServo1PosReceive);
                 hwMap.clawServo2.setPosition(TeleopConstants.clawServo2Block);
                 try{
                     Thread.sleep(200);
-                } catch(Exception e){}
+                } catch(Exception e){}*/
             }
 
             if(gamepad2.dpad_down){
@@ -626,18 +650,18 @@ public class Teleop extends LinearOpMode {
                     Thread.sleep(300);
                 } catch (Exception e) {}
 
-                hwMap.innerTransfer.setPosition(TeleopConstants.intakeInitPosRight);
+                //hwMap.innerTransfer.setPosition(TeleopConstants.intakeInitPosRight);
                 try {
                     Thread.sleep(700);
                 } catch (Exception e) {}
 
-                hwMap.innerTransfer.setPosition(TeleopConstants.intakeInitPosLeft);
+                //hwMap.innerTransfer.setPosition(TeleopConstants.intakeInitPosLeft);
 
                 try {
                     Thread.sleep(700);
                 } catch (Exception e) {}
 
-                hwMap.innerTransfer.setPosition(TeleopConstants.intakeInitPosReset);
+                //hwMap.innerTransfer.setPosition(TeleopConstants.intakeInitPosReset);
             }
         };
 
