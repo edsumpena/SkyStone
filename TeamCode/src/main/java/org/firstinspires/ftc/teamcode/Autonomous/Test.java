@@ -56,7 +56,7 @@ public class Test extends LinearOpMode {
 
         SampleMecanumDriveBase drive = new SampleMecanumDriveREVOptimized(hardwareMap, false);
         String trajectory = DriveConstant.trajectoryString;
-        
+
         RunTrajectoryFromString run = new RunTrajectoryFromString(drive, trajectory);
 
         drivetrain.resetEncoders();

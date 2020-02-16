@@ -64,7 +64,7 @@ import java.util.List;
  */
 
 @TeleOp(name = "Custom TFOD Webcam", group = "Linear Opmode")
-@Disabled
+//@Disabled
 public class CustomTFODWebcam extends LinearOpMode {
     private static final String TFOD_MODEL_ASSET = "skystoneTFOD_v2_[105-15].tflite";
     private static final String LABEL_FIRST_ELEMENT = "skystone";
@@ -164,18 +164,18 @@ public class CustomTFODWebcam extends LinearOpMode {
                           telemetry.addData("Object Height", objHeight);
                           telemetry.addData("Object Width", objWidth);
                           telemetry.addData("**Distance From Object", distanceToObj);
-                          telemetry.addData("**Object Angle", tfodData.get(0));
+                          /*telemetry.addData("**Object Angle", tfodData.get(0));
                           telemetry.addData("Angle Model Domain",
                                   "[" + tfodData.get(1) + ", " + tfodData.get(2) + "]");
                           telemetry.addData("Auto-adjusted Domain-Predicted 0° Stone Width Delta",
-                                  Math.round((tfodData.get(3)) * 1000.0) / 1000.0);
+                                  Math.round((tfodData.get(3)) * 1000.0) / 1000.0);*/
                           telemetry.addData("Position",
-                                  Arrays.toString(detect.getSkystonePositionsRed(updatedRecognitions, imgWidth)));
+                                  Arrays.toString(Detect.getSkystonePositionsRed(updatedRecognitions, imgWidth)));
                           index += 1;
                       }
                     }
                 }
-                if (!(gamepad1.left_stick_x == 0 && gamepad1.right_stick_y == 0)) {
+                /*if (!(gamepad1.left_stick_x == 0 && gamepad1.right_stick_y == 0)) {
 
                     double speed;
 
@@ -215,7 +215,7 @@ public class CustomTFODWebcam extends LinearOpMode {
                 }
 
                 telemetry.addData("Motor Power", power);
-                telemetry.update();
+                telemetry.update();*/
             }
         }
 

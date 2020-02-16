@@ -1,5 +1,7 @@
 package org.firstinspires.ftc.teamcode.Autonomous.Vision;
 
+import com.qualcomm.robotcore.util.RobotLog;
+
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.tfod.Recognition;
 import org.firstinspires.ftc.teamcode.Tensorflow.TFODCalc;
@@ -14,31 +16,27 @@ public class Detect {
         TFODCalc.init();
         TFODCalc.setHardwareProperties(43.30, 3.67f);
     }
+
     // TODO : consider using enum, or a single int - there are only three possibilities!
     public static int[] getSkystonePositionsBlue(List<Recognition> updatedRecognitions, double imageWidthPx) {    //Stones left -> right
         // TODO : consider using an associative array of some sort here - this is not the ideal data structure
 
         if (updatedRecognitions != null) {
-            int index = 0;
-            double[] left = new double[updatedRecognitions.size()];
-            ArrayList<String> skystoneIndex = new ArrayList<>();
+            ArrayList<Stone> skystoneIndex = new ArrayList<>();
 
-            for (Recognition recognition : updatedRecognitions) {
-                left[index] = recognition.getLeft();
-                if (recognition.getLabel().equalsIgnoreCase("skystone"))
-                    skystoneIndex.add("skystone");
-                else
-                    skystoneIndex.add("stone");
-                index += 1;
-            }
+            for (Recognition r : updatedRecognitions)
+                skystoneIndex.add(new Stone(r.getLabel(), r.getLeft(), r.getTop(), r.getHeight(), r.getWidth()));
+
+            if(!skystoneIndex.isEmpty() && skystoneIndex.size() >= 2)
+                skystoneIndex = processData(skystoneIndex);
 
             switch (updatedRecognitions.size()) {
                 case 1:
                     // if only one skystone is detected, segment image like |1|2|3-|
                     // if midpoint of skystone is in one of these "regions", assume the positions of remaining stones
-                    if (skystoneIndex.get(0).equalsIgnoreCase("skystone")) {
-                        double horizontalMid = updatedRecognitions.get(0).getLeft() + updatedRecognitions.get(0).getWidth() / 2;
-                        double dividedImg = imageWidthPx / 4;
+                    if (skystoneIndex.get(0).getLabel().equalsIgnoreCase("skystone")) {
+                        double horizontalMid = skystoneIndex.get(0).getCenter()[0];
+                        double dividedImg = imageWidthPx / 3d;
 
                         if (horizontalMid <= dividedImg)
                             return new int[]{1, 4};
@@ -53,32 +51,33 @@ public class Detect {
                     // based on that
 
                     // if one is a skystone and one is not, predict position based on their relative positions
-                    if (!skystoneIndex.contains("skystone")) {
+                    if (!containsLabel(skystoneIndex, "skystone")) {
                         return new int[]{3, 6};
                     } else {
-                        if (left[skystoneIndex.indexOf("skystone")] > left[skystoneIndex.indexOf("stone")])
+                        if (skystoneIndex.get(getIndex(skystoneIndex, "skystone")).getLeft() >
+                                skystoneIndex.get(getIndex(skystoneIndex, "stone")).getLeft())
                             return new int[]{2, 5};
-                        else if (left[skystoneIndex.indexOf("skystone")] <= left[skystoneIndex.indexOf("stone")])
+                        else if (skystoneIndex.get(getIndex(skystoneIndex, "skystone")).getLeft() <=
+                                skystoneIndex.get(getIndex(skystoneIndex, "stone")).getLeft())
                             return new int[]{1, 4};
                     }
                     break;
             }
 
-            if (skystoneIndex.contains("skystone")) {
+            if (containsLabel(skystoneIndex, "skystone")) {
 
-                // TODO : consider using indexof or something similar - this is inelegant
-                double minPos = 9999;
+                double minPos = skystoneIndex.get(0).getLeft();
                 if (updatedRecognitions.size() >= 3) {
-                    for (int x = 0; x < skystoneIndex.size(); x++) {
-                        if (skystoneIndex.get(x).equalsIgnoreCase("skystone")) {
-                            if (minPos > updatedRecognitions.get(x).getLeft())
-                                minPos = updatedRecognitions.get(x).getLeft();
+                    for (int x = 1; x < skystoneIndex.size(); x++) {
+                        if (skystoneIndex.get(x).getLabel().equalsIgnoreCase("skystone")) {
+                            if (minPos > skystoneIndex.get(x).getLeft())
+                                minPos = skystoneIndex.get(x).getLeft();
                         }
                     }
 
                     int idx = 0;
-                    for (Recognition r : updatedRecognitions) {
-                        if (r.getLeft() < minPos)
+                    for (Stone s : skystoneIndex) {
+                        if (s.getLeft() < minPos)
                             idx += 1;
                     }
                     return new int[]{idx + 1, idx + 4};
@@ -88,7 +87,76 @@ public class Detect {
         return new int[]{-1, -1};
     }
 
-    public static int[] getSkystonePositionsRed(List<Recognition> updatedRecognitions, double imageWidthPx) {     //Stones right -> left
+    public static int[] getSkystonePositionsRed(List<Recognition> updatedRecognitions, double imageWidthPx) {    //Stones left -> right
+        // TODO : consider using an associative array of some sort here - this is not the ideal data structure
+
+        if (updatedRecognitions != null) {
+            ArrayList<Stone> skystoneIndex = new ArrayList<>();
+
+            for (Recognition r : updatedRecognitions)
+                skystoneIndex.add(new Stone(r.getLabel(), r.getLeft(), r.getTop(), r.getHeight(), r.getWidth()));
+
+            if(!skystoneIndex.isEmpty() && skystoneIndex.size() >= 2)
+                skystoneIndex = processData(skystoneIndex);
+
+            switch (updatedRecognitions.size()) {
+                case 1:
+                    // if only one skystone is detected, segment image like |1|2|3-|
+                    // if midpoint of skystone is in one of these "regions", assume the positions of remaining stones
+                    if (skystoneIndex.get(0).getLabel().equalsIgnoreCase("skystone")) {
+                        double horizontalMid = skystoneIndex.get(0).getCenter()[0];
+                        double dividedImg = imageWidthPx / 3d;
+
+                        if (horizontalMid >= dividedImg)
+                            return new int[]{1, 4};
+                        else if (horizontalMid < dividedImg && horizontalMid >= dividedImg * 2)
+                            return new int[]{2, 5};
+                        else
+                            return new int[]{3, 6};
+                    } else
+                        return new int[]{1, 4};
+                case 2:
+                    // if only see two, and neither are skystones, assume that the skystone is out of view and predict position
+                    // based on that
+
+                    // if one is a skystone and one is not, predict position based on their relative positions
+                    if (!containsLabel(skystoneIndex, "skystone")) {
+                        return new int[]{3, 6};
+                    } else {
+                        if (skystoneIndex.get(getIndex(skystoneIndex, "skystone")).getRight() <
+                                skystoneIndex.get(getIndex(skystoneIndex, "stone")).getRight())
+                            return new int[]{2, 5};
+                        else if (skystoneIndex.get(getIndex(skystoneIndex, "skystone")).getRight() >=
+                                skystoneIndex.get(getIndex(skystoneIndex, "stone")).getRight())
+                            return new int[]{1, 4};
+                    }
+                    break;
+            }
+
+            if (containsLabel(skystoneIndex, "skystone")) {
+
+                double minPos = skystoneIndex.get(0).getRight();
+                if (updatedRecognitions.size() >= 3) {
+                    for (int x = 1; x < skystoneIndex.size(); x++) {
+                        if (skystoneIndex.get(x).getLabel().equalsIgnoreCase("skystone")) {
+                            if (minPos < skystoneIndex.get(x).getRight())
+                                minPos = skystoneIndex.get(x).getRight();
+                        }
+                    }
+
+                    int idx = 0;
+                    for (Stone s : skystoneIndex) {
+                        if (s.getRight() > minPos)
+                            idx += 1;
+                    }
+                    return new int[]{idx + 1, idx + 4};
+                }
+            }
+        }
+        return new int[]{-1, -1};
+    }
+
+    /*public int[] getSkystonePositionsRed(List<Recognition> updatedRecognitions, double imageWidthPx) {     //Stones right -> left
         if (updatedRecognitions != null) {
             int index = 0;
             double[] right = new double[updatedRecognitions.size() + 1];
@@ -149,5 +217,65 @@ public class Detect {
             }
         }
         return new int[]{-1, -1};
+    }*/
+
+    private static boolean containsLabel(ArrayList<Stone> stones, String label) {
+        for (Stone s : stones)
+            if (s.getLabel().equalsIgnoreCase(label))
+                return true;
+        return false;
+    }
+
+    private static int getIndex(ArrayList<Stone> stones, String label) {
+        for (int i = 0; i < stones.size(); i++)
+            if (stones.get(i).getLabel().equalsIgnoreCase(label))
+                return i;
+        return -1;
+    }
+
+    private static ArrayList<Stone> processData(ArrayList<Stone> stones) {
+        float[] data = new float[stones.size()];
+
+        for (int i = 0; i < stones.size(); i++)
+            data[i] = stones.get(i).getTop();
+
+        for (int i = 0; i < stones.size(); i++)
+            if (isOutlier(data, stones.get(i).getTop())) {
+                RobotLog.dd("NOTICE", stones.get(i).getTop() + ", Is Removed");
+                stones.remove(i);
+                i -= 1;
+            }
+
+        return stones;
+    }
+
+    private static boolean isOutlier(float[] data, float testCase) {
+        float[] lowerQuartile;
+        float[] upperQuartile;
+
+        Arrays.sort(data);
+
+        if (data.length % 2 == 0) {
+            lowerQuartile = Arrays.copyOfRange(data, 0, data.length / 2 - 1);
+            upperQuartile = Arrays.copyOfRange(data, data.length / 2, data.length - 1);
+        } else {
+            lowerQuartile = Arrays.copyOfRange(data, 0, data.length / 2);
+            upperQuartile = Arrays.copyOfRange(data, data.length / 2 + 2, data.length - 1);
+        }
+
+        double q1 = getMedian(lowerQuartile);
+        double q3 = getMedian(upperQuartile);
+        double iqr = q3 - q1;
+        double lowerBounds = q1 - 1.5 * iqr;
+        double upperBounds = q3 + 1.5 * iqr;
+
+        return testCase <= lowerBounds || testCase >= upperBounds;
+    }
+
+    private static double getMedian(float[] data) {
+        if (data.length % 2 == 0)
+            return (data[data.length / 2] + data[data.length / 2 - 1]) / 2d;
+        else
+            return data[data.length / 2];
     }
 }
