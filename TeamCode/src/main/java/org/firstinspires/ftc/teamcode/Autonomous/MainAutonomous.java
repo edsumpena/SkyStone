@@ -185,14 +185,14 @@ public class MainAutonomous extends LinearOpMode {
             tfDetector.stop();
 
         waitForStart();
-        /*
+
         if (tfDetector != null) {
             RobotLogger.dd("", "to shutdown tensor flow");
             tfDetector.stop();
             tfDetector = null;
             RobotLogger.dd("", "tensor flow is shutdown");
         }
-*/
+
         if (DriveConstantsPID.USE_VUFORIA_LOCALIZER) {
             vuLocalizer = VuforiaCamLocalizer.getSingle_instance(hardwareMap,
                     VuforiaCameraChoice.PHONE_BACK, true);
