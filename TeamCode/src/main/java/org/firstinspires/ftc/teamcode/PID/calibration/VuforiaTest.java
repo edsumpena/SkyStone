@@ -45,32 +45,42 @@ public class VuforiaTest extends LinearOpMode {
         VuforiaCamLocalizer vLocalizer = null;
 
         int count = 0;
-        while (!isStopRequested()) {
-            vLocalizer = VuforiaCamLocalizer.getSingle_instance(hardwareMap, VuforiaCameraChoice.PHONE_BACK, true);
-
+        while (opModeIsActive()) {
+            if (opModeIsActive())
+                vLocalizer = VuforiaCamLocalizer.getSingle_instance(hardwareMap, VuforiaCameraChoice.PHONE_BACK, true);
+            else
+                break;
             Pose2d poseEstimate;
             for (int i = 0; i < 10; i ++ ) {
-                poseEstimate = vLocalizer.getPoseEstimate();
-                telemetry.addData("x", poseEstimate.getX());
-                telemetry.addData("y", poseEstimate.getY());
-                telemetry.addData("heading", poseEstimate.getHeading());
-                telemetry.update();
-                RobotLogger.dd(TAG, "vuforia localization: " + poseEstimate.toString());
-                Path.sleep_millisec(200);
+                if (opModeIsActive()) {
+                    poseEstimate = vLocalizer.getPoseEstimate();
+                    telemetry.addData("x", poseEstimate.getX());
+                    telemetry.addData("y", poseEstimate.getY());
+                    telemetry.addData("heading", poseEstimate.getHeading());
+                    telemetry.update();
+                    RobotLogger.dd(TAG, "vuforia localization: " + poseEstimate.toString());
+                }
+                if (opModeIsActive())
+                    Path.sleep_millisec(200);
             }
             vLocalizer.stop();
 
             count ++;
-
-            vLocalizer = VuforiaCamLocalizer.getSingle_instance(hardwareMap, VuforiaCameraChoice.PHONE_FRONT, true);
+            if (opModeIsActive())
+                vLocalizer = VuforiaCamLocalizer.getSingle_instance(hardwareMap, VuforiaCameraChoice.PHONE_FRONT, true);
+            else
+                break;
             for (int i = 0; i < 10; i ++ ) {
-                poseEstimate = vLocalizer.getPoseEstimate();
-                telemetry.addData("x", poseEstimate.getX());
-                telemetry.addData("y", poseEstimate.getY());
-                telemetry.addData("heading", poseEstimate.getHeading());
-                telemetry.update();
-                RobotLogger.dd(TAG, "vuforia localization: " + poseEstimate.toString());
-                Path.sleep_millisec(200);
+                if (opModeIsActive()) {
+                    poseEstimate = vLocalizer.getPoseEstimate();
+                    telemetry.addData("x", poseEstimate.getX());
+                    telemetry.addData("y", poseEstimate.getY());
+                    telemetry.addData("heading", poseEstimate.getHeading());
+                    telemetry.update();
+                    RobotLogger.dd(TAG, "vuforia localization: " + poseEstimate.toString());
+                }
+                if (opModeIsActive())
+                    Path.sleep_millisec(200);
             }
             vLocalizer.stop();
 
