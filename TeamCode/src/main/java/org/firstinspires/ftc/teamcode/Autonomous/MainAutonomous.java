@@ -46,7 +46,7 @@ public class MainAutonomous extends LinearOpMode {
     private boolean initialize = false;
     public BNO055IMU imu;
     private VuforiaCamLocalizer vuLocalizer = null;
-    private VuforiaCameraChoice camChoice;
+    private VuforiaCameraChoice camChoice = VuforiaCameraChoice.HUB_USB;  // default one;;
     private TensorflowDetector tfDetector;
 
     @Override
@@ -67,7 +67,7 @@ public class MainAutonomous extends LinearOpMode {
         hwMap.backRight.setDirection(DcMotorSimple.Direction.REVERSE);
 
         DriveConstantsPID.updateConstantsFromProperties();
-        camChoice = VuforiaCameraChoice.HUB_USB;  // default one;
+
         while (!isStarted() && !isStopRequested()) {
             // Select starting position from user input
             if (fieldPosition == null) {
