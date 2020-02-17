@@ -5,11 +5,6 @@ import android.support.annotation.NonNull;
 import android.util.Log;
 import android.widget.Toast;
 
-import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.DatabaseError;
-import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.ValueEventListener;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
@@ -78,7 +73,7 @@ public class Test extends LinearOpMode {
     }
 
     public String loadTrajectoryFromDatabase(){
-        trajectory = null;
+        /*trajectory = null;
         DatabaseReference rootRef = FirebaseDatabase.getInstance().getReference().child("Trajectories");
         rootRef.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
@@ -90,7 +85,7 @@ public class Test extends LinearOpMode {
             public void onCancelled(@NonNull DatabaseError databaseError) {
                 Log.d("ERROR", "Failed to get missingSwitch state.");
             }
-        });
+        });*/
         return trajectory;
     }
 }
