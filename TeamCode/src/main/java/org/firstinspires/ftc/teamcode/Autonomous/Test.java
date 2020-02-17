@@ -1,5 +1,15 @@
 package org.firstinspires.ftc.teamcode.Autonomous;
 
+import android.content.Intent;
+import android.support.annotation.NonNull;
+import android.util.Log;
+import android.widget.Toast;
+
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
@@ -31,6 +41,7 @@ public class Test extends LinearOpMode {
     private VuforiaLocalizer vuforia;
     private TFObjectDetector tfod;
     private FourWheelMecanumDrivetrain drivetrain;
+    private String trajectory = null;
     private HardwareMap hwMap;
     private static final String TFOD_MODEL_ASSET = "skystoneTFOD_v2_[105-15].tflite";
     private static final String LABEL_FIRST_ELEMENT = "skystone";
@@ -55,85 +66,31 @@ public class Test extends LinearOpMode {
         hwMap.backRight.setDirection(DcMotorSimple.Direction.REVERSE);
 
         SampleMecanumDriveBase drive = new SampleMecanumDriveREVOptimized(hardwareMap, false);
-        String trajectory = DriveConstant.trajectoryString;
+        String trajectory = loadTrajectoryFromDatabase() != null ? loadTrajectoryFromDatabase() : DriveConstant.trajectoryString;
 
-        RunTrajectoryFromString run = new RunTrajectoryFromString(drive, trajectory);
+        RunTrajectoryFromString trajRunner = new RunTrajectoryFromString(drive, trajectory);
 
         drivetrain.resetEncoders();
 
         waitForStart();
 
-        run.runTrajectory();
-
+        trajRunner.runTrajectory();
     }
 
-    private void initVuforia() {
-        /*
-         * Configure Vuforia by creating a Parameter object, and passing it to the Vuforia engine.
-         */
-        VuforiaLocalizer.Parameters parameters = new VuforiaLocalizer.Parameters();
-
-        parameters.vuforiaLicenseKey = VUFORIA_KEY;
-        parameters.cameraName = hardwareMap.get(WebcamName.class, "WebcamFront");
-
-        //  Instantiate the Vuforia engine
-        vuforia = ClassFactory.getInstance().createVuforia(parameters);
-
-        Vuforia.setFrameFormat(PIXEL_FORMAT.RGB565, true); //enables RGB565 format for the image
-        vuforia.setFrameQueueCapacity(1); //tells VuforiaLocalizer to only store one frame at a time
-
-        VuforiaLocalizer.CloseableFrame frame = null;
-
-        try {
-            frame = vuforia.getFrameQueue().take(); //takes the frame at the head of the queue
-            imgWidth = frame.getImage(0).getWidth();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-
-        // Loading trackables is not necessary for the TensorFlow Object Detection engine.
-    }
-
-    /**
-     * Initialize the TensorFlow Object Detection engine.
-     */
-    private void initTfod() {
-        int tfodMonitorViewId = hardwareMap.appContext.getResources().getIdentifier(
-                "tfodMonitorViewId", "id", hardwareMap.appContext.getPackageName());
-        TFObjectDetector.Parameters tfodParameters = new TFObjectDetector.Parameters(tfodMonitorViewId);
-        tfodParameters.minimumConfidence = 0.78;
-        tfod = ClassFactory.getInstance().createTFObjectDetector(tfodParameters, vuforia);
-        tfod.loadModelFromAsset(TFOD_MODEL_ASSET, LABEL_FIRST_ELEMENT, LABEL_SECOND_ELEMENT);
-    }
-
-    public List<Recognition> recognize() {
-        List<Recognition> updatedRecognitions = null;
-        if (tfod != null) {
-            updatedRecognitions = tfod.getUpdatedRecognitions();
-            if (updatedRecognitions != null) {
-                telemetry.addData("# Object Detected", updatedRecognitions.size());
-                telemetry.update();
-                // step through the list of recognitions and display boundary info.
+    public String loadTrajectoryFromDatabase(){
+        trajectory = null;
+        DatabaseReference rootRef = FirebaseDatabase.getInstance().getReference().child("Trajectories");
+        rootRef.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                trajectory = rootRef.child("Red_Quarry-[1,4]").getKey();
             }
-        }
-        return updatedRecognitions;
-    }
 
-    private void sendData() {
-        Thread update = new Thread() {
-            public void run() {
-                while (true) {
-                    align.updateTFOD(recognize());
-                    if (isStopRequested() && tfod != null) {
-                        tfod.shutdown();
-                        break;
-                    }
-
-                    if(isStopRequested())
-                        break;
-                }
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+                Log.d("ERROR", "Failed to get missingSwitch state.");
             }
-        };
-        update.start();
+        });
+        return trajectory;
     }
 }
