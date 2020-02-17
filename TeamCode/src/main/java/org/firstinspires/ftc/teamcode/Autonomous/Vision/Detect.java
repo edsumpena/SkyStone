@@ -28,7 +28,7 @@ public class Detect {
                 skystoneIndex.add(new Stone(r.getLabel(), r.getLeft(), r.getTop(), r.getHeight(), r.getWidth()));
 
             if (!skystoneIndex.isEmpty() && skystoneIndex.size() >= 2)
-                skystoneIndex = processData(skystoneIndex);
+                //skystoneIndex = processData(skystoneIndex);
 
             switch (updatedRecognitions.size()) {
                 case 1:

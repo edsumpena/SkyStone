@@ -178,24 +178,21 @@ public class MainAutonomous extends LinearOpMode {
             telemetry.addData("Current (starting) Location", fieldPosition);
             telemetry.addData("Pose2d Estimate", startingPos);
             telemetry.update();
-            try {
-                Thread.sleep(200);
-            } catch (Exception e) {
-            }
+            Path.sleep_millisec_opmode(200, this);
         }
 
         if(isStopRequested())
             tfDetector.stop();
 
         waitForStart();
-        /*
+
         if (tfDetector != null) {
             RobotLogger.dd("", "to shutdown tensor flow");
             tfDetector.stop();
             tfDetector = null;
             RobotLogger.dd("", "tensor flow is shutdown");
         }
-*/
+
         if (DriveConstantsPID.USE_VUFORIA_LOCALIZER) {
             vuLocalizer = VuforiaCamLocalizer.getSingle_instance(hardwareMap,
                     VuforiaCameraChoice.PHONE_BACK, true);
