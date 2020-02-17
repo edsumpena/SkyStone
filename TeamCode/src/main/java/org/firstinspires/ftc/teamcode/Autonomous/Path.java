@@ -164,13 +164,6 @@ public class Path {
             }
         }
     }
-    public static void sleep_millisec(int c) {
-        try {
-            Thread.sleep(c);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
 
     public static void initGrab(HardwareMap hw, FieldPosition side, LinearOpMode mode) {
         transferReset(hw, mode);
@@ -715,7 +708,7 @@ public class Path {
         LinearOpMode opmode = mode;
         Thread t = new Thread() {
             public void run() {
-                sleep_millisec(2300);
+                sleep_millisec_opmode(2300, opmode);
                 if (FieldPosition.RED_QUARY == fieldPosition) {
                     if (first) {
                         hw.redAutoClawJoint1.setPosition(TeleopConstants.autoClaw1Drop);

@@ -45,9 +45,9 @@ public class MainAutonomous extends LinearOpMode {
     private SampleMecanumDriveBase strafeDrive;
     private boolean initialize = false;
     public BNO055IMU imu;
-    private VuforiaCamLocalizer vuLocalizer = null;
     private VuforiaCameraChoice camChoice = VuforiaCameraChoice.HUB_USB;  // default one;;
-    private TensorflowDetector tfDetector;
+    private TensorflowDetector tfDetector = null;
+    private VuforiaCamLocalizer vuLocalizer = null;
 
     @Override
     public void runOpMode() {
@@ -182,16 +182,11 @@ public class MainAutonomous extends LinearOpMode {
         }
 
         if(isStopRequested())
-            tfDetector.stop();
+            stopTensorFLow();
 
         waitForStart();
 
-        if (tfDetector != null) {
-            RobotLogger.dd("", "to shutdown tensor flow");
-            tfDetector.stop();
-            tfDetector = null;
-            RobotLogger.dd("", "tensor flow is shutdown");
-        }
+        stopTensorFLow();  // better to close TF, to avoid USB instability causing issue; and in case need to run vuforia localization;
 
         if (DriveConstantsPID.USE_VUFORIA_LOCALIZER) {
             vuLocalizer = VuforiaCamLocalizer.getSingle_instance(hardwareMap,
@@ -240,7 +235,14 @@ public class MainAutonomous extends LinearOpMode {
 
     }
 
-
+    private void stopTensorFLow() {
+        if (tfDetector != null) {
+            RobotLogger.dd("", "to shutdown tensor flow");
+            tfDetector.stop();
+            tfDetector = null;
+            RobotLogger.dd("", "tensor flow is shutdown");
+        }
+    }
 
     private void sendData() {
         // inject imu heading and tfod recognition into currently running path from another thread

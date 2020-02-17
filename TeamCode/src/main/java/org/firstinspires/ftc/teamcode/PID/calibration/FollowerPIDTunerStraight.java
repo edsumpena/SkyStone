@@ -73,7 +73,7 @@ public class FollowerPIDTunerStraight extends LinearOpMode {
             currentPos = drive.getPoseEstimate();
             error_pose = drive.follower.getLastError();
             RobotLog.dd(TAG, "currentPos %s, errorPos %s",currentPos.toString(), error_pose.toString());
-            Path.sleep_millisec(2000);
+            Path.sleep_millisec_opmode(2000, this);
         }
     }
 }
