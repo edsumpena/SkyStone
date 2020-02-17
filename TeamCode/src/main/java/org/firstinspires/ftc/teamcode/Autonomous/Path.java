@@ -358,6 +358,7 @@ public class Path {
         // step 6
         DriveBuilderReset(false, false, "step" + Integer.toString(step_count) + coordinates[step_count].toString() +
                 ", after drop and strafe");
+
         if (opMode.opModeIsActive()) {
             if (!isRed) {
                 theta = _drive.getExternalHeading() >= 0 ? _drive.getExternalHeading() :
@@ -393,6 +394,7 @@ public class Path {
 
         // step 7
         if (DriveConstantsPID.ENABLE_ARM_ACTIONS) {
+
             hwMap.foundationLock.setPosition(TeleopConstants.foundationLockLock);
             hwMap.transferLock.setPosition(TeleopConstants.transferLockPosUp);
         }
@@ -842,5 +844,15 @@ public class Path {
         thread.start();
         sleep_millisec_opmode(50, opmode);
 
+    }
+    public static void extendLocks(HardwareMap hw){
+        Thread thread = new Thread(){
+            public void run(){
+                hw.transferLock.setPosition(TeleopConstants.transferLockPosExtended);
+                hw.foundationLock.setPosition(TeleopConstants.foundationLockExtended);
+            }
+
+        };
+        thread.start();
     }
 }

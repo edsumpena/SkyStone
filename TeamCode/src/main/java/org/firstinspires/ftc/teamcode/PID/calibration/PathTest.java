@@ -52,7 +52,7 @@ public class PathTest extends LinearOpMode {
         int[] skystonePositions = new int[2];
         skystonePositions[0] = (int) DriveConstantsPID.TEST_SKY_STONE_POSITION;
         RobotLogger.dd(TAG, "xml file %d", skystonePositions[0]);
-        String filename = "path_red_.xml";
+        String filename = "path_blue_.xml";
         filename = filename.substring(0, 8) + Integer.toString(skystonePositions[0])
                 + filename.substring(9);
         Pose2d t[] = DriveConstantsPID.parsePathXY(filename);
@@ -68,7 +68,7 @@ public class PathTest extends LinearOpMode {
             _strafeDrive = new SampleMecanumDriveREVOptimized(hardwareMap, true);
         }
 
-        RobotLogger.dd(TAG, "unit test for path (RED QUARY), ARM actions?" + Integer.toString(DriveConstantsPID.ENABLE_ARM_ACTIONS?1:0));
+        RobotLogger.dd(TAG, "unit test for path (BLUE QUARY), ARM actions?" + Integer.toString(DriveConstantsPID.ENABLE_ARM_ACTIONS?1:0));
         Pose2d startingPos = new Pose2d(new Vector2d(-34.752, -63.936), Math.toRadians(0));
         hwMap = new HardwareMap(hardwareMap);
         fieldPosition = FieldPosition.RED_QUARY;
@@ -82,8 +82,8 @@ public class PathTest extends LinearOpMode {
                     VuforiaCameraChoice.PHONE_BACK, true);
         }
         path = new Path(hwMap, this, _drive, _strafeDrive, hardwareMap, null, telemetry);
-        path.RedQuary(skystonePositions, vuLocalizer);
+        path.BlueQuary(skystonePositions, vuLocalizer);
         //path.BlueQuary(skystonePositions, vuLocalizer);
-        RobotLogger.dd(TAG, "----------done --------------------- unit test for path (RED QUARY)");
+        RobotLogger.dd(TAG, "----------done --------------------- unit test for path (BLUE QUARY)");
     }
 }
