@@ -157,8 +157,6 @@ public class TensorflowDetector {
 
     public TensorflowDetector(HardwareMap hardwareMap, VuforiaCameraChoice camera_choice) {
         localCamera = camera_choice;
-        boolean PHONE_IS_PORTRAIT = true;
-        VuforiaLocalizer.CameraDirection CAMERA_CHOICE;
 
         /*
          * Configure Vuforia by creating a Parameter object, and passing it to the Vuforia engine.
@@ -166,29 +164,22 @@ public class TensorflowDetector {
          * If no camera monitor is desired, use the parameter-less constructor instead (commented out below).
          */
 
-        int cameraMonitorViewId = hardwareMap.appContext.getResources().getIdentifier("cameraMonitorViewId", "id", hardwareMap.appContext.getPackageName());
-        VuforiaLocalizer.Parameters parameters = new VuforiaLocalizer.Parameters(cameraMonitorViewId);
+        VuforiaLocalizer.Parameters parameters = new VuforiaLocalizer.Parameters();
 
         parameters.vuforiaLicenseKey = VUFORIA_KEY;
         if (localCamera == VuforiaCameraChoice.PHONE_FRONT) {
             parameters.cameraDirection = VuforiaLocalizer.CameraDirection.FRONT;
-            CAMERA_CHOICE = FRONT;
             RobotLogger.dd(TAG, "using front camera");
         }
-        else {
+        else if (localCamera == VuforiaCameraChoice.PHONE_FRONT)
+        {
             parameters.cameraDirection = VuforiaLocalizer.CameraDirection.BACK;
-            CAMERA_CHOICE = BACK;
-            if (localCamera == VuforiaCameraChoice.HUB_USB) {
-                parameters.cameraDirection = VuforiaLocalizer.CameraDirection.BACK;
-                PHONE_IS_PORTRAIT = false;
-                updateParametersForWebCamera();
-                webcamName = hardwareMap.get(WebcamName.class, "WebcamFront");
-                parameters.cameraName = webcamName;
-                RobotLogger.dd(TAG, "using USB camera");
-            }
-            else
-                RobotLogger.dd(TAG, "using back camera");
-
+            RobotLogger.dd(TAG, "using back camera");
+        }
+        else if (localCamera == VuforiaCameraChoice.HUB_USB) {
+            webcamName = hardwareMap.get(WebcamName.class, "WebcamFront");
+            parameters.cameraName = webcamName;
+            RobotLogger.dd(TAG, "using USB camera");
         }
 
         //  Instantiate the Vuforia engine
@@ -211,8 +202,6 @@ public class TensorflowDetector {
         }
     }
 
-
-
     /**
      * Initialize the TensorFlow Object Detection engine.
      */
@@ -221,7 +210,7 @@ public class TensorflowDetector {
         int tfodMonitorViewId = hw.appContext.getResources().getIdentifier(
                 "tfodMonitorViewId", "id", hw.appContext.getPackageName());
         TFObjectDetector.Parameters tfodParameters = new TFObjectDetector.Parameters(tfodMonitorViewId);
-        tfodParameters.minimumConfidence = 0.6;
+        tfodParameters.minimumConfidence = 0.8;
         tfod = ClassFactory.getInstance().createTFObjectDetector(tfodParameters, vuforia);
         tfod.loadModelFromAsset(TFOD_MODEL_ASSET, LABEL_FIRST_ELEMENT, LABEL_SECOND_ELEMENT);
     }
