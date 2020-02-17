@@ -18,7 +18,7 @@ public class TeleopConstants {
     public static double clawServo2PosOpen = 1;
     public static double clawServo2PosAuto = 1;
     public static double clawServo2CapstoneOld = 0.6;
-    public static double clawServo2CapstoneNew = 0.641;
+    public static double clawServo2CapstoneNew = 0.498;// updated per Michael;  0.641;
     public static double transferLockPosUp = 0.4367;
     public static double transferLockPosOut = 0;
     public static double transferLockPosExtended = 0.245;
