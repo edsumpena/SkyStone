@@ -9,10 +9,10 @@ public class Stone {
     private float width;
     private String label;
 
-    public Stone(String label, float leftX, float topX, float height, float width){
+    public Stone(String label, float left, float top, float height, float width){
         this.label = label;
-        this.leftX = leftX;
-        this.topX = topX;
+        leftX = left;
+        topX = top;
         this.height = height;
         this.width = width;
         rightX = leftX + width;
@@ -49,5 +49,10 @@ public class Stone {
 
     public float[] getCenter(){
         return new float[]{Math.round(leftX + width / 2d), Math.round(topX + height / 2d)};
+    }
+
+    public String toString(){
+        return "{Name: " + label + " {Left, Right, Top, Bottom}: " + getLeft() + ", " + getRight() + ", " +
+                getTop() + ", " + getBottom() + ", Height: " + getHeight() + ", Width: " + getWidth() + "}";
     }
 }
