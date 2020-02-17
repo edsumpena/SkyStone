@@ -378,7 +378,6 @@ public class Path {
             } else {
                 theta = _drive.getExternalHeading() >= 0 ? _drive.getExternalHeading() :
                         _drive.getExternalHeading() + 2 * PI;
->>>>>>> a25396cab83b7276c0c26ebeb9a46f3a4b0db0a7
 
                 if (theta > PI)
                     _drive.turnSync(-(_drive.getExternalHeading() - 3 * PI / 2));
