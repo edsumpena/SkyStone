@@ -99,7 +99,7 @@ public class DiagonalTest extends LinearOpMode {
             if (DriveConstantsPID.RESET_FOLLOWER)
                 _drive.resetFollowerWithParameters(DriveConstantsPID.USING_STRAFE_DIAGONAL, false);
 
-            Path.sleep_millisec(5000);
+            Path.sleep_millisec_opmode(5000, this);
         }
     }
 }
