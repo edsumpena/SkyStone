@@ -30,39 +30,39 @@ public class Detect {
             if (!skystoneIndex.isEmpty() && skystoneIndex.size() >= 2)
                 //skystoneIndex = processData(skystoneIndex);
 
-            switch (updatedRecognitions.size()) {
-                case 1:
-                    // if only one skystone is detected, segment image like |1|2|3-|
-                    // if midpoint of skystone is in one of these "regions", assume the positions of remaining stones
-                    if (skystoneIndex.get(0).getLabel().equalsIgnoreCase("skystone")) {
-                        double horizontalMid = skystoneIndex.get(0).getCenter()[0];
-                        double dividedImg = imageWidthPx / 3d;
+                switch (updatedRecognitions.size()) {
+                    case 1:
+                        // if only one skystone is detected, segment image like |1|2|3-|
+                        // if midpoint of skystone is in one of these "regions", assume the positions of remaining stones
+                        if (skystoneIndex.get(0).getLabel().equalsIgnoreCase("skystone")) {
+                            double horizontalMid = skystoneIndex.get(0).getCenter()[0];
+                            double dividedImg = imageWidthPx / 3d;
 
-                        if (horizontalMid <= dividedImg)
+                            if (horizontalMid <= dividedImg)
+                                return new int[]{1, 4};
+                            else if (horizontalMid > dividedImg && horizontalMid <= dividedImg * 2)
+                                return new int[]{2, 5};
+                            else
+                                return new int[]{3, 6};
+                        } else
                             return new int[]{1, 4};
-                        else if (horizontalMid > dividedImg && horizontalMid <= dividedImg * 2)
-                            return new int[]{2, 5};
-                        else
+                    case 2:
+                        // if only see two, and neither are skystones, assume that the skystone is out of view and predict position
+                        // based on that
+
+                        // if one is a skystone and one is not, predict position based on their relative positions
+                        if (!containsLabel(skystoneIndex, "skystone")) {
                             return new int[]{3, 6};
-                    } else
-                        return new int[]{1, 4};
-                case 2:
-                    // if only see two, and neither are skystones, assume that the skystone is out of view and predict position
-                    // based on that
-
-                    // if one is a skystone and one is not, predict position based on their relative positions
-                    if (!containsLabel(skystoneIndex, "skystone")) {
-                        return new int[]{3, 6};
-                    } else {
-                        if (skystoneIndex.get(getIndex(skystoneIndex, "skystone")).getLeft() >
-                                skystoneIndex.get(getIndex(skystoneIndex, "stone")).getLeft())
-                            return new int[]{2, 5};
-                        else if (skystoneIndex.get(getIndex(skystoneIndex, "skystone")).getLeft() <=
-                                skystoneIndex.get(getIndex(skystoneIndex, "stone")).getLeft())
-                            return new int[]{1, 4};
-                    }
-                    break;
-            }
+                        } else {
+                            if (skystoneIndex.get(getIndex(skystoneIndex, "skystone")).getLeft() >
+                                    skystoneIndex.get(getIndex(skystoneIndex, "stone")).getLeft())
+                                return new int[]{2, 5};
+                            else if (skystoneIndex.get(getIndex(skystoneIndex, "skystone")).getLeft() <=
+                                    skystoneIndex.get(getIndex(skystoneIndex, "stone")).getLeft())
+                                return new int[]{1, 4};
+                        }
+                        break;
+                }
 
             if (containsLabel(skystoneIndex, "skystone")) {
 
@@ -97,7 +97,7 @@ public class Detect {
                 skystoneIndex.add(new Stone(r.getLabel(), r.getLeft(), r.getTop(), r.getHeight(), r.getWidth()));
 
             if (!skystoneIndex.isEmpty() && skystoneIndex.size() >= 2)
-                //skystoneIndex = processData(skystoneIndex);
+                skystoneIndex = processData(skystoneIndex);
 
             switch (updatedRecognitions.size()) {
                 case 1:
@@ -270,13 +270,13 @@ public class Detect {
         return stones;
     }
 
-    private static Stone generateImpliedStone(ArrayList<Stone> stones, double centerX){
+    private static Stone generateImpliedStone(ArrayList<Stone> stones, double centerX) {
         double avgCenterY = 0;
         double avgHeight = 0;
         double avgWidth = 0;
         String label = containsLabel(stones, "skystone") ? "stone" : "skystone";
 
-        for(Stone s : stones) {
+        for (Stone s : stones) {
             avgCenterY += s.getTop();
             avgHeight += s.getHeight();
             avgWidth += s.getWidth();
@@ -291,8 +291,8 @@ public class Detect {
     }
 
     private static boolean isOutlier(float[] data, float testCase) {
-        float[] lowerQuartile;
-        float[] upperQuartile;
+        float[] lowerQuartile = null;
+        float[] upperQuartile = null;
 
         RobotLog.dd("DATA", Arrays.toString(data));
 
@@ -300,12 +300,17 @@ public class Detect {
 
         RobotLog.dd("SORTED DATA", Arrays.toString(data));
 
-        if (data.length % 2 == 0) {
+        if (data.length % 2 == 0 && data.length > 3) {
             lowerQuartile = Arrays.copyOfRange(data, 0, data.length / 2 - 1);
             upperQuartile = Arrays.copyOfRange(data, data.length / 2, data.length - 1);
         } else {
-            lowerQuartile = Arrays.copyOfRange(data, 0, data.length / 2);
-            upperQuartile = Arrays.copyOfRange(data, data.length / 2 + 2, data.length - 1);
+            if (data.length > 3) {
+                lowerQuartile = Arrays.copyOfRange(data, 0, data.length / 2);
+                upperQuartile = Arrays.copyOfRange(data, data.length / 2 + 2, data.length - 1);
+            } else if(data.length == 3){
+                lowerQuartile = new float[]{data[0]};
+                upperQuartile = new float[]{data[2]};
+            }
         }
 
         double q1 = getMedian(lowerQuartile);
