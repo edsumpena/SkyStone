@@ -4,6 +4,7 @@ import com.qualcomm.robotcore.util.RobotLog;
 
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.tfod.Recognition;
+import org.firstinspires.ftc.teamcode.R;
 import org.firstinspires.ftc.teamcode.Tensorflow.TFODCalc;
 
 import java.util.ArrayList;
@@ -11,6 +12,8 @@ import java.util.Arrays;
 import java.util.List;
 
 public class Detect {
+
+    public static double tollerance = 0.9;
 
     public Detect() {
         TFODCalc.init();
@@ -28,59 +31,55 @@ public class Detect {
                 skystoneIndex.add(new Stone(r.getLabel(), r.getLeft(), r.getTop(), r.getHeight(), r.getWidth()));
 
             if (!skystoneIndex.isEmpty() && skystoneIndex.size() >= 2)
-                //skystoneIndex = processData(skystoneIndex);
+                skystoneIndex = processData(skystoneIndex);
 
-                switch (updatedRecognitions.size()) {
-                    case 1:
-                        // if only one skystone is detected, segment image like |1|2|3-|
-                        // if midpoint of skystone is in one of these "regions", assume the positions of remaining stones
-                        if (skystoneIndex.get(0).getLabel().equalsIgnoreCase("skystone")) {
-                            double horizontalMid = skystoneIndex.get(0).getCenter()[0];
-                            double dividedImg = imageWidthPx / 3d;
+            switch (updatedRecognitions.size()) {
+                case 1:
+                    // if only one skystone is detected, segment image like |1|2|3-|
+                    // if midpoint of skystone is in one of these "regions", assume the positions of remaining stones
+                    if (skystoneIndex.get(0).getLabel().equalsIgnoreCase("skystone")) {
+                        double horizontalMid = skystoneIndex.get(0).getCenter()[0];
+                        double dividedImg = imageWidthPx / 3d;
 
-                            if (horizontalMid <= dividedImg)
-                                return new int[]{1, 4};
-                            else if (horizontalMid > dividedImg && horizontalMid <= dividedImg * 2)
-                                return new int[]{2, 5};
-                            else
-                                return new int[]{3, 6};
-                        } else
+                        if (horizontalMid <= dividedImg)
                             return new int[]{1, 4};
-                    case 2:
-                        // if only see two, and neither are skystones, assume that the skystone is out of view and predict position
-                        // based on that
-
-                        // if one is a skystone and one is not, predict position based on their relative positions
-                        if (!containsLabel(skystoneIndex, "skystone")) {
+                        else if (horizontalMid > dividedImg && horizontalMid <= dividedImg * 2)
+                            return new int[]{2, 5};
+                        else
                             return new int[]{3, 6};
-                        } else {
-                            if (skystoneIndex.get(getIndex(skystoneIndex, "skystone")).getLeft() >
-                                    skystoneIndex.get(getIndex(skystoneIndex, "stone")).getLeft())
-                                return new int[]{2, 5};
-                            else if (skystoneIndex.get(getIndex(skystoneIndex, "skystone")).getLeft() <=
-                                    skystoneIndex.get(getIndex(skystoneIndex, "stone")).getLeft())
-                                return new int[]{1, 4};
-                        }
-                        break;
-                }
+                    } else
+                        return new int[]{1, 4};
+                case 2:
+                    // if only see two, and neither are skystones, assume that the skystone is out of view and predict position
+                    // based on that
+
+                    // if one is a skystone and one is not, predict position based on their relative positions
+                    if (!containsLabel(skystoneIndex, "skystone")) {
+                        return new int[]{3, 6};
+                    } else {
+                        if (skystoneIndex.get(getIndex(skystoneIndex, "skystone")).getLeft() >
+                                skystoneIndex.get(getIndex(skystoneIndex, "stone")).getLeft())
+                            return new int[]{2, 5};
+                        else if (skystoneIndex.get(getIndex(skystoneIndex, "skystone")).getLeft() <=
+                                skystoneIndex.get(getIndex(skystoneIndex, "stone")).getLeft())
+                            return new int[]{1, 4};
+                    }
+                    break;
+            }
 
             if (containsLabel(skystoneIndex, "skystone")) {
 
-                double minPos = skystoneIndex.get(0).getLeft();
+                double skystoneLeft = skystoneIndex.get(getIndex(skystoneIndex, "skystone")).getLeft();
+                int stones = 0;
                 if (updatedRecognitions.size() >= 3) {
-                    for (int x = 1; x < skystoneIndex.size(); x++) {
-                        if (skystoneIndex.get(x).getLabel().equalsIgnoreCase("skystone")) {
-                            if (minPos > skystoneIndex.get(x).getLeft())
-                                minPos = skystoneIndex.get(x).getLeft();
+                    for (int x = 0; x < skystoneIndex.size(); x++) {
+                        if (skystoneIndex.get(x).getLabel().equalsIgnoreCase("stone")) {
+                            if (skystoneLeft > skystoneIndex.get(x).getLeft())
+                                stones += 1;
                         }
                     }
 
-                    int idx = 0;
-                    for (Stone s : skystoneIndex) {
-                        if (s.getLeft() < minPos)
-                            idx += 1;
-                    }
-                    return new int[]{idx + 1, idx + 4};
+                    return new int[]{stones + 1, stones + 4};
                 }
             }
         }
@@ -135,21 +134,17 @@ public class Detect {
 
             if (containsLabel(skystoneIndex, "skystone")) {
 
-                double minPos = skystoneIndex.get(0).getRight();
+                double skystoneRight = skystoneIndex.get(getIndex(skystoneIndex, "skystone")).getRight();
+                int stones = 0;
                 if (updatedRecognitions.size() >= 3) {
-                    for (int x = 1; x < skystoneIndex.size(); x++) {
-                        if (skystoneIndex.get(x).getLabel().equalsIgnoreCase("skystone")) {
-                            if (minPos < skystoneIndex.get(x).getRight())
-                                minPos = skystoneIndex.get(x).getRight();
+                    for (int x = 0; x < skystoneIndex.size(); x++) {
+                        if (skystoneIndex.get(x).getLabel().equalsIgnoreCase("stone")) {
+                            if (skystoneRight < skystoneIndex.get(x).getRight())
+                                stones += 1;
                         }
                     }
 
-                    int idx = 0;
-                    for (Stone s : skystoneIndex) {
-                        if (s.getRight() > minPos)
-                            idx += 1;
-                    }
-                    return new int[]{idx + 1, idx + 4};
+                    return new int[]{stones + 1, stones + 4};
                 }
             }
         }
@@ -248,24 +243,36 @@ public class Detect {
             }
         RobotLog.dd("Current List (Post-Remove processing)", stones.toString());
 
-        /*float[] centerDeltaX = new float[stones.size()];
+        /*if (stones.size() >= 2) {
+            float[] centerDeltaX = new float[stones.size() - 1];
+            float[] centerX = new float[stones.size()];
 
-        for (int i = 0; i < stones.size() - 1; i++)
-            centerDeltaX[i] = Math.abs(stones.get(i).getCenter()[0] - stones.get(i + 1).getCenter()[0]);
+            for(int i = 0; i < centerX.length; i++)
+                centerX[i] = stones.get(i).getCenter()[0];
 
-        RobotLog.dd("Current List (Pre-Imply processing)", stones.toString());
-        for (int i = 0; i < stones.size(); i++) {
-            if(isOutlier(centerDeltaX, centerDeltaX[i])){
-                double impledCenterX = (stones.get(i).getCenter()[0] + stones.get(i + 1).getCenter()[0]) / 2d;
-                Stone impliedStone = generateImpliedStone(stones, impledCenterX);
-                RobotLog.dd(">>>", "Stone CenterXs = [" + stones.get(i).getCenter()[0] + " - " + stones.get(i + 1).getCenter()[0] +
-                        "], Index = " + i + ", Delta = " + centerDeltaX[i] + ", Implied Center = " + impledCenterX);
-                RobotLog.dd("Implied Stone", impliedStone.toString());
-                stones.add(impliedStone);
+            Arrays.sort(centerX);
+
+            for (int i = 0; i < centerX.length - 1; i++)
+                centerDeltaX[i] = Math.abs(centerX[i] - centerX[i + 1]);
+
+            RobotLog.dd("Center Deltas", Arrays.toString(centerDeltaX));
+
+            RobotLog.dd("Current List (Pre-Imply processing)", stones.toString());
+            for (int i = 0; i < centerDeltaX.length; i++) {
+                RobotLog.dd("Implying Loop Index", String.valueOf(i));
+                RobotLog.dd("Value at Index", String.valueOf(centerDeltaX[i]));
+                if (centerDeltaX[i] > 200) {
+                    double impledCenterX = (stones.get(i).getCenter()[0] + stones.get(i + 1).getCenter()[0]) / 2d;
+                    Stone impliedStone = generateImpliedStone(stones, impledCenterX);
+                    RobotLog.dd(">>>", "Implied Stone CenterXs = [" + stones.get(i).getCenter()[0] + " - " + stones.get(i + 1).getCenter()[0] +
+                            "], Index = " + i + ", Delta = " + centerDeltaX[i] + ", Implied Center = " + impledCenterX);
+                    RobotLog.dd("Implied Stone", impliedStone.toString());
+                    stones.add(impliedStone);
+                }
+
             }
-
-        }
-        RobotLog.dd("Current List (Post-Imply processing)", stones.toString());*/
+            RobotLog.dd("Current List (Post-Imply processing)", stones.toString());
+        }*/
 
         return stones;
     }
@@ -305,22 +312,23 @@ public class Detect {
             upperQuartile = Arrays.copyOfRange(data, data.length / 2, data.length - 1);
         } else {
             if (data.length > 3) {
-                lowerQuartile = Arrays.copyOfRange(data, 0, data.length / 2);
-                upperQuartile = Arrays.copyOfRange(data, data.length / 2 + 2, data.length - 1);
-            } else if(data.length == 3){
+                lowerQuartile = Arrays.copyOfRange(data, 0, data.length / 2 - 1);
+                upperQuartile = Arrays.copyOfRange(data, data.length / 2 + 1, data.length - 1);
+            } else if (data.length == 3) {
                 lowerQuartile = new float[]{data[0]};
                 upperQuartile = new float[]{data[2]};
             }
         }
 
+        RobotLog.dd("LowerQuartile", Arrays.toString(lowerQuartile));
+        RobotLog.dd("UpperQuartile", Arrays.toString(upperQuartile));
+
         double q1 = getMedian(lowerQuartile);
         double q3 = getMedian(upperQuartile);
         double iqr = q3 - q1;
-        double lowerBounds = q1 - 1.5 * iqr;
-        double upperBounds = q3 + 1.5 * iqr;
+        double lowerBounds = q1 - tollerance * iqr;
+        double upperBounds = q3 + tollerance * iqr;
 
-        RobotLog.dd("LowerQuartile", Arrays.toString(lowerQuartile));
-        RobotLog.dd("UpperQuartile", Arrays.toString(upperQuartile));
         RobotLog.dd(">>>", "Q1 = " + q1 + ", Q3 = " + q3 + ", IQR = " + iqr +
                 ", {LowerBounds, UpperBounds} = {" + lowerBounds + ", " + upperBounds + "}, TestCase: " + testCase);
 
