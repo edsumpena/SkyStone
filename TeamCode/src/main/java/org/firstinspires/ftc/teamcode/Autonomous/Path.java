@@ -322,6 +322,8 @@ public class Path {
         }
         RobotLog.dd(TAG, "step4.5, after straight move, to drop");
 
+        sleep_millisec_opmode(400, opMode);
+
         // step 5
         DriveBuilderReset(true, false, "step" + Integer.toString(step_count) + coordinates[step_count].toString() +
                 ", after drop 2nd stone, to strafe");
@@ -710,7 +712,7 @@ public class Path {
         LinearOpMode opmode = mode;
         Thread t = new Thread() {
             public void run() {
-                sleep_millisec_opmode(2300, opmode);
+                sleep_millisec_opmode(2200, opmode);
                 if (FieldPosition.RED_QUARY == fieldPosition) {
                     if (first) {
                         hw.redAutoClawJoint1.setPosition(TeleopConstants.autoClaw1Drop);
@@ -755,10 +757,10 @@ public class Path {
                         hw.clawServo1.setPosition(TeleopConstants.clawServo1PosOpen);
                         sleep_millisec_opmode(600, opmode);
 
-                        hw.foundationLock.setPosition(TeleopConstants.foundationLockUnlock);
+                        hw.foundationLock.setPosition(TeleopConstants.foundationLockHalfUnlock);
                         sleep_millisec_opmode(200, opmode);
 
-                        hw.transferLock.setPosition(TeleopConstants.transferLockPosOut);
+                        hw.transferLock.setPosition(TeleopConstants.transferLockPosHalfUnlock);
                         sleep_millisec_opmode(200, opmode);
                     }
                 } else {
@@ -800,12 +802,15 @@ public class Path {
                         sleep_millisec_opmode(200, opmode);
 
                         hw.clawServo2.setPosition(TeleopConstants.clawServo2PosOpen);
-                        sleep_millisec_opmode(600, opmode);
-
-                        hw.foundationLock.setPosition(TeleopConstants.foundationLockUnlock);
                         sleep_millisec_opmode(200, opmode);
 
-                        hw.transferLock.setPosition(TeleopConstants.transferLockPosOut);
+                        hw.clawServo1.setPosition(TeleopConstants.clawServo1PosOpen);
+                        sleep_millisec_opmode(600, opmode);
+
+                        hw.foundationLock.setPosition(TeleopConstants.foundationLockHalfUnlock);
+                        sleep_millisec_opmode(200, opmode);
+
+                        hw.transferLock.setPosition(TeleopConstants.transferLockPosHalfUnlock);
                         sleep_millisec_opmode(200, opmode);
                     }
                 }
@@ -844,15 +849,5 @@ public class Path {
         thread.start();
         sleep_millisec_opmode(50, opmode);
 
-    }
-    public static void extendLocks(HardwareMap hw){
-        Thread thread = new Thread(){
-            public void run(){
-                hw.transferLock.setPosition(TeleopConstants.transferLockPosExtended);
-                hw.foundationLock.setPosition(TeleopConstants.foundationLockExtended);
-            }
-
-        };
-        thread.start();
     }
 }
