@@ -457,6 +457,10 @@ public class Path {
             first_skystone_location = 3;
             RobotLogger.dd(TAG, "detected wrong, force skystone location to be [3, 6]");
         }
+        else if (first_skystone_location < 1) {
+            first_skystone_location = 1;
+            RobotLogger.dd(TAG, "detected wrong, force skystone location to be [1, 4]");
+        }
         path_file = tmp.substring(0, 8) + Integer.toString(skystonePositions[0])
                 + tmp.substring(9);
         RobotLogger.dd(TAG, "to read XY coordinates from " + path_file);
@@ -486,6 +490,10 @@ public class Path {
         if (first_skystone_location > 3) {
             first_skystone_location = 3;
             RobotLogger.dd(TAG, "detected wrong, force skystone location to be [3, 6]");
+        }
+        else if (first_skystone_location < 1) {
+            first_skystone_location = 1;
+            RobotLogger.dd(TAG, "detected wrong, force skystone location to be [1, 4]");
         }
         path_file = tmp.substring(0, 9) + Integer.toString(skystonePositions[0])
                 + tmp.substring(10);
