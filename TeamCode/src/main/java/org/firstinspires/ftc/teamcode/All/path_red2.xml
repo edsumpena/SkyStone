@@ -12,20 +12,20 @@
       <!--X-coordinate of the Skystone closest to the wall-->
       <!--Y-coordinate value which the robot moves back and forth on-->
       <x>-46.5</x>
-      <y>-38.0</y>
+      <y>-38.5</y>
       <h>0.0</h>
    </movestep>
    <!--X-coordinate of the foundation-->
    <movestep drive_type = "2, line to foundation to drop">
       <x>52.5</x>
-      <y>-37.5</y>
+      <y>-38.0</y>
       <h>0.0</h>
    </movestep>
 
    <movestep drive_type = "3, reverse true, line to, straight back to stones">
       <!--X-coordinate of the Skystone furthest away from the wall-->
-      <x>-21.5</x>
-      <y>-37.0</y>
+      <x>-24.5</x>
+      <y>-37.5</y>
       <h>0.0</h>
    </movestep>
 
@@ -39,8 +39,8 @@
 
    <movestep drive_type = "5, strafe, after drop 2nd, strafe away from foundation">
       <!---(-7, -10)-->
-      <x>45.0</x>
-      <y>-41.0</y>
+      <x>48.0</x>
+      <y>-40.0</y>
       <h>0.0</h>
    </movestep>
 
@@ -48,7 +48,7 @@
       <!--not using X-->
       <x>0.0</x>
       <!--_drive.getPoseEstimate().getY() + coordinates[step_count].getY())-->
-      <y>9.0</y>
+      <y>10.0</y>
       <h>0.0</h>
    </movestep>
 
@@ -56,14 +56,14 @@
       <!--drive.getPoseEstimate().getX() - coordinates[step_count].getX()-->
       <x>12.0</x>
       <!--_drive.getPoseEstimate().getY() - coordinates[step_count].getY()-->
-      <y>22.0</y>
+      <y>24.0</y>
       <h>180.0</h>
    </movestep>
 
    <movestep drive_type = "8, spline, after drop foundation, to back to parking, absulate XY, not delta">
       <!--not delta -->
       <x>5.0</x>
-      <y>-45.5</y>
+      <y>-42.5</y>
       <h>180.0</h>
    </movestep>
 </pathXY>
