@@ -35,7 +35,7 @@ import java.util.ArrayList;
  *  -Adjust Intake/Lift power in TeleopConstants.java class
  */
 
-@TeleOp(name = "TeleOp", group = "Linear Opmode")
+@TeleOp(name = "TeleOp", group = "TeleOp")
 public class Teleop extends LinearOpMode {
     private boolean intake = false;
     private boolean outake = false;
@@ -150,7 +150,7 @@ public class Teleop extends LinearOpMode {
             hwMap.redAutoClawJoint1.setPosition(TeleopConstants.autoClaw1Retracted_blue);
             Path.sleep_millisec_opmode(200, this);
         }
-        hwMap.innerTransfer.setPosition(TeleopConstants.innerTransferPosInit);
+        hwMap.innerTransfer.setPosition(TeleopConstants.innerTransferPosClosed);
 
         while (opModeIsActive()) {
 
@@ -261,6 +261,11 @@ public class Teleop extends LinearOpMode {
                 hwMap.clawServo1.setPosition(TeleopConstants.clawServo1PosOpen);
             }
 
+            if(gamepad1.right_bumper){
+                hwMap.clawServo1.setPosition(TeleopConstants.clawServo1Capstone);
+                hwMap.clawServo2.setPosition(TeleopConstants.clawServo2CapstoneOld);
+            }
+
             //------------------------------===Driving/Strafing===------------------------------------------
 
             if (gamepad1.start && gamepad1.back && !switchBlocker) {
@@ -270,7 +275,7 @@ public class Teleop extends LinearOpMode {
                 switchBlocker = false;
             }
 
-            if (gamepad2.right_stick_y != 0 || gamepad2.left_stick_y != 0) {
+            if (gamepad2.right_stick_y != 0 || gamepad2.left_stick_y != 0) {    //??? Ask Mechanical
                 lift.moveLift(gamepad2.right_stick_y + gamepad2.left_stick_y * TeleopConstants.liftSpeedSlow);
             } else {
                 lift.stop();

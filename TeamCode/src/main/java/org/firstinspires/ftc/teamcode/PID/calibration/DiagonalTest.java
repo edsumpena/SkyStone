@@ -8,6 +8,7 @@ import com.acmerobotics.roadrunner.trajectory.BaseTrajectoryBuilder;
 import com.acmerobotics.roadrunner.trajectory.Trajectory;
 import com.acmerobotics.roadrunner.trajectory.TrajectoryBuilder;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
 import org.firstinspires.ftc.teamcode.All.DriveConstant;
@@ -27,7 +28,7 @@ import java.util.List;
  */
 @Config
 @Autonomous(name = "DiagonalTest", group = "drive")
-//@Disabled
+@Disabled
 public class DiagonalTest extends LinearOpMode {
     public static double DISTANCE = 0; // update later;
     private String TAG = "DiagonalTest";

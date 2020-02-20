@@ -2,6 +2,7 @@ package org.firstinspires.ftc.teamcode.PID.calibration;
 
 import com.acmerobotics.dashboard.config.Config;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
 import org.firstinspires.ftc.teamcode.PID.DriveConstantsPID;
@@ -14,6 +15,7 @@ import org.firstinspires.ftc.teamcode.PID.mecanum.SampleMecanumDriveREVOptimized
  */
 @Config
 @Autonomous(group = "drive")
+@Disabled
 public class TurnTest0 extends LinearOpMode {
     public static double ANGLE = 90; // deg
 

@@ -20,7 +20,7 @@ import org.firstinspires.ftc.teamcode.PID.mecanum.SampleMecanumDriveREVOptimized
  */
 @Config
 @Autonomous(name = "FollowerPIDTunerStraight", group = "drive")
-//@Disabled
+@Disabled
 public class FollowerPIDTunerStraight extends LinearOpMode {
     public static double DISTANCE = 0; // update later;
     private String TAG = "FollowerPIDTunerStraight";

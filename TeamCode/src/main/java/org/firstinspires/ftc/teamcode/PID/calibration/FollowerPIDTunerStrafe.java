@@ -6,6 +6,7 @@ import com.acmerobotics.roadrunner.geometry.Vector2d;
 import com.acmerobotics.roadrunner.trajectory.BaseTrajectoryBuilder;
 import com.acmerobotics.roadrunner.trajectory.Trajectory;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
 import org.firstinspires.ftc.teamcode.All.DriveConstant;
@@ -22,7 +23,7 @@ import org.firstinspires.ftc.teamcode.PID.mecanum.SampleMecanumDriveREVOptimized
  */
 @Config
 @Autonomous(name = "FollowerPIDTunerStrafe", group = "drive")
-//@Disabled
+@Disabled
 public class FollowerPIDTunerStrafe extends LinearOpMode {
     public static double DISTANCE = 0; // update later;
     private String TAG = "FollowerPIDTunerStrafe";

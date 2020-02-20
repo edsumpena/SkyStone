@@ -49,6 +49,7 @@ import static org.firstinspires.ftc.teamcode.PID.DriveConstantsPID.kV;
  */
 @Config
 @Autonomous(name = "DriveVelocityPIDTuner", group = "drive")
+@Disabled
 public class DriveVelocityPIDTuner extends LinearOpMode {
     public static double DISTANCE = 72;
     private DcMotorEx leftFront, leftRear, rightRear, rightFront;
