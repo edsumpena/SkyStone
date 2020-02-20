@@ -45,7 +45,7 @@ public class DriveConstantsPID {
     public static boolean RUN_USING_ODOMETRY_WHEEL = false;
     public static boolean RUN_USING_IMU_LOCALIZER = true;
     public static boolean BRAKE_ON_ZERO = true;
-    public static boolean USING_BULK_READ = false;
+    public static boolean USING_BULK_READ = true;
     public static boolean USING_STRAFE_DIAGONAL = true;
     public static boolean DIAGONAL_SPLIT = true;
     public static boolean RESET_FOLLOWER = true;
