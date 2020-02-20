@@ -201,7 +201,7 @@ public class Path {
 
         DriveBuilderReset(DriveConstantsPID.USING_STRAFE_DIAGONAL, false,
                 "step" + Integer.toString(step_count) + coordinates[step_count].toString() + ", after prepare, start");
-        if (first_skystone_location == 2) {
+        if (first_skystone_location == -2) {
             builder = builder
                     .setReversed(false).strafeTo(new Vector2d(coordinates[step_count].getX(), coordinates[step_count].getY()));
             trajectory = builder.build();   //x - 2.812, y + 7.984
@@ -630,7 +630,7 @@ public class Path {
                         hw.redAutoClawJoint2.setPosition(TeleopConstants.autoClaw2Prep);
                         sleep_millisec_opmode(200, opmode);
                     } else {
-                        sleep_millisec_opmode(1700, opmode);
+                        sleep_millisec_opmode(1900, opmode);
 
                         hw.redAutoClawJoint3.setPosition(TeleopConstants.autoClaw3Open);
                         sleep_millisec_opmode(200, opmode);
@@ -657,7 +657,7 @@ public class Path {
                         hw.redAutoClawJoint2.setPosition(TeleopConstants.autoClaw2Prep_blue);
                         sleep_millisec_opmode(200, opmode);
                     } else {
-                        sleep_millisec_opmode(1700, opmode);
+                        sleep_millisec_opmode(1900, opmode);
 
                         hw.redAutoClawJoint3.setPosition(TeleopConstants.autoClaw3Open_blue);
                         sleep_millisec_opmode(200, opmode);
@@ -681,7 +681,7 @@ public class Path {
         LinearOpMode opmode = mode;
         if (FieldPosition.RED_QUARY == fieldPosition) {
             hw.redAutoClawJoint2.setPosition(TeleopConstants.autoClaw2Grabbing);
-            sleep_millisec_opmode(200, opmode);
+            sleep_millisec_opmode(400, opmode);
 
             hw.redAutoClawJoint3.setPosition(TeleopConstants.autoClaw3Closed);
             sleep_millisec_opmode(200, opmode);
@@ -694,7 +694,7 @@ public class Path {
 
         } else {
             hw.redAutoClawJoint2.setPosition(TeleopConstants.autoClaw2Grabbing_blue);
-            sleep_millisec_opmode(200, opmode);
+            sleep_millisec_opmode(400, opmode);
 
             hw.redAutoClawJoint3.setPosition(TeleopConstants.autoClaw3Closed_blue);
             sleep_millisec_opmode(200, opmode);
@@ -842,8 +842,8 @@ public class Path {
                 sleep_millisec_opmode(200, mode);
                 hw.liftOdometry.setPosition(TeleopConstants.liftOdometryDown);
                 sleep_millisec_opmode(200, mode);
-
-                //hw.innerTransfer.setPosition(TeleopConstants.innerTransferPosInit);
+                hw.innerTransfer.setPosition(TeleopConstants.innerTransferPosClosed);
+                sleep_millisec_opmode(200, mode);
             }
         };
         thread.start();

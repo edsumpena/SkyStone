@@ -2,9 +2,7 @@ package org.firstinspires.ftc.teamcode.Autonomous.Vision;
 
 import com.qualcomm.robotcore.util.RobotLog;
 
-import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.tfod.Recognition;
-import org.firstinspires.ftc.teamcode.R;
 import org.firstinspires.ftc.teamcode.Tensorflow.TFODCalc;
 
 import java.util.ArrayList;
@@ -13,7 +11,7 @@ import java.util.List;
 
 public class Detect {
 
-    public static double tollerance = 0.9;
+    public static double tolerance = 0.3;
 
     public Detect() {
         TFODCalc.init();
@@ -326,8 +324,8 @@ public class Detect {
         double q1 = getMedian(lowerQuartile);
         double q3 = getMedian(upperQuartile);
         double iqr = q3 - q1;
-        double lowerBounds = q1 - tollerance * iqr;
-        double upperBounds = q3 + tollerance * iqr;
+        double lowerBounds = q1 - tolerance * iqr;
+        double upperBounds = q3 + tolerance * iqr;
 
         RobotLog.dd(">>>", "Q1 = " + q1 + ", Q3 = " + q3 + ", IQR = " + iqr +
                 ", {LowerBounds, UpperBounds} = {" + lowerBounds + ", " + upperBounds + "}, TestCase: " + testCase);

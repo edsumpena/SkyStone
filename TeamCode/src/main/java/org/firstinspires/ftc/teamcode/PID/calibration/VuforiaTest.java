@@ -6,6 +6,7 @@ import com.acmerobotics.roadrunner.geometry.Vector2d;
 import com.acmerobotics.roadrunner.trajectory.BaseTrajectoryBuilder;
 import com.acmerobotics.roadrunner.trajectory.Trajectory;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
 import org.firstinspires.ftc.teamcode.All.HardwareMap;
@@ -24,6 +25,7 @@ import org.firstinspires.ftc.teamcode.PID.mecanum.SampleMecanumDriveREVOptimized
  */
 @Config
 @Autonomous(group = "drive")
+@Disabled
 public class VuforiaTest extends LinearOpMode {
     private Trajectory trajectory;
     private BaseTrajectoryBuilder builder, strafe_builder;

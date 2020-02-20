@@ -4,6 +4,7 @@ import com.acmerobotics.dashboard.config.Config;
 import com.acmerobotics.roadrunner.localization.Localizer;
 import com.acmerobotics.roadrunner.trajectory.Trajectory;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
 import org.firstinspires.ftc.teamcode.PID.DriveConstantsPID;
@@ -21,6 +22,7 @@ import java.util.List;
  */
 @Config
 @Autonomous(name = "StraightTestV0", group = "drive")
+@Disabled
 public class StraightTestV0 extends LinearOpMode {
     public static double DISTANCE = DriveConstantsPID.TEST_DISTANCE;
     private String TAG = "StraightTest";

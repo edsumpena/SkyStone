@@ -51,6 +51,7 @@ import org.firstinspires.ftc.robotcore.external.tfod.Recognition;
  * is explained below.
  */
 @Autonomous(name = "Phone TFOD Test", group = "Linear Opmode")
+@Disabled
 public class ConceptTensorFlowObjectDetection extends LinearOpMode {
     private static final String TFOD_MODEL_ASSET = "skystoneTFOD_v2_[105-15].tflite";
     private static final String LABEL_FIRST_ELEMENT = "skystone";
