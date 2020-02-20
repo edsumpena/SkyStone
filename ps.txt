@@ -1,1 +1,0 @@
-u0_a198   6210  361   1965676 226356 sys_epoll_ 00000000 S com.qualcomm.ftcrobotcontroller
