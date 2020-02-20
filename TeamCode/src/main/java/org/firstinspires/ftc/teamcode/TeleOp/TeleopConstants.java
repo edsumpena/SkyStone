@@ -6,41 +6,45 @@ public class TeleopConstants {
     public static double drivePowerTurbo = 1;
     public static double drivePowerSlow = 0.5;
     public static double turnPower = 0.5;
-    public static double intakePower = 0.8;
+    public static double intakePower = 1;
     public static double liftPower = 1;
     public static double clawServo1PosClose = 0.075;    //@TODO Get clawServo1 & clawServo2 positions
     public static double clawServo1PosOpen = 0.3003;
     public static double clawServo1PosReceive = 0.54;
     public static double clawServo1Prep = 0.2196;
-    public static double clawServo1Capstone = 0.295;
+    public static double clawServo1Capstone = 0.014;
     public static double clawServo2Block = 0.74281;
     public static double clawServo2PosClose = 0.522;
     public static double clawServo2PosOpen = 1;
     public static double clawServo2PosAuto = 1;
-    public static double transferLockPosPlatform = 0.465;
-    public static double transferLockPosUp = 0.418;
-    public static double transferLockPosOut = 0.221;
+    public static double clawServo2CapstoneOld = 0.6;
+    public static double clawServo2CapstoneNew = 0.498;// updated per Michael;  0.641;
+    public static double transferLockPosUp = 0.4367;
+    public static double transferLockPosOut = 0;
+    public static double transferLockPosHalfUnlock = 0.3026;
     public static double foundationLockInit = 0.1215;
-    public static double foundationLockUnlock = 0.364;
-    public static double foundationLockLock = 0.201;
+    public static double foundationLockUnlock = 0.62;
+    public static double foundationLockLock = 0.16;
+    public static double foundationLockHalfUnlock = 0.31558;
 
 
     public static double transferHornPosReady = 1.0;
-    public static double transferHornPosPush = 0.4;
+    public static double transferHornPosPush = 0.327599;
     public static double transferHornCapstone = 0.652;
     public static double clawInitPosReset = 0;
     public static double clawInitPosCapstone = 0.6623;
     public static double clawInitPosCapstoneForReal = 0.547;
-    public static double innerTransferPosOpen = 0.367; //0.1201 closed,
-    public static double innerTransferPosClosed = 0.225;     //@TODO Get servo position innerTransfer "block" position
+    public static double innerTransferPosOpen = 0.411;
+    public static double innerTransferPosClosed = 0.6624;     //@TODO Get servo position innerTransfer "block" position
+    public static double innerTransferPosInit = 0.562;
     public static double intakeInitPosLeft = 0.6131;     //@TODO Get intakeInit servo positions
     public static double intakeInitPosRight = innerTransferPosOpen;
     public static double intakeInitPosReset = 0.3108;
 
-    public static double autoClaw1Retracted = 0; // stove away
-    public static double autoClaw1Drop = 0.32; // dropping onto foundation
-    public static double autoClaw1Stone = 0.7; // store behind robot
-    public static double autoClaw1Extended = 0.5; // move to get stone
+    public static double autoClaw1Retracted = 0.06; // stove away
+    public static double autoClaw1Drop = 0.38; // dropping onto foundation
+    public static double autoClaw1Stone = 0.76; // store behind robot
+    public static double autoClaw1Extended = 0.56; // move to get stone
 
 
     public static double autoClaw1Retracted_blue = 0.95;
@@ -58,9 +62,9 @@ public class TeleopConstants {
     public static double autoClaw2Prep_blue = 0.3249;
     public static double autoClaw2Grabbing_blue = 0.45;
 
-    public static double autoClaw3Init = 0.8554;
-    public static double autoClaw3Closed = 0.5709;
-    public static double autoClaw3Open = 0.3669;
+    public static double autoClaw3Init = 0.7951;
+    public static double autoClaw3Closed = 0.5614;
+    public static double autoClaw3Open = 0.3258;
 
     public static double autoClaw3Init_blue = 0.3029;
     public static double autoClaw3Closed_blue = 0.5532;
@@ -69,8 +73,8 @@ public class TeleopConstants {
     public static double parkingServoPosUnlock = 0.18;
     public static double parkingServoPosLock = 0.35;
 
-    public static double liftOdometryDown = 0.142;
-    public static double liftOdometryUp = 0.425;
+    public static double liftOdometryDown = 0;
+    public static double liftOdometryUp = 1;
 
     public static int[] stoneEncoderValues = new int[] {0, -681, -1120, -1428, -1806};
 }

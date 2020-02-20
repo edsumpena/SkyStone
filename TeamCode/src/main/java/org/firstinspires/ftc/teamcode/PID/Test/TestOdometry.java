@@ -29,6 +29,7 @@ import kotlin.jvm.functions.Function0;
 
 @Config
 @Autonomous(name = "StraightLineOdometryTest", group = "drive")
+@Disabled
 public class TestOdometry extends LinearOpMode {
     HardwareMap hwMap;
     SampleMecanumDriveBase drive;

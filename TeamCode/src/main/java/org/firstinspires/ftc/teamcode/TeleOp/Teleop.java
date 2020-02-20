@@ -6,16 +6,19 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.Servo;
 
+import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.robotcore.internal.system.AppUtil;
 import org.firstinspires.ftc.teamcode.All.DriveConstant;
 import org.firstinspires.ftc.teamcode.All.FourWheelMecanumDrivetrain;
 import org.firstinspires.ftc.teamcode.All.HardwareMap;
 import org.firstinspires.ftc.teamcode.All.Lift;
 import org.firstinspires.ftc.teamcode.Autonomous.FieldPosition;
+import org.firstinspires.ftc.teamcode.Autonomous.Path;
 import org.firstinspires.ftc.teamcode.TeleOp.ToggleButtons.GamepadButtons;
 import org.firstinspires.ftc.teamcode.TeleOp.ToggleButtons.OnOffButton;
 
 import java.util.ArrayList;
+
 
 /*
  * -Gamepad A:
@@ -32,7 +35,7 @@ import java.util.ArrayList;
  *  -Adjust Intake/Lift power in TeleopConstants.java class
  */
 
-@TeleOp(name = "TeleOp", group = "Linear Opmode")
+@TeleOp(name = "TeleOp", group = "TeleOp")
 public class Teleop extends LinearOpMode {
     private boolean intake = false;
     private boolean outake = false;
@@ -127,63 +130,60 @@ public class Teleop extends LinearOpMode {
         driveLoop();
         liftLoop();
         toggleLoop();
-        parkingLoop();
-        armDelayHandler();
-        initIntakeClawArm();
+        parkingLoop(this);
+        armDelayHandler(this);
+        initIntakeClawArm(this);
 
         String val = DriveConstant.getString(AppUtil.ROOT_FOLDER + "/FIRST/PrevRunPath.txt");
         if(val.equalsIgnoreCase(FieldPosition.RED_QUARY.toString()) || val.equalsIgnoreCase(FieldPosition.RED_FOUNDATION_PARK.toString())) {
             hwMap.redAutoClawJoint3.setPosition(TeleopConstants.autoClaw3Init);
-            try{
-                Thread.sleep(200);
-            } catch (Exception e){}
+            Path.sleep_millisec_opmode(200, this);
             hwMap.redAutoClawJoint2.setPosition(TeleopConstants.autoClaw2Init);
-            try{
-                Thread.sleep(200);
-            } catch (Exception e){}
+            Path.sleep_millisec_opmode(200, this);
             hwMap.redAutoClawJoint1.setPosition(TeleopConstants.autoClaw1Retracted);
-            try{
-                Thread.sleep(200);
-            } catch (Exception e){}
+            Path.sleep_millisec_opmode(200, this);
         } else if(val.equalsIgnoreCase(FieldPosition.BLUE_QUARY.toString()) || val.equalsIgnoreCase(FieldPosition.BLUE_FOUNDATION_PARK.toString())) {
             hwMap.redAutoClawJoint3.setPosition(TeleopConstants.autoClaw3Init_blue);
-            try{
-                Thread.sleep(200);
-            } catch (Exception e){}
+            Path.sleep_millisec_opmode(200, this);
             hwMap.redAutoClawJoint2.setPosition(TeleopConstants.autoClaw2Init_blue);
-            try{
-                Thread.sleep(200);
-            } catch (Exception e){}
+            Path.sleep_millisec_opmode(200, this);
             hwMap.redAutoClawJoint1.setPosition(TeleopConstants.autoClaw1Retracted_blue);
-            try{
-                Thread.sleep(200);
-            } catch (Exception e){}
+            Path.sleep_millisec_opmode(200, this);
         }
+        hwMap.innerTransfer.setPosition(TeleopConstants.innerTransferPosClosed);
 
         while (opModeIsActive()) {
 
             if (gamepad2.a && buttonLogic.get(0).getState()[0]) {
                 hwMap.transferHorn.setPosition(TeleopConstants.transferHornPosReady);
-                try{
-                    Thread.sleep(200);
-                } catch (Exception e){}
+                Path.sleep_millisec_opmode(200, this);
                 /*hwMap.clawServo1.setPosition(TeleopConstants.clawServo1PosReceive);
                 hwMap.clawServo2.setPosition(TeleopConstants.clawServo2Block);
                 try{
                     Thread.sleep(200);
                 } catch (Exception e){}*/
-                hwMap.innerTransfer.setPosition(TeleopConstants.innerTransferPosOpen);
-                try{
-                    Thread.sleep(200);
-                } catch (Exception e){}
+                //hwMap.innerTransfer.setPosition(TeleopConstants.innerTransferPosOpen);
+                Path.sleep_millisec_opmode(200, this);
             }
 
             //------------------------------===Capstone===------------------------------------------
 
             if (gamepad2.dpad_up && !blockerCapstone) {
                 blockerCapstone = true;
+                telemetry.addData("here1", "f");
+                telemetry.update();
+
+                //James's Version:
+
+                hwMap.clawServo1.setPosition(TeleopConstants.clawServo1Capstone);
+                hwMap.clawServo2.setPosition(TeleopConstants.clawServo2CapstoneOld);
+                Path.sleep_millisec_opmode(200, this);
 
                 hwMap.innerTransfer.setPosition(TeleopConstants.innerTransferPosOpen);
+
+                //Old Version:
+
+                /*hwMap.innerTransfer.setPosition(TeleopConstants.innerTransferPosOpen);
                 hwMap.clawServo1.setPosition(TeleopConstants.clawServo1Capstone);
                 hwMap.transferHorn.setPosition(TeleopConstants.transferHornCapstone);
 
@@ -196,7 +196,7 @@ public class Teleop extends LinearOpMode {
 
                 try{
                     Thread.sleep(500);
-                } catch (Exception e){}*/
+                } catch (Exception e){}
 
                 hwMap.innerTransfer.setPosition(TeleopConstants.innerTransferPosClosed);
 
@@ -227,26 +227,43 @@ public class Teleop extends LinearOpMode {
 
                 try{
                     Thread.sleep(1000);
-                } catch (Exception e){}
+                } catch (Exception e){}*/
             } else if (!gamepad2.dpad_up && blockerCapstone) {
+                telemetry.addData("here2", "f");
+                telemetry.update();
                 blockerCapstone = false;
 
-                hwMap.transferHorn.setPosition(TeleopConstants.transferHornPosReady);
+                hwMap.clawServo1.setPosition(TeleopConstants.clawServo1Capstone);
+                hwMap.clawServo2.setPosition(TeleopConstants.clawServo2CapstoneOld);
+                Path.sleep_millisec_opmode(200, this);
+
+                hwMap.innerTransfer.setPosition(TeleopConstants.innerTransferPosOpen);
+                /*hwMap.transferHorn.setPosition(TeleopConstants.transferHornPosReady);
 
                 hwMap.innerTransfer.setPosition(TeleopConstants.innerTransferPosOpen);
                 hwMap.clawServo1.setPosition(TeleopConstants.clawServo1PosReceive);
                 hwMap.clawServo2.setPosition(TeleopConstants.clawServo2Block);
                 try{
                     Thread.sleep(200);
-                } catch(Exception e){}
+                } catch(Exception e){}*/
             }
 
-            if(gamepad2.dpad_down){
+            /*if(gamepad2.dpad_down){
                 hwMap.clawServo1.setPosition(TeleopConstants.clawServo1Capstone);
                 hwMap.clawServo2.setPosition(TeleopConstants.clawServo2Block);
                 try{
                     Thread.sleep(300);
                 } catch (Exception e){}
+            }*/
+
+            if(gamepad2.right_trigger >= 0.5){
+                hwMap.clawServo2.setPosition(TeleopConstants.clawServo2CapstoneNew);
+                hwMap.clawServo1.setPosition(TeleopConstants.clawServo1PosOpen);
+            }
+
+            if(gamepad1.right_bumper){
+                hwMap.clawServo1.setPosition(TeleopConstants.clawServo1Capstone);
+                hwMap.clawServo2.setPosition(TeleopConstants.clawServo2CapstoneOld);
             }
 
             //------------------------------===Driving/Strafing===------------------------------------------
@@ -258,7 +275,7 @@ public class Teleop extends LinearOpMode {
                 switchBlocker = false;
             }
 
-            if (gamepad2.right_stick_y != 0 || gamepad2.left_stick_y != 0) {
+            if (gamepad2.right_stick_y != 0 || gamepad2.left_stick_y != 0) {    //??? Ask Mechanical
                 lift.moveLift(gamepad2.right_stick_y + gamepad2.left_stick_y * TeleopConstants.liftSpeedSlow);
             } else {
                 lift.stop();
@@ -280,30 +297,19 @@ public class Teleop extends LinearOpMode {
 
     }
 
-    private void detectBlock() {
+    private void detectBlock(LinearOpMode mode) {
+        LinearOpMode opmode = mode;
         Thread thread = new Thread() {
             public void run() {
                 if (!hwMap.intakeDetect.getState() && !blocker && !manualOverride) {
                     blocker = true;
                     hwMap.transferHorn.setPosition(TeleopConstants.transferHornPosPush);
-                    try {
-                        Thread.sleep(500);
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                    }
+                    Path.sleep_millisec_opmode(500, opmode);
                     //hwMap.innerTransfer.setPosition(TeleopConstants.innerTransferPosTucked);
-                    try {
-                        Thread.sleep(500);
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                    }
+                    Path.sleep_millisec_opmode(500, opmode);
                     hwMap.transferHorn.setPosition(TeleopConstants.transferHornPosReady);
                     //hwMap.innerTransfer.setPosition(TeleopConstants.innerTransferPosExtended);
-                    try {
-                        Thread.sleep(300);
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                    }
+                    Path.sleep_millisec_opmode(300, opmode);
                     blocker = false;
                 }
             }
@@ -318,11 +324,7 @@ public class Teleop extends LinearOpMode {
             }
         };
         thread.start();
-        try {
-            Thread.sleep(100);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+        Path.sleep_millisec_opmode(100, opmode);
         interruptDetect.start();
     }
 
@@ -514,7 +516,8 @@ public class Teleop extends LinearOpMode {
         toggle.start();
     }
 
-    private void armDelayHandler(){
+    private void armDelayHandler(LinearOpMode mode){
+        LinearOpMode opmode = mode;
         Thread armDelay = new Thread(){
             public void run(){
                 while(opModeIsActive()) {
@@ -526,13 +529,9 @@ public class Teleop extends LinearOpMode {
                             outake = false;
                         } else {
                             hwMap.clawServo1.setPosition(TeleopConstants.clawServo1Prep);
-                            try{
-                                Thread.sleep(250);
-                            } catch (Exception e){}
+                            Path.sleep_millisec_opmode(250, opmode);
                             hwMap.clawServo2.setPosition(TeleopConstants.clawServo2PosClose);
-                            try{
-                                Thread.sleep(250);
-                            } catch (Exception e){}
+                            Path.sleep_millisec_opmode(250, opmode);
                             hwMap.clawServo1.setPosition(TeleopConstants.clawServo1PosClose);
                             intake = false;
                             outake = false;
@@ -548,13 +547,9 @@ public class Teleop extends LinearOpMode {
                             outake = true;
                         } else {
                             hwMap.clawServo1.setPosition(TeleopConstants.clawServo1Prep);
-                            try{
-                                Thread.sleep(250);
-                            } catch (Exception e){}
+                            Path.sleep_millisec_opmode(250, opmode);
                             hwMap.clawServo2.setPosition(TeleopConstants.clawServo2PosClose);
-                            try{
-                                Thread.sleep(250);
-                            } catch (Exception e){}
+                            Path.sleep_millisec_opmode(250, opmode);
                             hwMap.clawServo1.setPosition(TeleopConstants.clawServo1PosClose);
                             intake = false;
                             outake = false;
@@ -571,7 +566,8 @@ public class Teleop extends LinearOpMode {
         armDelay.start();
     }
 
-    private void parkingLoop(){
+    private void parkingLoop(LinearOpMode mode){
+        LinearOpMode opmode = mode;
         Thread parkingServ = new Thread(){
             public void run(){
                 while(opModeIsActive()){
@@ -579,16 +575,12 @@ public class Teleop extends LinearOpMode {
                         if(gamepad2.x && !dummy){
                             if(!parking) {
                                 //hwMap.redAutoClawJoint1.setPosition(TeleopConstants.autoClaw1Up - 0.08);
-                                try{
-                                    Thread.sleep(300);
-                                } catch (Exception e){}
+                                Path.sleep_millisec_opmode(300, opmode);
                                 hwMap.parkingServo.setPosition(TeleopConstants.parkingServoPosUnlock);
                                 parking = true;
                             } else {
                                 hwMap.parkingServo.setPosition(TeleopConstants.parkingServoPosLock);
-                                try{
-                                    Thread.sleep(300);
-                                } catch (Exception e){}
+                                Path.sleep_millisec_opmode(300, opmode);
                                 //hwMap.redAutoClawJoint1.setPosition(TeleopConstants.autoClaw1TeleOp);
                                 parking = false;
                             }
@@ -616,28 +608,22 @@ public class Teleop extends LinearOpMode {
         parkingServ.start();
     }
 
-    private void initIntakeClawArm() {
+    private void initIntakeClawArm(LinearOpMode mode) {
+        LinearOpMode opmode = mode;
         Thread intake = new Thread() {
             public void run() {
                 hwMap.clawInit.setPosition(TeleopConstants.clawInitPosCapstone);
                 hwMap.clawServo2.setPosition(TeleopConstants.clawServo2Block + 0.08);
                 //resetLift(TeleopConstants.liftPower);
-                try {
-                    Thread.sleep(300);
-                } catch (Exception e) {}
+                Path.sleep_millisec_opmode(300, opmode);
 
-                hwMap.innerTransfer.setPosition(TeleopConstants.intakeInitPosRight);
-                try {
-                    Thread.sleep(700);
-                } catch (Exception e) {}
+                //hwMap.innerTransfer.setPosition(TeleopConstants.intakeInitPosRight);
+                Path.sleep_millisec_opmode(700, opmode);
 
-                hwMap.innerTransfer.setPosition(TeleopConstants.intakeInitPosLeft);
+                //hwMap.innerTransfer.setPosition(TeleopConstants.intakeInitPosLeft);
 
-                try {
-                    Thread.sleep(700);
-                } catch (Exception e) {}
-
-                hwMap.innerTransfer.setPosition(TeleopConstants.intakeInitPosReset);
+                Path.sleep_millisec_opmode(700, opmode);
+                //hwMap.innerTransfer.setPosition(TeleopConstants.intakeInitPosReset);
             }
         };
 
@@ -646,9 +632,7 @@ public class Teleop extends LinearOpMode {
                 //hwMap.clawInit.setPosition(TeleopConstants.clawInitPosReset);
                 hwMap.clawInit.setPosition(TeleopConstants.clawInitPosReset);
 
-                try {
-                    Thread.sleep(800);
-                } catch (Exception e) {}
+                Path.sleep_millisec_opmode(800, opmode);
 
                 hwMap.clawInit.setPosition(TeleopConstants.clawInitPosCapstone);
             }
@@ -658,10 +642,7 @@ public class Teleop extends LinearOpMode {
             public void run(){
                // hwMap.redAutoClawJoint1.setPosition(TeleopConstants.autoClaw1Init);
 
-                try{
-                    Thread.sleep(150);
-                } catch(Exception e){}
-
+                Path.sleep_millisec_opmode(150, opmode);
                 hwMap.redAutoClawJoint2.setPosition(TeleopConstants.autoClaw2Init);
             }
         };
@@ -681,7 +662,8 @@ public class Teleop extends LinearOpMode {
         loop.start();
     }
 
-    private void saveDataLoop(HardwareMap hw) {
+    private void saveDataLoop(HardwareMap hw, LinearOpMode mode) {
+        LinearOpMode opmode = mode;
         Thread loop = new Thread() {
             public void run() {
                 long initTime = System.currentTimeMillis();
@@ -689,10 +671,7 @@ public class Teleop extends LinearOpMode {
                     kVData.add(hw.frontLeft.getPower() + "," + hw.backLeft.getPower() + "," +
                             hw.frontLeft.getCurrentPosition() + "," + hw.backLeft.getCurrentPosition() + "," +
                             (System.currentTimeMillis() - initTime));
-                    try {
-                        sleep(50);
-                    } catch (Exception e) {
-                    }
+                    Path.sleep_millisec_opmode(50, opmode);
                 }
             }
         };

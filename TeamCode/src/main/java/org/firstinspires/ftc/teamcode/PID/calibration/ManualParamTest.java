@@ -76,7 +76,7 @@ public class ManualParamTest extends LinearOpMode {
         waitForStart();
 
         if (DriveConstantsPID.ENABLE_ARM_ACTIONS) {
-            Path.initGrab(hwMap, side);
+            Path.initGrab(hwMap, side, this);
         }
 
         VuforiaCamLocalizer vu = VuforiaCamLocalizer.getSingle_instance(hardwareMap, VuforiaCameraChoice.PHONE_BACK, true);
@@ -108,7 +108,7 @@ public class ManualParamTest extends LinearOpMode {
             if (v_double != Double.MAX_VALUE) {
                 int v_int = (int) v_double;
                 if (v_int != 0) {
-                    Path.grabStone(hwMap, side);
+                    Path.grabStone(hwMap, side, this);
                 }
             }
             Thread.sleep(polling_interval);

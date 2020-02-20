@@ -117,21 +117,6 @@ public class CustomTensorFlowObjectDetection extends LinearOpMode {
                             telemetry.addData("**Height", objHeightpx);
                             telemetry.addData("**Width", objWidthpx);
                             telemetry.addData("**Distance to Object", distanceToObj);
-                            //telemetry.addData("**Estimated Angle", TFODCalc.getAngleOfStone(objWidthpx,
-                            //        distanceToObj).get(0));
-
-                            /*double min = TFODCalc.getAngleOfStone(objWidthpx, distanceToObj).get(1);
-                            double max = TFODCalc.getAngleOfStone(objWidthpx, distanceToObj).get(2);
-                            double zeroDegreeWidth = TFODCalc.getAngleOfStone(objWidthpx, distanceToObj).get(3);
-                            double offsetWidth = TFODCalc.getAngleOfStone(objWidthpx, distanceToObj).get(4);
-                            double deltaWidth = TFODCalc.getAngleOfStone(objWidthpx, distanceToObj).get(4) -
-                                    TFODCalc.getAngleOfStone(objWidthpx, distanceToObj).get(3);
-
-                            telemetry.addData("Angle Model Domain", "[" + min + ", " + max + "]");
-                            telemetry.addData("Predicted 0° Stone Width", zeroDegreeWidth);
-                            telemetry.addData("Auto-adjusted Domain-Predicted 0° Stone Width", offsetWidth);
-                            telemetry.addData("Auto-adjusted Domain-Predicted 0° Stone Width Delta",
-                                    Math.round((deltaWidth) * 1000.0) / 1000.0);*/
                             telemetry.addData("Position",
                                     Arrays.toString(detect.getSkystonePositionsBlue(updatedRecognitions, imgWidth)));
                             telemetry.addData("","----------------------------");

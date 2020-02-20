@@ -139,7 +139,7 @@ public class VuforiaCamLocalizer implements Localizer {
 
     // Class Members
     private OpenGLMatrix lastLocation = null;
-    private VuforiaLocalizer vuforia = null;
+    private VuforiaLocalizerPlus vuforia = null;
     private boolean targetVisible = false;
     private float phoneXRotate    = 0;
     private float phoneYRotate    = 0;
@@ -207,7 +207,8 @@ public class VuforiaCamLocalizer implements Localizer {
          * If no camera monitor is desired, use the parameter-less constructor instead (commented out below).
          */
 
-        int cameraMonitorViewId = hardwareMap.appContext.getResources().getIdentifier("cameraMonitorViewId", "id", hardwareMap.appContext.getPackageName());
+        int cameraMonitorViewId = hardwareMap.appContext.getResources().getIdentifier("cameraMonitorViewId",
+                "id", hardwareMap.appContext.getPackageName());
         VuforiaLocalizer.Parameters parameters = new VuforiaLocalizer.Parameters(cameraMonitorViewId);
 
         parameters.vuforiaLicenseKey = VUFORIA_KEY;
@@ -232,8 +233,8 @@ public class VuforiaCamLocalizer implements Localizer {
 
         }
         //  Instantiate the Vuforia engine
-        vuforia = ClassFactory.getInstance().createVuforia(parameters);
-
+        //vuforia = ClassFactory.getInstance().createVuforia(parameters);
+        vuforia = VuforiaLocalizerPlus.get_single_instance(parameters);
         // Load the data sets for the trackable objects. These particular data
         // sets are stored in the 'assets' part of our application.
         targetsSkyStone = this.vuforia.loadTrackablesFromAsset("Skystone");
@@ -404,8 +405,9 @@ public class VuforiaCamLocalizer implements Localizer {
     public void stop() {
         RobotLogger.dd(TAG, "stop vuforia ...");
         targetsSkyStone.deactivate();
-        if (Vuforia.isInitialized())
-           Vuforia.deinit();
+        //if (Vuforia.isInitialized())
+          // Vuforia.deinit();
+        vuforia.close();
         vuforia = null;
         single_instance_per_camera[localCamera.ordinal()] = null;
 

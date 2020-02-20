@@ -5,6 +5,7 @@ import com.acmerobotics.roadrunner.geometry.Pose2d;
 import com.acmerobotics.roadrunner.trajectory.BaseTrajectoryBuilder;
 import com.acmerobotics.roadrunner.trajectory.Trajectory;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
 import org.firstinspires.ftc.teamcode.All.HardwareMap;
@@ -22,6 +23,7 @@ import org.firstinspires.ftc.teamcode.PID.mecanum.SampleMecanumDriveBase;
  */
 @Config
 @Autonomous(group = "drive")
+@Disabled
 public class TensorFlowTest extends LinearOpMode {
     private Trajectory trajectory;
     private BaseTrajectoryBuilder builder, strafe_builder;
@@ -43,30 +45,31 @@ public class TensorFlowTest extends LinearOpMode {
         TensorflowDetector vTester = null;
 
         int count = 0;
-        while (!isStopRequested()) {
+        while (opModeIsActive()) {
             RobotLogger.dd(TAG, "looop %d", count);
-            vTester = TensorflowDetector.getSingle_instance(hardwareMap, VuforiaCameraChoice.PHONE_BACK);
+            if (opModeIsActive())
+                vTester = TensorflowDetector.getSingle_instance(hardwareMap, VuforiaCameraChoice.PHONE_BACK);
+            else break;
 
             for (int i = 0; i < 10; i ++ ) {
-                vTester.detectSkystone();
-                try {
-                    Thread.sleep(1000);
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
+                if (opModeIsActive())
+                    vTester.detectSkystone();
+                if (opModeIsActive())
+                    Path.sleep_millisec_opmode(200, this);
             }
             count ++;
             vTester.stop();
 
-            vTester = TensorflowDetector.getSingle_instance(hardwareMap, VuforiaCameraChoice.PHONE_FRONT);
+            if (opModeIsActive())
+                vTester = TensorflowDetector.getSingle_instance(hardwareMap, VuforiaCameraChoice.PHONE_FRONT);
+            else
+                break;
 
             for (int i = 0; i < 10; i ++ ) {
-                vTester.detectSkystone();
-                try {
-                    Thread.sleep(1000);
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
+                if (opModeIsActive())
+                    vTester.detectSkystone();
+                if (opModeIsActive())
+                    Path.sleep_millisec_opmode(200, this);
             }
             count ++;
             vTester.stop();

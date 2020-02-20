@@ -7,6 +7,7 @@ import com.acmerobotics.roadrunner.trajectory.BaseTrajectoryBuilder;
 import com.acmerobotics.roadrunner.trajectory.Trajectory;
 import com.acmerobotics.roadrunner.trajectory.TrajectoryBuilder;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
@@ -29,6 +30,7 @@ import org.firstinspires.ftc.teamcode.TeleOp.TeleopConstants;
  */
 @Config
 @Autonomous(group = "drive")
+@Disabled
 public class PathTest extends LinearOpMode {
     private Trajectory trajectory;
     private BaseTrajectoryBuilder builder, strafe_builder;
@@ -52,9 +54,11 @@ public class PathTest extends LinearOpMode {
         int[] skystonePositions = new int[2];
         skystonePositions[0] = (int) DriveConstantsPID.TEST_SKY_STONE_POSITION;
         RobotLogger.dd(TAG, "xml file %d", skystonePositions[0]);
-        String filename = "path_red_.xml";
-        filename = filename.substring(0, 8) + Integer.toString(skystonePositions[0])
-                + filename.substring(9);
+        String filename = "path_blue_.xml";
+        int tindex = filename.indexOf(".xml");
+        RobotLogger.dd(TAG, "%d", tindex);
+        filename = filename.substring(0, tindex-1) + Integer.toString(skystonePositions[0])
+                + filename.substring(tindex);
         Pose2d t[] = DriveConstantsPID.parsePathXY(filename);
         RobotLogger.dd(TAG, "XY array len: " + Integer.toString(t.length));
 
@@ -68,7 +72,7 @@ public class PathTest extends LinearOpMode {
             _strafeDrive = new SampleMecanumDriveREVOptimized(hardwareMap, true);
         }
 
-        RobotLogger.dd(TAG, "unit test for path (RED QUARY), ARM actions?" + Integer.toString(DriveConstantsPID.ENABLE_ARM_ACTIONS?1:0));
+        RobotLogger.dd(TAG, "unit test for path (BLUE QUARY), ARM actions?" + Integer.toString(DriveConstantsPID.ENABLE_ARM_ACTIONS?1:0));
         Pose2d startingPos = new Pose2d(new Vector2d(-34.752, -63.936), Math.toRadians(0));
         hwMap = new HardwareMap(hardwareMap);
         fieldPosition = FieldPosition.RED_QUARY;
@@ -82,8 +86,8 @@ public class PathTest extends LinearOpMode {
                     VuforiaCameraChoice.PHONE_BACK, true);
         }
         path = new Path(hwMap, this, _drive, _strafeDrive, hardwareMap, null, telemetry);
-        path.RedQuary(skystonePositions, vuLocalizer);
+        path.BlueQuary(skystonePositions, vuLocalizer);
         //path.BlueQuary(skystonePositions, vuLocalizer);
-        RobotLogger.dd(TAG, "----------done --------------------- unit test for path (RED QUARY)");
+        RobotLogger.dd(TAG, "----------done --------------------- unit test for path (BLUE QUARY)");
     }
 }

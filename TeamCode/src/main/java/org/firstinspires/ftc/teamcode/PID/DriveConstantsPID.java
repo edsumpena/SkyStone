@@ -45,7 +45,7 @@ public class DriveConstantsPID {
     public static boolean RUN_USING_ODOMETRY_WHEEL = false;
     public static boolean RUN_USING_IMU_LOCALIZER = true;
     public static boolean BRAKE_ON_ZERO = true;
-    public static boolean USING_BULK_READ = false;
+    public static boolean USING_BULK_READ = true;
     public static boolean USING_STRAFE_DIAGONAL = true;
     public static boolean DIAGONAL_SPLIT = true;
     public static boolean RESET_FOLLOWER = true;
@@ -134,7 +134,7 @@ public class DriveConstantsPID {
     public static double TEST_DISTANCE_0 = 24;
 	public static double maxVel = 75.0; //90.0
 	public static double maxAccel = 35.0;   //35.0
-    public static double strafeMaxVel = 30.0; //40.0
+    public static double strafeMaxVel = 25.0; //40.0
     public static double strafeMaxAccel = 10.0;   //20.0
     public static double maxAngVel = 135.0;
     public static double maxAngAccel = 90.0;

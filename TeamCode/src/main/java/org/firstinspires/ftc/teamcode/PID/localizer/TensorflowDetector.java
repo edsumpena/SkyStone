@@ -45,6 +45,7 @@ import org.firstinspires.ftc.robotcore.external.navigation.VuforiaTrackableDefau
 import org.firstinspires.ftc.robotcore.external.navigation.VuforiaTrackables;
 import org.firstinspires.ftc.robotcore.external.tfod.Recognition;
 import org.firstinspires.ftc.robotcore.external.tfod.TFObjectDetector;
+import org.firstinspires.ftc.teamcode.Autonomous.Vision.Detect;
 import org.firstinspires.ftc.teamcode.PID.RobotLogger;
 import org.jetbrains.annotations.NotNull;
 
@@ -91,7 +92,7 @@ import static org.firstinspires.ftc.robotcore.external.navigation.VuforiaLocaliz
 
 //@TeleOp(name="SKYSTONE Vuforia Nav", group ="Linear Opmode")
 //@Disabled
-public class TensorflowDetector  {
+public class TensorflowDetector {
     public static final int MAX_CAMERA_NUM = VuforiaCameraChoice.values().length;
     private static TensorflowDetector[] single_instance_per_camera = new TensorflowDetector[MAX_CAMERA_NUM];
     private VuforiaCameraChoice localCamera;
@@ -125,7 +126,7 @@ public class TensorflowDetector  {
      * {@link #vuforia} is the variable we will use to store our instance of the Vuforia
      * localization engine.
      */
-    private VuforiaLocalizer vuforia = null;
+    private VuforiaLocalizerPlus vuforia = null;
 
     /**
      * {@link #tfod} is the variable we will use to store our instance of the TensorFlow Object
@@ -156,8 +157,6 @@ public class TensorflowDetector  {
 
     public TensorflowDetector(HardwareMap hardwareMap, VuforiaCameraChoice camera_choice) {
         localCamera = camera_choice;
-        boolean PHONE_IS_PORTRAIT = true;
-        VuforiaLocalizer.CameraDirection CAMERA_CHOICE;
 
         /*
          * Configure Vuforia by creating a Parameter object, and passing it to the Vuforia engine.
@@ -165,33 +164,27 @@ public class TensorflowDetector  {
          * If no camera monitor is desired, use the parameter-less constructor instead (commented out below).
          */
 
-        int cameraMonitorViewId = hardwareMap.appContext.getResources().getIdentifier("cameraMonitorViewId", "id", hardwareMap.appContext.getPackageName());
-        VuforiaLocalizer.Parameters parameters = new VuforiaLocalizer.Parameters(cameraMonitorViewId);
+        VuforiaLocalizer.Parameters parameters = new VuforiaLocalizer.Parameters();
 
         parameters.vuforiaLicenseKey = VUFORIA_KEY;
         if (localCamera == VuforiaCameraChoice.PHONE_FRONT) {
             parameters.cameraDirection = VuforiaLocalizer.CameraDirection.FRONT;
-            CAMERA_CHOICE = FRONT;
             RobotLogger.dd(TAG, "using front camera");
         }
-        else {
+        else if (localCamera == VuforiaCameraChoice.PHONE_FRONT)
+        {
             parameters.cameraDirection = VuforiaLocalizer.CameraDirection.BACK;
-            CAMERA_CHOICE = BACK;
-            if (localCamera == VuforiaCameraChoice.HUB_USB) {
-                parameters.cameraDirection = VuforiaLocalizer.CameraDirection.BACK;
-                PHONE_IS_PORTRAIT = false;
-                updateParametersForWebCamera();
-                webcamName = hardwareMap.get(WebcamName.class, "WebcamFront");
-                parameters.cameraName = webcamName;
-                RobotLogger.dd(TAG, "using USB camera");
-            }
-            else
-                RobotLogger.dd(TAG, "using back camera");
-
+            RobotLogger.dd(TAG, "using back camera");
+        }
+        else if (localCamera == VuforiaCameraChoice.HUB_USB) {
+            webcamName = hardwareMap.get(WebcamName.class, "WebcamFront");
+            parameters.cameraName = webcamName;
+            RobotLogger.dd(TAG, "using USB camera");
         }
 
         //  Instantiate the Vuforia engine
-        vuforia = ClassFactory.getInstance().createVuforia(parameters);
+        //vuforia = ClassFactory.getInstance().createVuforia(parameters);
+        vuforia = VuforiaLocalizerPlus.get_single_instance(parameters);
         // The TFObjectDetector uses the camera frames from the VuforiaLocalizer, so we create that
         // first.
         if (ClassFactory.getInstance().canCreateTFObjectDetector()) {
@@ -217,7 +210,7 @@ public class TensorflowDetector  {
         int tfodMonitorViewId = hw.appContext.getResources().getIdentifier(
                 "tfodMonitorViewId", "id", hw.appContext.getPackageName());
         TFObjectDetector.Parameters tfodParameters = new TFObjectDetector.Parameters(tfodMonitorViewId);
-        tfodParameters.minimumConfidence = 0.8;
+        tfodParameters.minimumConfidence = 0.70;
         tfod = ClassFactory.getInstance().createTFObjectDetector(tfodParameters, vuforia);
         tfod.loadModelFromAsset(TFOD_MODEL_ASSET, LABEL_FIRST_ELEMENT, LABEL_SECOND_ELEMENT);
     }
@@ -227,8 +220,9 @@ public class TensorflowDetector  {
         if (tfod != null) {
             tfod.shutdown();
         }
-        if (Vuforia.isInitialized())
-            Vuforia.deinit();
+        //if (Vuforia.isInitialized())
+        //    Vuforia.deinit();
+        vuforia.close();
         vuforia = null;
         single_instance_per_camera[localCamera.ordinal()] = null;
 
@@ -242,6 +236,15 @@ public class TensorflowDetector  {
         }
         single_instance_per_camera[localCamera.ordinal()] = null;
     }
+
+    public List<Recognition> recognize() {
+        List<Recognition> updatedRecognitions = null;
+        if (tfod != null) {
+            updatedRecognitions = tfod.getUpdatedRecognitions();
+        }
+        return updatedRecognitions;
+    }
+
     public void detectSkystone() {
         RobotLogger.dd(TAG, "to detectSkystone");
         if (tfod != null) {
@@ -264,8 +267,6 @@ public class TensorflowDetector  {
                 RobotLogger.dd(TAG, "none of Object Detected");
             }
         }
-    };
-
-
+    }
 }
 

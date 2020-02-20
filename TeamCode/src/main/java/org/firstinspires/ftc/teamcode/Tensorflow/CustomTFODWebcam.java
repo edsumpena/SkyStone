@@ -53,18 +53,18 @@ import java.util.List;
 
 /**
  * There are currently 4 available models:
- *  -"Skystone.tflite" --Standard trained, Skystone & stone detecting model provided by FTC
- *  -"skystoneTFOD_v1_[50-15].tflite" --Basic retrained Skystone & Stone detection model
- *  -"skystoneTFOD_v2_[105-15].tflite" --Training set better optimized for different light conditions
- *  -"skystoneTFOD_v3_[150-30].tflite" --Training set better optimized for detection at longer distances
- *  -"skystoneTFOD_v4_[160-30].tflite" --Training set contains more images at longer distances
- *
- *  Skystone file name format: "skystoneTFOD_vVersion#_[# of training images-# of testing images].tflite
- *  NOTE: Covering a wider variety of light conditions sacrifices some accuracy
+ * -"Skystone.tflite" --Standard trained, Skystone & stone detecting model provided by FTC
+ * -"skystoneTFOD_v1_[50-15].tflite" --Basic retrained Skystone & Stone detection model
+ * -"skystoneTFOD_v2_[105-15].tflite" --Training set better optimized for different light conditions
+ * -"skystoneTFOD_v3_[150-30].tflite" --Training set better optimized for detection at longer distances
+ * -"skystoneTFOD_v4_[160-30].tflite" --Training set contains more images at longer distances
+ * <p>
+ * Skystone file name format: "skystoneTFOD_vVersion#_[# of training images-# of testing images].tflite
+ * NOTE: Covering a wider variety of light conditions sacrifices some accuracy
  */
 
 @TeleOp(name = "Custom TFOD Webcam", group = "Linear Opmode")
-@Disabled
+//@Disabled
 public class CustomTFODWebcam extends LinearOpMode {
     private static final String TFOD_MODEL_ASSET = "skystoneTFOD_v2_[105-15].tflite";
     private static final String LABEL_FIRST_ELEMENT = "skystone";
@@ -90,6 +90,8 @@ public class CustomTFODWebcam extends LinearOpMode {
      */
     private TFObjectDetector tfod;
 
+    private boolean red = true;
+
     @Override
     public void runOpMode() {
         // The TFObjectDetector uses the camera frames from the VuforiaLocalizer, so we create that
@@ -99,7 +101,7 @@ public class CustomTFODWebcam extends LinearOpMode {
 
         try {
             initVuforia();
-        } catch (Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
         }
 
@@ -145,37 +147,51 @@ public class CustomTFODWebcam extends LinearOpMode {
                     // the last time that call was made.
                     List<Recognition> updatedRecognitions = tfod.getUpdatedRecognitions();
                     if (updatedRecognitions != null) {
-                      telemetry.addData("# Object Detected", updatedRecognitions.size());
-                      // step through the list of recognitions and display boundary info.
-                      int i = 0;
-                      int index = 0;
-                      for (Recognition recognition : updatedRecognitions) {
-                          double objWidth = recognition.getWidth();
-                          double objHeight = recognition.getHeight();
-                          double distanceToObj = TFODCalc.getDistanceToObj(127, imgHeight, objHeight);
-                          ArrayList<Double> tfodData = TFODCalc.getAngleOfStone(objWidth, distanceToObj);
+                        telemetry.addData("# Object Detected", updatedRecognitions.size());
+                        // step through the list of recognitions and display boundary info.
+                        int i = 0;
+                        int index = 0;
+                        for (Recognition recognition : updatedRecognitions) {
+                            double objWidth = recognition.getWidth();
+                            double objHeight = recognition.getHeight();
+                            double distanceToObj = TFODCalc.getDistanceToObj(127, imgHeight, objHeight);
+                            //ArrayList<Double> tfodData = TFODCalc.getAngleOfStone(objWidth, distanceToObj);
 
-                          telemetry.addData(String.format("label (%d)", i), recognition.getLabel());
-                          telemetry.addData(String.format("  left,top (%d)", i), "%.03f , %.03f",
-                                recognition.getLeft(), recognition.getTop());
-                          telemetry.addData(String.format("  right,bottom (%d)", i), "%.03f , %.03f",
-                                recognition.getRight(), recognition.getBottom());
+                            telemetry.addData(String.format("label (%d)", i), recognition.getLabel());
+                            telemetry.addData(String.format("  left,top (%d)", i), "%.03f , %.03f",
+                                    recognition.getLeft(), recognition.getTop());
+                            telemetry.addData(String.format("  right,bottom (%d)", i), "%.03f , %.03f",
+                                    recognition.getRight(), recognition.getBottom());
 
-                          telemetry.addData("Object Height", objHeight);
-                          telemetry.addData("Object Width", objWidth);
-                          telemetry.addData("**Distance From Object", distanceToObj);
-                          telemetry.addData("**Object Angle", tfodData.get(0));
+                            telemetry.addData("Object Height", objHeight);
+                            telemetry.addData("Object Width", objWidth);
+                            telemetry.addData("**Distance From Object", distanceToObj);
+                          /*telemetry.addData("**Object Angle", tfodData.get(0));
                           telemetry.addData("Angle Model Domain",
                                   "[" + tfodData.get(1) + ", " + tfodData.get(2) + "]");
                           telemetry.addData("Auto-adjusted Domain-Predicted 0° Stone Width Delta",
-                                  Math.round((tfodData.get(3)) * 1000.0) / 1000.0);
-                          telemetry.addData("Position",
-                                  Arrays.toString(detect.getSkystonePositionsRed(updatedRecognitions, imgWidth)));
-                          index += 1;
-                      }
+                                  Math.round((tfodData.get(3)) * 1000.0) / 1000.0);*/
+                            index += 1;
+                        }
+
+                        if (red)
+                            telemetry.addData("Position",
+                                    Arrays.toString(Detect.getSkystonePositionsRed(updatedRecognitions, imgWidth)));
+                        else
+                            telemetry.addData("Position",
+                                    Arrays.toString(Detect.getSkystonePositionsBlue(updatedRecognitions, imgWidth)));
+
+                        telemetry.addData("DETECTION SIDE", red ? "Red" : "Blue");
+
+                        telemetry.update();
                     }
                 }
-                if (!(gamepad1.left_stick_x == 0 && gamepad1.right_stick_y == 0)) {
+
+                if (gamepad1.a)
+                    red = true;
+                else if (gamepad1.b)
+                    red = false;
+                /*if (!(gamepad1.left_stick_x == 0 && gamepad1.right_stick_y == 0)) {
 
                     double speed;
 
@@ -215,7 +231,7 @@ public class CustomTFODWebcam extends LinearOpMode {
                 }
 
                 telemetry.addData("Motor Power", power);
-                telemetry.update();
+                telemetry.update();*/
             }
         }
 
@@ -227,7 +243,7 @@ public class CustomTFODWebcam extends LinearOpMode {
     /**
      * Initialize the Vuforia localization engine.
      */
-    private void initVuforia() throws InterruptedException{
+    private void initVuforia() throws InterruptedException {
         /*
          * Configure Vuforia by creating a Parameter object, and passing it to the Vuforia engine.
          */
@@ -255,10 +271,10 @@ public class CustomTFODWebcam extends LinearOpMode {
      */
     private void initTfod() {
         int tfodMonitorViewId = hardwareMap.appContext.getResources().getIdentifier(
-            "tfodMonitorViewId", "id", hardwareMap.appContext.getPackageName());
+                "tfodMonitorViewId", "id", hardwareMap.appContext.getPackageName());
         TFObjectDetector.Parameters tfodParameters = new TFObjectDetector.Parameters(tfodMonitorViewId);
-       tfodParameters.minimumConfidence = 0.85;
-       tfod = ClassFactory.getInstance().createTFObjectDetector(tfodParameters, vuforia);
-       tfod.loadModelFromAsset(TFOD_MODEL_ASSET, LABEL_FIRST_ELEMENT, LABEL_SECOND_ELEMENT);
+        tfodParameters.minimumConfidence = 0.85;
+        tfod = ClassFactory.getInstance().createTFObjectDetector(tfodParameters, vuforia);
+        tfod.loadModelFromAsset(TFOD_MODEL_ASSET, LABEL_FIRST_ELEMENT, LABEL_SECOND_ELEMENT);
     }
 }

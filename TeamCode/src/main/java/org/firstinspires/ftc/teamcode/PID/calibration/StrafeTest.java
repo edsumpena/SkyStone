@@ -4,7 +4,9 @@ import com.acmerobotics.dashboard.config.Config;
 import com.acmerobotics.roadrunner.localization.Localizer;
 import com.acmerobotics.roadrunner.trajectory.Trajectory;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
+import com.qualcomm.robotcore.hardware.configuration.annotations.DigitalIoDeviceType;
 
 import org.firstinspires.ftc.teamcode.All.HardwareMap;
 import org.firstinspires.ftc.teamcode.PID.DriveConstantsPID;
@@ -25,6 +27,7 @@ import static org.firstinspires.ftc.teamcode.PID.DriveConstantsPID.rear_ratio;
  */
 @Config
 @Autonomous(name = "StrafeTest", group = "drive")
+@Disabled
 public class StrafeTest extends LinearOpMode {
     public static double DISTANCE = DriveConstantsPID.TEST_DISTANCE;
     private HardwareMap hwMap;

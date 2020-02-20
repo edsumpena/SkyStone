@@ -8,6 +8,7 @@ import com.acmerobotics.roadrunner.trajectory.BaseTrajectoryBuilder;
 import com.acmerobotics.roadrunner.trajectory.Trajectory;
 import com.acmerobotics.roadrunner.trajectory.TrajectoryBuilder;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
 import org.firstinspires.ftc.teamcode.All.DriveConstant;
@@ -27,7 +28,7 @@ import java.util.List;
  */
 @Config
 @Autonomous(name = "DiagonalTest", group = "drive")
-//@Disabled
+@Disabled
 public class DiagonalTest extends LinearOpMode {
     public static double DISTANCE = 0; // update later;
     private String TAG = "DiagonalTest";
@@ -79,7 +80,7 @@ public class DiagonalTest extends LinearOpMode {
             Pose2d error_pose = _drive.follower.getLastError();
             RobotLogger.dd(TAG, "currentPos %s, errorPos %s", currentPos.toString(), error_pose.toString());
             //drive.turnSync(Math.toRadians(90));
-            Path.sleep_millisec(2000);
+            Path.sleep_millisec_opmode(2000, this);
 
             if (DriveConstantsPID.RESET_FOLLOWER)
                 _drive.resetFollowerWithParameters(DriveConstantsPID.USING_STRAFE_DIAGONAL, false);
@@ -99,7 +100,7 @@ public class DiagonalTest extends LinearOpMode {
             if (DriveConstantsPID.RESET_FOLLOWER)
                 _drive.resetFollowerWithParameters(DriveConstantsPID.USING_STRAFE_DIAGONAL, false);
 
-            Path.sleep_millisec(5000);
+            Path.sleep_millisec_opmode(5000, this);
         }
     }
 }
