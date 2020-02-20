@@ -11,7 +11,7 @@ import java.util.List;
 
 public class Detect {
 
-    public static double tolerance = 0.3;
+    public static double tolerance = 0.9;
 
     public Detect() {
         TFODCalc.init();
@@ -66,10 +66,14 @@ public class Detect {
             }
 
             if (containsLabel(skystoneIndex, "skystone")) {
-
-                double skystoneLeft = skystoneIndex.get(getIndex(skystoneIndex, "skystone")).getLeft();
                 int stones = 0;
                 if (updatedRecognitions.size() >= 3) {
+                    double skystoneLeft = skystoneIndex.get(getIndex(skystoneIndex, "skystone")).getLeft();;
+                    for(int i = 0; i < skystoneIndex.size(); i++){
+                        if(skystoneIndex.get(i).getLabel().equalsIgnoreCase("skystone") &&
+                                skystoneLeft < skystoneIndex.get(i).getLeft())
+                            skystoneLeft = skystoneIndex.get(i).getLeft();
+                    }
                     for (int x = 0; x < skystoneIndex.size(); x++) {
                         if (skystoneIndex.get(x).getLabel().equalsIgnoreCase("stone")) {
                             if (skystoneLeft > skystoneIndex.get(x).getLeft())
@@ -131,10 +135,14 @@ public class Detect {
             }
 
             if (containsLabel(skystoneIndex, "skystone")) {
-
-                double skystoneRight = skystoneIndex.get(getIndex(skystoneIndex, "skystone")).getRight();
                 int stones = 0;
                 if (updatedRecognitions.size() >= 3) {
+                    double skystoneRight = skystoneIndex.get(getIndex(skystoneIndex, "skystone")).getRight();
+                    for(int i = 0; i < skystoneIndex.size(); i++){
+                        if(skystoneIndex.get(i).getLabel().equalsIgnoreCase("skystone") &&
+                                skystoneRight > skystoneIndex.get(i).getRight())
+                            skystoneRight = skystoneIndex.get(i).getRight();
+                    }
                     for (int x = 0; x < skystoneIndex.size(); x++) {
                         if (skystoneIndex.get(x).getLabel().equalsIgnoreCase("stone")) {
                             if (skystoneRight < skystoneIndex.get(x).getRight())
