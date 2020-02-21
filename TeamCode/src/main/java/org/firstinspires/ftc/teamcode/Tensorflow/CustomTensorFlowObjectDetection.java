@@ -119,7 +119,7 @@ public class CustomTensorFlowObjectDetection extends LinearOpMode {
                             telemetry.addData("**Distance to Object", distanceToObj);
 
                             telemetry.addData("Position",
-                                    Arrays.toString(detect.getSkystonePositionsRed(updatedRecognitions, imgWidth)));
+                                    Arrays.toString(detect.getSkystonePositionsBlue(updatedRecognitions, imgWidth)));
                             telemetry.addData("","----------------------------");
 
                             objIndex += 1;
