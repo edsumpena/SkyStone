@@ -54,6 +54,8 @@ public class Detect {
                     // if one is a skystone and one is not, predict position based on their relative positions
                     if (!containsLabel(skystoneIndex, "skystone")) {
                         return new int[]{3, 6};
+                    } else if(!containsLabel(skystoneIndex, "stone")) {
+                        return new int[]{1, 4};
                     } else {
                         if (skystoneIndex.get(getIndex(skystoneIndex, "skystone")).getLeft() >
                                 skystoneIndex.get(getIndex(skystoneIndex, "stone")).getLeft())
@@ -138,6 +140,8 @@ public class Detect {
                     // if one is a skystone and one is not, predict position based on their relative positions
                     if (!containsLabel(skystoneIndex, "skystone")) {
                         return new int[]{3, 6};
+                    } else if(!containsLabel(skystoneIndex, "stone")) {
+                        return new int[]{1, 4};
                     } else {
                         if (skystoneIndex.get(getIndex(skystoneIndex, "skystone")).getRight() <
                                 skystoneIndex.get(getIndex(skystoneIndex, "stone")).getRight())
