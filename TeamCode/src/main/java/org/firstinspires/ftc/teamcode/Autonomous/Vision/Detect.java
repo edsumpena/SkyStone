@@ -74,7 +74,7 @@ public class Detect {
                             ", GetLeft = " + skystoneIndex.get(getIndex(skystoneIndex, "skystone")).getLeft());
                     for(int i = 0; i < skystoneIndex.size(); i++){
                         if(skystoneIndex.get(i).getLabel().equalsIgnoreCase("skystone") &&
-                                skystoneLeft < skystoneIndex.get(i).getLeft()) {
+                                skystoneLeft > skystoneIndex.get(i).getLeft()) {
                             skystoneLeft = skystoneIndex.get(i).getLeft();
 
                             RobotLog.dd("Skystone Closest to Left (Updating)", "Index = " + i +
@@ -155,7 +155,7 @@ public class Detect {
                     double skystoneRight = skystoneIndex.get(getIndex(skystoneIndex, "skystone")).getRight();
                     for(int i = 0; i < skystoneIndex.size(); i++){
                         if(skystoneIndex.get(i).getLabel().equalsIgnoreCase("skystone") &&
-                                skystoneRight > skystoneIndex.get(i).getRight())
+                                skystoneRight < skystoneIndex.get(i).getRight())
                             skystoneRight = skystoneIndex.get(i).getRight();
                     }
                     for (int x = 0; x < skystoneIndex.size(); x++) {
