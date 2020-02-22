@@ -1,8 +1,9 @@
-package org.firstinspires.ftc.teamcode.drive.opmode;
+package org.firstinspires.ftc.teamcode.PID.calibration;
 
 import com.acmerobotics.dashboard.config.Config;
 import com.acmerobotics.roadrunner.geometry.Pose2d;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.acmerobotics.roadrunner.localization.Localizer;
 
@@ -34,6 +35,7 @@ import static org.firstinspires.ftc.teamcode.PID.DriveConstantsPID.RUN_USING_ENC
  */
 @Config
 @Autonomous(name = "ManualParamTest", group = "drive")
+@Disabled
 public class ManualParamTest extends LinearOpMode {
     private DcMotorEx leftFront, leftRear, rightRear, rightFront;
     private List<DcMotorEx> motors;
