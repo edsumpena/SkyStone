@@ -175,6 +175,13 @@ public class DemonstrationTeleOp extends LinearOpMode {
                             if(run) {
                                 run = false;
                                 if (isRed) {
+                                    hwMap.redAutoClawJoint2.setPosition(0.85);
+
+                                    try {
+                                        Thread.sleep(300);
+                                    } catch (Exception e) {
+                                    }
+
                                     hwMap.redAutoClawJoint1.setPosition(TeleopConstants.autoClaw1Extended);
 
                                     try {
@@ -196,6 +203,13 @@ public class DemonstrationTeleOp extends LinearOpMode {
                                     } catch (Exception e) {
                                     }
                                 } else {
+                                    hwMap.redAutoClawJoint2.setPosition(0.117);
+
+                                    try {
+                                        Thread.sleep(300);
+                                    } catch (Exception e) {
+                                    }
+
                                     hwMap.redAutoClawJoint1.setPosition(TeleopConstants.autoClaw1Extended_blue);
 
                                     try {
