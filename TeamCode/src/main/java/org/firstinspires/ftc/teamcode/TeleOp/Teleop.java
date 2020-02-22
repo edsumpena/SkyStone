@@ -63,6 +63,12 @@ public class Teleop extends LinearOpMode {
     private FourWheelMecanumDrivetrain drivetrain;
     private Lift lift;
 
+    private int autoClawStage = 0;
+    private boolean run = true;
+    private boolean isRed = true;
+    private boolean blockerRight = false;
+    private boolean blockerLeft = false;
+
     private long lastUpdateTime;
 
     public void runOpMode() {
@@ -99,7 +105,7 @@ public class Teleop extends LinearOpMode {
         buttonLogic.add(new OnOffButton(gamepad2, gamepad2, GamepadButtons.A, GamepadButtons.B, //Intake-A & B
                 new DcMotor[]{hwMap.leftIntake, hwMap.rightIntake},
                 new double[][]{{-TeleopConstants.intakePower, 0}, {TeleopConstants.intakePower, 0}},
-                new double[]{TeleopConstants.intakePower, -TeleopConstants.intakePower}));
+                new double[]{0.5, -0.5}));
         buttonLogic.add(new OnOffButton(gamepad2, GamepadButtons.Y, new Servo[]{hwMap.foundationLock, hwMap.transferLock},   //Foundation Lock-Y
                 new double[][]{{TeleopConstants.foundationLockLock, TeleopConstants.foundationLockUnlock},
                         {TeleopConstants.transferLockPosUp, TeleopConstants.transferLockPosOut}}));
@@ -133,16 +139,19 @@ public class Teleop extends LinearOpMode {
         parkingLoop(this);
         armDelayHandler(this);
         initIntakeClawArm(this);
+        autoClawThread();
 
         String val = DriveConstant.getString(AppUtil.ROOT_FOLDER + "/FIRST/PrevRunPath.txt");
-        if(val.equalsIgnoreCase(FieldPosition.RED_QUARY.toString()) || val.equalsIgnoreCase(FieldPosition.RED_FOUNDATION_PARK.toString())) {
+        if (val.equalsIgnoreCase(FieldPosition.RED_QUARY.toString()) || val.equalsIgnoreCase(FieldPosition.RED_FOUNDATION_PARK.toString())) {
+            isRed = true;
             hwMap.redAutoClawJoint3.setPosition(TeleopConstants.autoClaw3Init);
             Path.sleep_millisec_opmode(200, this);
             hwMap.redAutoClawJoint2.setPosition(TeleopConstants.autoClaw2Init);
             Path.sleep_millisec_opmode(200, this);
             hwMap.redAutoClawJoint1.setPosition(TeleopConstants.autoClaw1Retracted);
             Path.sleep_millisec_opmode(200, this);
-        } else if(val.equalsIgnoreCase(FieldPosition.BLUE_QUARY.toString()) || val.equalsIgnoreCase(FieldPosition.BLUE_FOUNDATION_PARK.toString())) {
+        } else if (val.equalsIgnoreCase(FieldPosition.BLUE_QUARY.toString()) || val.equalsIgnoreCase(FieldPosition.BLUE_FOUNDATION_PARK.toString())) {
+            isRed = false;
             hwMap.redAutoClawJoint3.setPosition(TeleopConstants.autoClaw3Init_blue);
             Path.sleep_millisec_opmode(200, this);
             hwMap.redAutoClawJoint2.setPosition(TeleopConstants.autoClaw2Init_blue);
@@ -256,12 +265,12 @@ public class Teleop extends LinearOpMode {
                 } catch (Exception e){}
             }*/
 
-            if(gamepad2.right_trigger >= 0.5){
+            if (gamepad2.right_trigger >= 0.5) {
                 hwMap.clawServo2.setPosition(TeleopConstants.clawServo2CapstoneNew);
                 hwMap.clawServo1.setPosition(TeleopConstants.clawServo1PosOpen);
             }
 
-            if(gamepad1.right_bumper){
+            if (gamepad1.a) {
                 hwMap.clawServo1.setPosition(TeleopConstants.clawServo1Capstone);
                 hwMap.clawServo2.setPosition(TeleopConstants.clawServo2CapstoneOld);
             }
@@ -280,6 +289,25 @@ public class Teleop extends LinearOpMode {
             } else {
                 lift.stop();
             }
+
+            //--------------------------------------------===AutoClaw===-------------------------------------------------
+
+            if(gamepad1.right_bumper && !blockerRight){
+                blockerRight = true;
+                if(autoClawStage + 1 <= 4)
+                    autoClawStage += 1;
+                else
+                    autoClawStage = 0;
+                run = true;
+            } else if(!gamepad1.right_bumper && blockerRight)
+                blockerRight = false;
+
+            if(gamepad1.left_bumper && !blockerLeft){
+                blockerLeft = true;
+                autoClawStage = 0;
+                run = true;
+            } else if(!gamepad1.left_bumper && blockerLeft)
+                blockerLeft = false;
 
             telemetry.addData("LeftForwardOdometry", hwMap.leftIntake.getCurrentPosition());
             telemetry.addData("RightForwardOdometry", hwMap.liftTwo.getCurrentPosition());
@@ -516,11 +544,11 @@ public class Teleop extends LinearOpMode {
         toggle.start();
     }
 
-    private void armDelayHandler(LinearOpMode mode){
+    private void armDelayHandler(LinearOpMode mode) {
         LinearOpMode opmode = mode;
-        Thread armDelay = new Thread(){
-            public void run(){
-                while(opModeIsActive()) {
+        Thread armDelay = new Thread() {
+            public void run() {
+                while (opModeIsActive()) {
                     if (gamepad2.left_bumper && !blocker) {
                         if (!intake) {
                             hwMap.clawServo1.setPosition(TeleopConstants.clawServo1PosOpen);
@@ -566,14 +594,14 @@ public class Teleop extends LinearOpMode {
         armDelay.start();
     }
 
-    private void parkingLoop(LinearOpMode mode){
+    private void parkingLoop(LinearOpMode mode) {
         LinearOpMode opmode = mode;
-        Thread parkingServ = new Thread(){
-            public void run(){
-                while(opModeIsActive()){
-                    if(gamepad2.right_trigger >= 0.5){
-                        if(gamepad2.x && !dummy){
-                            if(!parking) {
+        Thread parkingServ = new Thread() {
+            public void run() {
+                while (opModeIsActive()) {
+                    if (gamepad2.right_trigger >= 0.5) {
+                        if (gamepad2.x && !dummy) {
+                            if (!parking) {
                                 //hwMap.redAutoClawJoint1.setPosition(TeleopConstants.autoClaw1Up - 0.08);
                                 Path.sleep_millisec_opmode(300, opmode);
                                 hwMap.parkingServo.setPosition(TeleopConstants.parkingServoPosUnlock);
@@ -585,13 +613,13 @@ public class Teleop extends LinearOpMode {
                                 parking = false;
                             }
                             dummy = true;
-                        } else if(!gamepad2.x && dummy){
+                        } else if (!gamepad2.x && dummy) {
                             dummy = false;
                         }
                     }
 
-                    if(gamepad2.left_trigger >= 0.5 && !transferHornDummy){
-                        if(!transHornFlag) {
+                    if (gamepad2.left_trigger >= 0.5 && !transferHornDummy) {
+                        if (!transHornFlag) {
                             hwMap.transferHorn.setPosition(TeleopConstants.transferHornPosPush);
                             transHornFlag = true;
                         } else {
@@ -599,7 +627,7 @@ public class Teleop extends LinearOpMode {
                             transHornFlag = false;
                         }
                         transferHornDummy = true;
-                    } else if(gamepad2.left_trigger < 0.5 && transferHornDummy){
+                    } else if (gamepad2.left_trigger < 0.5 && transferHornDummy) {
                         transferHornDummy = false;
                     }
                 }
@@ -608,58 +636,329 @@ public class Teleop extends LinearOpMode {
         parkingServ.start();
     }
 
-    private void initIntakeClawArm(LinearOpMode mode) {
+    private void initIntakeClawArm(LinearOpMode mode) { //TODO Replace Thread.sleep() with sleep_milisecond_opmode
         LinearOpMode opmode = mode;
-        Thread intake = new Thread() {
+        Thread t2 = new Thread() {
             public void run() {
-                hwMap.clawInit.setPosition(TeleopConstants.clawInitPosCapstone);
-                hwMap.clawServo2.setPosition(TeleopConstants.clawServo2Block + 0.08);
-                //resetLift(TeleopConstants.liftPower);
-                Path.sleep_millisec_opmode(300, opmode);
+                hwMap.transferLock.setPosition(TeleopConstants.transferLockPosHalfUnlock);
 
-                //hwMap.innerTransfer.setPosition(TeleopConstants.intakeInitPosRight);
-                Path.sleep_millisec_opmode(700, opmode);
+                try {
+                    Thread.sleep(300);
+                } catch (Exception e) {
+                }
 
-                //hwMap.innerTransfer.setPosition(TeleopConstants.intakeInitPosLeft);
+                hwMap.foundationLock.setPosition(TeleopConstants.foundationLockHalfUnlock);
 
-                Path.sleep_millisec_opmode(700, opmode);
-                //hwMap.innerTransfer.setPosition(TeleopConstants.intakeInitPosReset);
+                try {
+                    Thread.sleep(300);
+                } catch (Exception e) {
+                }
             }
         };
+        Thread t = new Thread() {
+            public void run() {
+                t2.start();
+                hwMap.clawServo1.setPosition(TeleopConstants.clawServo1PosClose);
 
-        Thread claw = new Thread(){
-            public void run(){
+                try {
+                    Thread.sleep(600);
+                } catch (Exception e) {
+                }
+
+                hwMap.clawServo2.setPosition(TeleopConstants.clawServo2PosClose);
+
+                try {
+                    Thread.sleep(600);
+                } catch (Exception e) {
+                }
+
                 //hwMap.clawInit.setPosition(TeleopConstants.clawInitPosReset);
                 hwMap.clawInit.setPosition(TeleopConstants.clawInitPosReset);
 
-                Path.sleep_millisec_opmode(800, opmode);
+                try {
+                    Thread.sleep(1000);
+                } catch (Exception e) {
+                }
 
                 hwMap.clawInit.setPosition(TeleopConstants.clawInitPosCapstone);
-            }
-        };
 
-        Thread autoClaw = new Thread(){
-            public void run(){
-               // hwMap.redAutoClawJoint1.setPosition(TeleopConstants.autoClaw1Init);
+                try {
+                    Thread.sleep(1000);
+                } catch (Exception e) {
+                }
 
-                Path.sleep_millisec_opmode(150, opmode);
-                hwMap.redAutoClawJoint2.setPosition(TeleopConstants.autoClaw2Init);
+                hwMap.clawServo2.setPosition(TeleopConstants.clawServo2PosClose);
+
+                try {
+                    Thread.sleep(300);
+                } catch (Exception e) {
+                }
+
+                hwMap.transferHorn.setPosition(TeleopConstants.transferHornPosPush);
+
+                try {
+                    Thread.sleep(500);
+                } catch (Exception e) {
+                }
+
+                hwMap.transferHorn.setPosition(TeleopConstants.transferHornPosReady);
+
+                try {
+                    Thread.sleep(500);
+                } catch (Exception e) {
+                }
             }
         };
 
         Thread loop = new Thread() {
             public void run() {
-                while (opModeIsActive()){
-                    if(gamepad2.dpad_right){
-                        intake.run();
-                        claw.run();
-                        autoClaw.run();
+                while (opModeIsActive()) {
+                    if (gamepad2.dpad_right) {
+                        t.start();
                     }
                 }
             }
         };
 
         loop.start();
+    }
+
+    private void autoClawThread() {  //TODO Replace Thread.sleep() with sleep_milisecond_opmode
+        Thread t = new Thread() {
+            public void run() {
+                while (opModeIsActive()) {
+                    switch (autoClawStage) {
+                        case 0:
+                            if (run) {
+                                run = false;
+                                if (isRed)
+                                    hwMap.redAutoClawJoint3.setPosition(TeleopConstants.autoClaw3Init);
+                                else
+                                    hwMap.redAutoClawJoint3.setPosition(TeleopConstants.autoClaw3Init_blue);
+
+                                try {
+                                    Thread.sleep(300);
+                                } catch (Exception e) {
+                                }
+
+                                if (isRed)
+                                    hwMap.redAutoClawJoint2.setPosition(TeleopConstants.autoClaw2Init);
+                                else
+                                    hwMap.redAutoClawJoint2.setPosition(TeleopConstants.autoClaw2Init_blue);
+
+                                try {
+                                    Thread.sleep(300);
+                                } catch (Exception e) {
+                                }
+
+                                if (isRed)
+                                    hwMap.redAutoClawJoint1.setPosition(TeleopConstants.autoClaw1Retracted);
+                                else
+                                    hwMap.redAutoClawJoint1.setPosition(TeleopConstants.autoClaw1Retracted_blue);
+
+                                try {
+                                    Thread.sleep(300);
+                                } catch (Exception e) {
+                                }
+                            }
+                            break;
+                        case 1:
+                            if (run) {
+                                run = false;
+                                if (isRed) {
+                                    hwMap.redAutoClawJoint2.setPosition(0.85);
+
+                                    try {
+                                        Thread.sleep(300);
+                                    } catch (Exception e) {
+                                    }
+
+                                    hwMap.redAutoClawJoint1.setPosition(TeleopConstants.autoClaw1Extended);
+
+                                    try {
+                                        Thread.sleep(300);
+                                    } catch (Exception e) {
+                                    }
+
+                                    hwMap.redAutoClawJoint3.setPosition(TeleopConstants.autoClaw3Open);
+
+                                    try {
+                                        Thread.sleep(300);
+                                    } catch (Exception e) {
+                                    }
+
+                                    hwMap.redAutoClawJoint2.setPosition(TeleopConstants.autoClaw2Prep);
+
+                                    try {
+                                        Thread.sleep(300);
+                                    } catch (Exception e) {
+                                    }
+                                } else {
+                                    hwMap.redAutoClawJoint2.setPosition(0.117);
+
+                                    try {
+                                        Thread.sleep(300);
+                                    } catch (Exception e) {
+                                    }
+
+                                    hwMap.redAutoClawJoint1.setPosition(TeleopConstants.autoClaw1Extended_blue);
+
+                                    try {
+                                        Thread.sleep(300);
+                                    } catch (Exception e) {
+                                    }
+
+                                    hwMap.redAutoClawJoint3.setPosition(TeleopConstants.autoClaw3Open_blue);
+
+                                    try {
+                                        Thread.sleep(300);
+                                    } catch (Exception e) {
+                                    }
+
+                                    hwMap.redAutoClawJoint2.setPosition(TeleopConstants.autoClaw2Prep_blue);
+
+                                    try {
+                                        Thread.sleep(300);
+                                    } catch (Exception e) {
+                                    }
+                                }
+                            }
+                            break;
+                        case 2:
+                            if (run) {
+                                run = false;
+                                if (isRed) {
+                                    hwMap.redAutoClawJoint2.setPosition(TeleopConstants.autoClaw2Grabbing);
+
+                                    try {
+                                        Thread.sleep(300);
+                                    } catch (Exception e) {
+                                    }
+
+                                    hwMap.redAutoClawJoint3.setPosition(TeleopConstants.autoClaw3Closed);
+
+                                    try {
+                                        Thread.sleep(300);
+                                    } catch (Exception e) {
+                                    }
+
+                                    hwMap.redAutoClawJoint2.setPosition(TeleopConstants.autoClaw2PickUp);
+
+                                    try {
+                                        Thread.sleep(300);
+                                    } catch (Exception e) {
+                                    }
+                                } else {
+                                    hwMap.redAutoClawJoint2.setPosition(TeleopConstants.autoClaw2Grabbing_blue);
+
+                                    try {
+                                        Thread.sleep(300);
+                                    } catch (Exception e) {
+                                    }
+
+                                    hwMap.redAutoClawJoint3.setPosition(TeleopConstants.autoClaw3Closed_blue);
+
+                                    try {
+                                        Thread.sleep(300);
+                                    } catch (Exception e) {
+                                    }
+
+                                    hwMap.redAutoClawJoint2.setPosition(TeleopConstants.autoClaw2PickUp_blue);
+
+                                    try {
+                                        Thread.sleep(300);
+                                    } catch (Exception e) {
+                                    }
+                                }
+                            }
+                            break;
+                        case 3:
+                            if (run) {
+                                run = false;
+                                if (isRed) {
+                                    hwMap.redAutoClawJoint1.setPosition(TeleopConstants.autoClaw1Stone);
+
+                                    try {
+                                        Thread.sleep(300);
+                                    } catch (Exception e) {
+                                    }
+                                } else {
+                                    hwMap.redAutoClawJoint1.setPosition(TeleopConstants.autoClaw1Stone_blue);
+
+                                    try {
+                                        Thread.sleep(300);
+                                    } catch (Exception e) {
+                                    }
+                                }
+                            }
+                            break;
+                        case 4:
+                            if (run) {
+                                run = false;
+                                if (isRed) {
+                                    hwMap.redAutoClawJoint1.setPosition(TeleopConstants.autoClaw1Drop);
+
+                                    try {
+                                        Thread.sleep(600);
+                                    } catch (Exception e) {
+                                    }
+
+                                    hwMap.redAutoClawJoint2.setPosition(TeleopConstants.autoClaw2Grabbing);
+
+                                    try {
+                                        Thread.sleep(300);
+                                    } catch (Exception e) {
+                                    }
+
+                                    hwMap.redAutoClawJoint3.setPosition(TeleopConstants.autoClaw3Open);
+
+                                    try {
+                                        Thread.sleep(300);
+                                    } catch (Exception e) {
+                                    }
+
+                                    hwMap.redAutoClawJoint2.setPosition(TeleopConstants.autoClaw2PickUp);
+
+                                    try {
+                                        Thread.sleep(300);
+                                    } catch (Exception e) {
+                                    }
+
+                                } else {
+                                    hwMap.redAutoClawJoint1.setPosition(TeleopConstants.autoClaw1Drop_blue);
+
+                                    try {
+                                        Thread.sleep(300);
+                                    } catch (Exception e) {
+                                    }
+
+                                    hwMap.redAutoClawJoint2.setPosition(TeleopConstants.autoClaw2Grabbing_blue);
+
+                                    try {
+                                        Thread.sleep(300);
+                                    } catch (Exception e) {
+                                    }
+
+                                    hwMap.redAutoClawJoint3.setPosition(TeleopConstants.autoClaw3Open_blue);
+
+                                    try {
+                                        Thread.sleep(300);
+                                    } catch (Exception e) {
+                                    }
+
+                                    hwMap.redAutoClawJoint2.setPosition(TeleopConstants.autoClaw2PickUp_blue);
+                                    try {
+                                        Thread.sleep(300);
+                                    } catch (Exception e) {
+                                    }
+                                }
+                            }
+                            break;
+                    }
+                }
+            }
+        };
+        t.start();
     }
 
     private void saveDataLoop(HardwareMap hw, LinearOpMode mode) {
