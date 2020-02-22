@@ -477,7 +477,7 @@ public class Path {
         sleep_millisec_opmode(5000, opMode);
 
         DriveBuilderReset(false, false, "step");
-        builder = builder.forward(24);
+        builder = builder.forward(32);
         trajectory = builder.build();   //x - 2.812, y + 7.984
         if (opMode.opModeIsActive())
             _drive.followTrajectorySync(trajectory);
@@ -511,7 +511,7 @@ public class Path {
         sleep_millisec_opmode(5000, opMode);
 
         DriveBuilderReset(false, false, "step");
-        builder = builder.forward(24);
+        builder = builder.forward(32);
         trajectory = builder.build();   //x - 2.812, y + 7.984
         if (opMode.opModeIsActive())
             _drive.followTrajectorySync(trajectory);
