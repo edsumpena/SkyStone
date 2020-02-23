@@ -471,17 +471,34 @@ public class Path {
     }
 
     public void RedFoundationPark() {
+        hwMap.frontLeft.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        hwMap.frontRight.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        hwMap.backLeft.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        hwMap.backRight.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+
         hwMap.parkingServo.setPosition(TeleopConstants.parkingServoPosLock);
         transferReset(hwMap, opMode);
         initIntakeClaw(hwMap, opMode);
         sleep_millisec_opmode(5000, opMode);
 
-        DriveBuilderReset(false, false, "step");
-        builder = builder.forward(32);
+        hwMap.frontRight.setPower(0.5);
+        hwMap.frontLeft.setPower(0.5);
+        hwMap.backRight.setPower(0.7);
+        hwMap.backLeft.setPower(0.7);
+
+        sleep_millisec_opmode(400, opMode);
+
+        hwMap.frontRight.setPower(0);
+        hwMap.frontLeft.setPower(0);
+        hwMap.backRight.setPower(0);
+        hwMap.backLeft.setPower(0);
+
+       /* DriveBuilderReset(false, false, "step");
+        builder = builder.forward(24);
         trajectory = builder.build();   //x - 2.812, y + 7.984
         if (opMode.opModeIsActive())
             _drive.followTrajectorySync(trajectory);
-        intake(hwMap, 0);
+        intake(hwMap, 0);*/
     }
 
     public void BlueQuary(int[] skystonePositions, VuforiaCamLocalizer vuLocalizer) {    // (-x, y)
@@ -505,16 +522,32 @@ public class Path {
     }
 
     public void BlueFoundationPark() {
+        hwMap.frontLeft.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        hwMap.frontRight.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        hwMap.backLeft.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        hwMap.backRight.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+
         hwMap.parkingServo.setPosition(TeleopConstants.parkingServoPosLock);
         transferReset(hwMap, opMode);
         initIntakeClaw(hwMap, opMode);
         sleep_millisec_opmode(5000, opMode);
 
-        DriveBuilderReset(false, false, "step");
-        builder = builder.forward(32);
+        /*DriveBuilderReset(false, false, "step");
+        builder = builder.forward(24);
         trajectory = builder.build();   //x - 2.812, y + 7.984
         if (opMode.opModeIsActive())
-            _drive.followTrajectorySync(trajectory);
+            _drive.followTrajectorySync(trajectory);*/
+        hwMap.frontRight.setPower(0.5);
+        hwMap.frontLeft.setPower(0.5);
+        hwMap.backRight.setPower(0.7);
+        hwMap.backLeft.setPower(0.7);
+
+        sleep_millisec_opmode(400, opMode);
+
+        hwMap.frontRight.setPower(0);
+        hwMap.frontLeft.setPower(0);
+        hwMap.backRight.setPower(0);
+        hwMap.backLeft.setPower(0);
     }
 
     public void BlueFoundationDrag() {
@@ -653,7 +686,7 @@ public class Path {
                     }
                 } else {
                     if (first) {
-                        hw.redAutoClawJoint2.setPosition(0.117);
+                        hw.redAutoClawJoint2.setPosition(0.04);
                         sleep_millisec_opmode(200, opmode);
 
                         hw.redAutoClawJoint1.setPosition(TeleopConstants.autoClaw1Extended_blue);
