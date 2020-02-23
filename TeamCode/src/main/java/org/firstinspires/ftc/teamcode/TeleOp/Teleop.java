@@ -42,7 +42,7 @@ public class Teleop extends LinearOpMode {
     private final double normalSpeed = TeleopConstants.drivePowerNormal;
     private final double turboSpeed = TeleopConstants.drivePowerTurbo;
     private final double slowSpeed = TeleopConstants.drivePowerSlow;
-    private final double turnSpeed = TeleopConstants.turnPower;
+    private double turnSpeed = TeleopConstants.turnPower;
     private boolean runLogic = false;
     private boolean switchBlocker = false;
     private boolean tobyMode = false;
@@ -415,10 +415,13 @@ public class Teleop extends LinearOpMode {
                 while (opModeIsActive()) {
                     // telemetry.addData("Info", "Press START + BACK on GAMEPAD1 to switch drive modes!");
 
-                    if (tobyMode)
+                    if (tobyMode) {
                         drivetrain.setSpeedMultiplier(turboSpeed);
-                    else
+                        turnSpeed = 1;
+                    } else {
                         drivetrain.setSpeedMultiplier(normalSpeed);
+                        turnSpeed = TeleopConstants.turnPower;
+                    }
                     // telemetry.addData("Current Drive Mode", "CLASSIC MODE");
                     drivetrain.setMotorZeroPower(DcMotor.ZeroPowerBehavior.BRAKE);
 
@@ -739,7 +742,7 @@ public class Teleop extends LinearOpMode {
                                     } catch (Exception e) {
                                     }
                                 } else {
-                                    hwMap.redAutoClawJoint2.setPosition(0.117);
+                                    hwMap.redAutoClawJoint2.setPosition(0.04);
 
                                     try {
                                         Thread.sleep(300);
