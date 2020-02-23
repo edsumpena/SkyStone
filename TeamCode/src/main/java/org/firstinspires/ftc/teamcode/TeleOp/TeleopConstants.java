@@ -5,7 +5,7 @@ public class TeleopConstants {
     public static double drivePowerNormal = 0.8;
     public static double drivePowerTurbo = 1;
     public static double drivePowerSlow = 0.5;
-    public static double turnPower = 0.5;
+    public static double turnPower = 0.7;
     public static double intakePower = 1;
     public static double liftPower = 1;
     public static double clawServo1PosClose = 0.075;    //@TODO Get clawServo1 & clawServo2 positions
@@ -35,7 +35,7 @@ public class TeleopConstants {
     public static double clawInitPosCapstone = 0.6623;
     public static double clawInitPosCapstoneForReal = 0.547;
     public static double innerTransferPosOpen = 0.411;
-    public static double innerTransferPosClosed = 0.6624;     //@TODO Get servo position innerTransfer "block" position
+    public static double innerTransferPosClosed = 0.749;     //@TODO Get servo position innerTransfer "block" position
     public static double innerTransferPosInit = 0.562;
     public static double intakeInitPosLeft = 0.6131;     //@TODO Get intakeInit servo positions
     public static double intakeInitPosRight = innerTransferPosOpen;
@@ -53,12 +53,12 @@ public class TeleopConstants {
     public static double autoClaw1Extended_blue = 0.44;
 
     public static double autoClaw2PickUp = 0.9028;
-    public static double autoClaw2Init = 0.81;
-    public static double autoClaw2Prep = 0.6268;
+    public static double autoClaw2Init = 0.749;
+    public static double autoClaw2Prep = 0.5844;
     public static double autoClaw2Grabbing = 0.45;
 
     public static double autoClaw2PickUp_blue = 0.1675;
-    public static double autoClaw2Init_blue = 0.1588;
+    public static double autoClaw2Init_blue = 0.1275;
     public static double autoClaw2Prep_blue = 0.3249;
     public static double autoClaw2Grabbing_blue = 0.45;
 

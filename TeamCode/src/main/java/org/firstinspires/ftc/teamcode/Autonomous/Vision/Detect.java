@@ -11,7 +11,7 @@ import java.util.List;
 
 public class Detect {
 
-    public static double tolerance = 0.9;
+    public static double tolerance = 1.4;
 
     public Detect() {
         TFODCalc.init();
@@ -54,6 +54,8 @@ public class Detect {
                     // if one is a skystone and one is not, predict position based on their relative positions
                     if (!containsLabel(skystoneIndex, "skystone")) {
                         return new int[]{3, 6};
+                    } else if(!containsLabel(skystoneIndex, "stone")) {
+                        return new int[]{1, 4};
                     } else {
                         if (skystoneIndex.get(getIndex(skystoneIndex, "skystone")).getLeft() >
                                 skystoneIndex.get(getIndex(skystoneIndex, "stone")).getLeft())
@@ -67,18 +69,33 @@ public class Detect {
 
             if (containsLabel(skystoneIndex, "skystone")) { int stones = 0;
                 if (updatedRecognitions.size() >= 3) {
-                    double skystoneLeft = skystoneIndex.get(getIndex(skystoneIndex, "skystone")).getLeft();;
+                    double skystoneLeft = skystoneIndex.get(getIndex(skystoneIndex, "skystone")).getLeft();
+                    RobotLog.dd("List of Detected Objects (Pre-position determining)", skystoneIndex.toString());
+                    RobotLog.dd("Detected Skystone Info", "Index = " + getIndex(skystoneIndex, "skystone") +
+                            ", GetLeft = " + skystoneIndex.get(getIndex(skystoneIndex, "skystone")).getLeft());
                     for(int i = 0; i < skystoneIndex.size(); i++){
                         if(skystoneIndex.get(i).getLabel().equalsIgnoreCase("skystone") &&
-                                skystoneLeft < skystoneIndex.get(i).getLeft())
+                                skystoneLeft > skystoneIndex.get(i).getLeft()) {
                             skystoneLeft = skystoneIndex.get(i).getLeft();
-                    }
-                    for (int x = 0; x < skystoneIndex.size(); x++) {
-                        if (skystoneIndex.get(x).getLabel().equalsIgnoreCase("stone")) {
-                            if (skystoneLeft > skystoneIndex.get(x).getLeft())
-                                stones += 1;
+
+                            RobotLog.dd("Skystone Closest to Left (Updating)", "Index = " + i +
+                                    ", GetLeft = " + skystoneIndex.get(i).getLeft());
                         }
                     }
+
+                    RobotLog.dd("Skystone Closest to Left", "GetLeft = " + skystoneLeft);
+
+                    for (int x = 0; x < skystoneIndex.size(); x++) {
+                        if (skystoneIndex.get(x).getLabel().equalsIgnoreCase("stone")) {
+                            if (skystoneLeft > skystoneIndex.get(x).getLeft()) {
+                                RobotLog.dd("Stone left of Skystone Detected", skystoneLeft + " > " +
+                                        skystoneIndex.get(x).getLeft() + ", Index = " + x + ", GetLeft = " + skystoneIndex.get(x).getLeft());
+                                stones += 1;
+                            }
+                        }
+                    }
+
+                    RobotLog.dd("Stones Left of Skystone", stones + "");
 
                     return new int[]{stones + 1, stones + 4};
                 }
@@ -122,6 +139,8 @@ public class Detect {
                     // if one is a skystone and one is not, predict position based on their relative positions
                     if (!containsLabel(skystoneIndex, "skystone")) {
                         return new int[]{3, 6};
+                    } else if(!containsLabel(skystoneIndex, "stone")) {
+                        return new int[]{1, 4};
                     } else {
                         if (skystoneIndex.get(getIndex(skystoneIndex, "skystone")).getRight() <
                                 skystoneIndex.get(getIndex(skystoneIndex, "stone")).getRight())
@@ -139,7 +158,7 @@ public class Detect {
                     double skystoneRight = skystoneIndex.get(getIndex(skystoneIndex, "skystone")).getRight();
                     for(int i = 0; i < skystoneIndex.size(); i++){
                         if(skystoneIndex.get(i).getLabel().equalsIgnoreCase("skystone") &&
-                                skystoneRight > skystoneIndex.get(i).getRight())
+                                skystoneRight < skystoneIndex.get(i).getRight())
                             skystoneRight = skystoneIndex.get(i).getRight();
                     }
                     for (int x = 0; x < skystoneIndex.size(); x++) {
@@ -246,6 +265,7 @@ public class Detect {
                 stones.remove(i);
                 i -= 1;
             }
+
         RobotLog.dd("Current List (Post-Remove processing)", stones.toString());
 
         /*if (stones.size() >= 2) {

@@ -24,7 +24,7 @@
 
    <movestep drive_type = "3, reverse true, line to, straight back to stones">
       <!--X-coordinate of the Skystone furthest away from the wall-->
-      <x>-29.0</x>
+      <x>-30.5</x>
       <y>-38.0</y>
       <h>0.0</h>
    </movestep>

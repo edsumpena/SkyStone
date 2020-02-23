@@ -360,10 +360,10 @@ public class FourWheelMecanumDrivetrain {
         if (Math.abs(leftfront) < speedThreshold) {
             leftfront = 0;
         }
-        setPower(rw.frontRight, rightfront);
-        setPower(rw.frontLeft, leftfront);
-        setPower(rw.backRight, rightBackward);
-        setPower(rw.backLeft, leftBackward);
+        setPower(rw.frontRight, rightfront + 0.2);
+        setPower(rw.frontLeft, leftfront + 0.2);
+        setPower(rw.backRight, rightBackward + 0.2);
+        setPower(rw.backLeft, leftBackward + 0.2);
     }
 
     public void setPower(DcMotor motor, double speed) {

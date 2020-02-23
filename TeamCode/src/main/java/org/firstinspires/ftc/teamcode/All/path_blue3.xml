@@ -11,21 +11,21 @@
       <!--wallSkyStoneX, yCoordMvmtPlane -->
       <!--X-coordinate of the Skystone closest to the wall-->
       <!--Y-coordinate value which the robot moves back and forth on-->
-      <x>-53.0</x>
-      <y>37.5</y>
+      <x>-54.5</x>
+      <y>40.5</y>
       <h>0.0</h>
    </movestep>
    <!--X-coordinate of the foundation-->
    <movestep drive_type = "2, line to foundation to drop">
       <x>53.5</x>
-      <y>37.5</y>
+      <y>39.5</y>
       <h>0.0</h>
    </movestep>
 
    <movestep drive_type = "3, reverse true, line to, straight back to stones">
       <!--X-coordinate of the Skystone furthest away from the wall-->
-      <x>-32.5</x>
-      <y>37.0</y>
+      <x>-29.5</x>
+      <y>39.0</y>
       <h>0.0</h>
    </movestep>
 
@@ -33,13 +33,13 @@
       <!--X-coordinate of the foundation-->
       <x>48.0</x>
       <!--not using -20, to compensate Y direction off -->
-      <y>36.5</y>
+      <y>38.5</y>
       <h>0.0</h>
    </movestep>
    <movestep drive_type = "5, strafe, after drop 2nd, strafe away from foundation">
       <!---(-7, -10)-->
       <x>48.0</x>
-      <y>39.5</y>
+      <y>41.5</y>
       <h>0.0</h>
    </movestep>
 
@@ -62,7 +62,7 @@
    <movestep drive_type = "8, spline, after drop foundation, to back to parking, absulate XY, not delta">
       <!--not delta -->
       <x>5.0</x>
-      <y>36.5</y>
+      <y>40.0</y>
       <h>180.0</h>
    </movestep>
 </pathXY>
