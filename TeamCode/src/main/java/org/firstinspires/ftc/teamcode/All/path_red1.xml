@@ -17,7 +17,7 @@
    </movestep>
    <!--X-coordinate of the foundation-->
    <movestep drive_type = "2, line to foundation to drop">
-      <x>50.5</x>
+      <x>53.5</x>
       <y>-38.5</y>
       <h>0.0</h>
    </movestep>
@@ -31,7 +31,7 @@
 
    <movestep drive_type = "4, line to, line to foundation">
       <!--X-coordinate of the foundation-->
-      <x>45</x>
+      <x>45.0</x>
       <!--not using -20, to compensate Y direction off -->
       <y>-38.0</y>
       <h>0.0</h>
