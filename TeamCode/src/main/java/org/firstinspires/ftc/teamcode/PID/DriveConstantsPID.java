@@ -135,7 +135,7 @@ public class DriveConstantsPID {
 	public static double maxVel = 75.0; //90.0
 	public static double maxAccel = 35.0;   //35.0
     public static double strafeMaxVel = 25.0; //40.0
-    public static double strafeMaxAccel = 10.0;   //20.0
+    public static double strafeMaxAccel = 7.0;   //20.0
     public static double maxAngVel = 135.0;
     public static double maxAngAccel = 90.0;
 	public static boolean keep_vuforia_running = false;
