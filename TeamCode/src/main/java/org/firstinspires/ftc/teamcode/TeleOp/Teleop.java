@@ -287,10 +287,10 @@ public class Teleop extends LinearOpMode {
 
             //------------------------------===Driving/Strafing===------------------------------------------
 
-            if (gamepad1.start && gamepad1.back && !switchBlocker) {
+            if (gamepad1.right_bumper && !switchBlocker) {
                 switchBlocker = true;
                 tobyMode = !tobyMode;
-            } else if (!gamepad1.back && !gamepad1.start && switchBlocker) {
+            } else if (!gamepad1.right_bumper && switchBlocker) {
                 switchBlocker = false;
             }
 
