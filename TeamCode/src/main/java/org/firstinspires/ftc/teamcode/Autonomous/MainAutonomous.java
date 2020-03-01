@@ -186,12 +186,18 @@ public class MainAutonomous extends LinearOpMode {
 
         waitForStart();
 
-        stopTensorFLow();  // better to close TF, to avoid USB instability causing issue; and in case need to run vuforia localization;
 
-        if (DriveConstantsPID.USE_VUFORIA_LOCALIZER) {
-            vuLocalizer = VuforiaCamLocalizer.getSingle_instance(hardwareMap,
-                    VuforiaCameraChoice.PHONE_BACK, true);
-        }
+        Thread cameraHandler = new Thread() {
+            public void run() {
+                stopTensorFLow();  // better to close TF, to avoid USB instability causing issue; and in case need to run vuforia localization;
+
+                if (DriveConstantsPID.USE_VUFORIA_LOCALIZER) {
+                    vuLocalizer = VuforiaCamLocalizer.getSingle_instance(hardwareMap,
+                            VuforiaCameraChoice.PHONE_BACK, true);
+                }
+            }
+        };
+        cameraHandler.start();
 
         if (opModeIsActive() && fieldPosition != null) {
             if(skystonePositions != null || fieldPosition == FieldPosition.RED_FOUNDATION_PARK || fieldPosition == FieldPosition.BLUE_FOUNDATION_PARK) {
@@ -199,16 +205,12 @@ public class MainAutonomous extends LinearOpMode {
                 //resetLiftEncoder();
                 switch (fieldPosition) {
                     case RED_QUARY:
-                        if(skystonePositions[0] > 3)
-                            skystonePositions = new int[]{3, 6};
                         path.RedQuary(skystonePositions, vuLocalizer);
                         break;
                     case RED_FOUNDATION_PARK:
                         path.RedFoundationPark();
                         break;
                     case BLUE_QUARY:
-                        if(skystonePositions[0] > 3)
-                            skystonePositions = new int[]{3, 6};
                         path.BlueQuary(skystonePositions, vuLocalizer);
                         break;
                     case BLUE_FOUNDATION_PARK:

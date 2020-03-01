@@ -55,7 +55,7 @@
       <!--drive.getPoseEstimate().getX() - coordinates[step_count].getX()-->
       <x>14.0</x>
       <!--_drive.getPoseEstimate().getY() - coordinates[step_count].getY()-->
-      <y>-22.0</y>
+      <y>-24.0</y>
       <h>180.0</h>
    </movestep>
 

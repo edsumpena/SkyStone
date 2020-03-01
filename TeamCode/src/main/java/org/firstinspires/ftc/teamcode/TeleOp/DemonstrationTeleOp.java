@@ -230,7 +230,7 @@ public class DemonstrationTeleOp extends LinearOpMode {
                                     } catch (Exception e) {
                                     }
                                 } else {
-                                    hwMap.redAutoClawJoint2.setPosition(0.117);
+                                    hwMap.redAutoClawJoint2.setPosition(0.04);
 
                                     try {
                                         Thread.sleep(300);
