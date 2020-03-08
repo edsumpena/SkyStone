@@ -330,6 +330,8 @@ public class Teleop extends LinearOpMode {
 
             telemetry.addData("LiftOne", hwMap.liftOne.getCurrentPosition());
 
+            telemetry.update();
+
         }
 
 
@@ -449,16 +451,15 @@ public class Teleop extends LinearOpMode {
                         drivetrain.stop();
                     }
 
-                    telemetry.addData("Gamepad 1 State", gamepad1.toString());
+                    /*telemetry.addData("Gamepad 1 State", gamepad1.toString());
 
                     long deltaTime = System.nanoTime() - lastUpdateTime;
                     telemetry.addData("Time since last update", deltaTime);
                     if (deltaTime != 0) {
                         telemetry.addData("UPS", 1000000000 / deltaTime);
                     }
-                    telemetry.update();
 
-                    lastUpdateTime = System.nanoTime();
+                    lastUpdateTime = System.nanoTime();*/
 
                 }
             }
@@ -501,39 +502,40 @@ public class Teleop extends LinearOpMode {
             public void run() {
                 while (opModeIsActive()) {
                     if (gamepad2.left_bumper && !blocker) {
+                        blocker = true;
+
                         if (!intake) {
-                            hwMap.clawServo1.setPosition(TeleopConstants.clawServo1PosOpen);
-                            hwMap.clawServo2.setPosition(TeleopConstants.clawServo2PosOpen);
                             intake = true;
                             outake = false;
+                            hwMap.clawServo1.setPosition(TeleopConstants.clawServo1PosOpen);
+                            hwMap.clawServo2.setPosition(TeleopConstants.clawServo2PosOpen);
                         } else {
+                            intake = false;
+                            outake = false;
                             hwMap.clawServo1.setPosition(TeleopConstants.clawServo1Prep);
                             Path.sleep_millisec_opmode(250, opmode);
                             hwMap.clawServo2.setPosition(TeleopConstants.clawServo2PosClose);
                             Path.sleep_millisec_opmode(250, opmode);
                             hwMap.clawServo1.setPosition(TeleopConstants.clawServo1PosClose);
-                            intake = false;
-                            outake = false;
                         }
-                        blocker = true;
                     }
 
                     if (gamepad2.right_bumper && !blocker) {
+                        blocker = true;
                         if (!outake) {
-                            hwMap.clawServo1.setPosition(TeleopConstants.clawServo1PosReceive);
-                            hwMap.clawServo2.setPosition(TeleopConstants.clawServo2Block);
                             intake = false;
                             outake = true;
+                            hwMap.clawServo1.setPosition(TeleopConstants.clawServo1PosReceive);
+                            hwMap.clawServo2.setPosition(TeleopConstants.clawServo2Block);
                         } else {
+                            intake = false;
+                            outake = false;
                             hwMap.clawServo1.setPosition(TeleopConstants.clawServo1Prep);
                             Path.sleep_millisec_opmode(250, opmode);
                             hwMap.clawServo2.setPosition(TeleopConstants.clawServo2PosClose);
                             Path.sleep_millisec_opmode(250, opmode);
                             hwMap.clawServo1.setPosition(TeleopConstants.clawServo1PosClose);
-                            intake = false;
-                            outake = false;
                         }
-                        blocker = true;
                     }
 
                     if (!gamepad2.right_bumper && !gamepad2.left_bumper && !gamepad1.dpad_down)

@@ -481,24 +481,12 @@ public class Path {
         initIntakeClaw(hwMap, opMode);
         sleep_millisec_opmode(5000, opMode);
 
-        hwMap.frontRight.setPower(0.5);
-        hwMap.frontLeft.setPower(0.5);
-        hwMap.backRight.setPower(0.7);
-        hwMap.backLeft.setPower(0.7);
-
-        sleep_millisec_opmode(400, opMode);
-
-        hwMap.frontRight.setPower(0);
-        hwMap.frontLeft.setPower(0);
-        hwMap.backRight.setPower(0);
-        hwMap.backLeft.setPower(0);
-
-       /* DriveBuilderReset(false, false, "step");
+        DriveBuilderReset(false, false, "step");
         builder = builder.forward(24);
         trajectory = builder.build();   //x - 2.812, y + 7.984
         if (opMode.opModeIsActive())
             _drive.followTrajectorySync(trajectory);
-        intake(hwMap, 0);*/
+        intake(hwMap, 0);
     }
 
     public void BlueQuary(int[] skystonePositions, VuforiaCamLocalizer vuLocalizer) {    // (-x, y)
@@ -532,22 +520,11 @@ public class Path {
         initIntakeClaw(hwMap, opMode);
         sleep_millisec_opmode(5000, opMode);
 
-        /*DriveBuilderReset(false, false, "step");
+        DriveBuilderReset(false, false, "step");
         builder = builder.forward(24);
         trajectory = builder.build();   //x - 2.812, y + 7.984
         if (opMode.opModeIsActive())
-            _drive.followTrajectorySync(trajectory);*/
-        hwMap.frontRight.setPower(0.5);
-        hwMap.frontLeft.setPower(0.5);
-        hwMap.backRight.setPower(0.7);
-        hwMap.backLeft.setPower(0.7);
-
-        sleep_millisec_opmode(400, opMode);
-
-        hwMap.frontRight.setPower(0);
-        hwMap.frontLeft.setPower(0);
-        hwMap.backRight.setPower(0);
-        hwMap.backLeft.setPower(0);
+            _drive.followTrajectorySync(trajectory);
     }
 
     public void BlueFoundationDrag() {

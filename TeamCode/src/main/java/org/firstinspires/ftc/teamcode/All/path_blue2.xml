@@ -62,7 +62,7 @@
    <movestep drive_type = "8, spline, after drop foundation, to back to parking, absulate XY, not delta">
       <!--not delta -->
       <x>5.0</x>
-      <y>37.0</y>
+      <y>38.5</y>
       <h>180.0</h>
    </movestep>
 </pathXY>
