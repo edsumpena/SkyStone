@@ -33,7 +33,9 @@ import java.util.List;
 
 import static org.firstinspires.ftc.teamcode.PID.DriveConstantsPID.BASE_CONSTRAINTS;
 import static org.firstinspires.ftc.teamcode.PID.DriveConstantsPID.ROTATION_CONSTRAINTS;
+import static org.firstinspires.ftc.teamcode.PID.DriveConstantsPID.SPLINE_CONSTRAINTS;
 import static org.firstinspires.ftc.teamcode.PID.DriveConstantsPID.STRAFE_BASE_CONSTRAINTS;
+import static org.firstinspires.ftc.teamcode.PID.DriveConstantsPID.STRAFE_BASE_CONSTRAINTS_FAST;
 import static org.firstinspires.ftc.teamcode.PID.DriveConstantsPID.TRACK_WIDTH;
 import static org.firstinspires.ftc.teamcode.PID.util.DashboardUtil.drawRobot;
 import static org.firstinspires.ftc.teamcode.PID.util.DashboardUtil.drawSampledPath;
@@ -147,7 +149,7 @@ public abstract class SampleMecanumDriveBase extends MecanumDrive {
         waitForIdle();
     }
 
-    public void resetFollowerWithParameters(boolean strafe, boolean rotating){
+    public void resetFollowerWithParameters(boolean strafe, boolean rotating, boolean spline){
         addSpacer();
         RobotLogger.dd("Pre-Reinstantiate Error", follower.getLastError() + "");
         RobotLogger.dd("Follower PID Constants", strafe ? "STRAFE" : "BASE");
@@ -176,6 +178,64 @@ public abstract class SampleMecanumDriveBase extends MecanumDrive {
             HEADING_PID = new PIDCoefficients(DriveConstantsPID.hP, DriveConstantsPID.hI, DriveConstantsPID.hD);
 
             constraints = new MecanumConstraints(ROTATION_CONSTRAINTS, TRACK_WIDTH);
+        }
+
+        if(spline){
+            xTRANSLATIONAL_PID = new PIDCoefficients(DriveConstantsPID.stxP, DriveConstantsPID.stxI, DriveConstantsPID.stxD);
+            yTRANSLATIONAL_PID = new PIDCoefficients(DriveConstantsPID.styP, DriveConstantsPID.styI, DriveConstantsPID.styD);
+            HEADING_PID = new PIDCoefficients(DriveConstantsPID.shP, DriveConstantsPID.shI, DriveConstantsPID.shD);
+
+            constraints = new MecanumConstraints(SPLINE_CONSTRAINTS, TRACK_WIDTH);
+        }
+
+        turnController = new PIDFController(HEADING_PID);
+        turnController.setInputBounds(0, 2 * Math.PI);
+        follower = new HolonomicPIDVAFollower(xTRANSLATIONAL_PID, yTRANSLATIONAL_PID, HEADING_PID);
+        RobotLogger.dd("STATUS", "Re-Inited Follower");
+        RobotLogger.dd("Post-Reinstantiate Error", follower.getLastError() + "");
+        addSpacer();
+    }
+
+    public void resetFollowerWithParameters(boolean strafe, boolean rotating, boolean spline, int firstSkystonePos){
+        addSpacer();
+        RobotLogger.dd("Pre-Reinstantiate Error", follower.getLastError() + "");
+        RobotLogger.dd("Follower PID Constants", strafe ? "STRAFE" : "BASE");
+        if (!strafe) {
+            RobotLogger.dd(TAG, "using non-strafing PID, maxVel: %f, maxAccl: %f", BASE_CONSTRAINTS.maxVel, BASE_CONSTRAINTS.maxAccel);
+            xTRANSLATIONAL_PID = new PIDCoefficients(DriveConstantsPID.txP, DriveConstantsPID.txI, DriveConstantsPID.txD);
+            yTRANSLATIONAL_PID = new PIDCoefficients(DriveConstantsPID.tyP, DriveConstantsPID.tyI, DriveConstantsPID.tyD);
+            HEADING_PID = new PIDCoefficients(DriveConstantsPID.hP, DriveConstantsPID.hI, DriveConstantsPID.hD);
+
+            constraints = new MecanumConstraints(BASE_CONSTRAINTS, TRACK_WIDTH);
+        }
+        else
+        {
+            RobotLogger.dd(TAG, "using strafing PID, maxVel: %f, maxAccl: %f", STRAFE_BASE_CONSTRAINTS.maxVel, STRAFE_BASE_CONSTRAINTS.maxAccel);
+            xTRANSLATIONAL_PID = new PIDCoefficients(DriveConstantsPID.stxP, DriveConstantsPID.stxI, DriveConstantsPID.stxD);
+            yTRANSLATIONAL_PID = new PIDCoefficients(DriveConstantsPID.styP, DriveConstantsPID.styI, DriveConstantsPID.styD);
+            HEADING_PID = new PIDCoefficients(DriveConstantsPID.shP, DriveConstantsPID.shI, DriveConstantsPID.shD);
+
+            if(firstSkystonePos == 1)
+                constraints = new MecanumConstraints(STRAFE_BASE_CONSTRAINTS_FAST, TRACK_WIDTH);
+            else
+                constraints = new MecanumConstraints(STRAFE_BASE_CONSTRAINTS, TRACK_WIDTH);
+
+        }
+
+        if(rotating){
+            xTRANSLATIONAL_PID = new PIDCoefficients(DriveConstantsPID.txP, DriveConstantsPID.txI, DriveConstantsPID.txD);
+            yTRANSLATIONAL_PID = new PIDCoefficients(DriveConstantsPID.tyP, DriveConstantsPID.tyI, DriveConstantsPID.tyD);
+            HEADING_PID = new PIDCoefficients(DriveConstantsPID.hP, DriveConstantsPID.hI, DriveConstantsPID.hD);
+
+            constraints = new MecanumConstraints(ROTATION_CONSTRAINTS, TRACK_WIDTH);
+        }
+
+        if(spline){
+            xTRANSLATIONAL_PID = new PIDCoefficients(DriveConstantsPID.stxP, DriveConstantsPID.stxI, DriveConstantsPID.stxD);
+            yTRANSLATIONAL_PID = new PIDCoefficients(DriveConstantsPID.styP, DriveConstantsPID.styI, DriveConstantsPID.styD);
+            HEADING_PID = new PIDCoefficients(DriveConstantsPID.shP, DriveConstantsPID.shI, DriveConstantsPID.shD);
+
+            constraints = new MecanumConstraints(SPLINE_CONSTRAINTS, TRACK_WIDTH);
         }
 
         turnController = new PIDFController(HEADING_PID);

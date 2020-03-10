@@ -42,8 +42,8 @@ public class DriveConstantsPID {
 
     public static final boolean RUN_USING_PARAMTER_FROM_PROPERTIES = false;
 
-    public static boolean RUN_USING_ODOMETRY_WHEEL = false;
-    public static boolean RUN_USING_IMU_LOCALIZER = true;
+    public static boolean RUN_USING_ODOMETRY_WHEEL = true;
+    public static boolean RUN_USING_IMU_LOCALIZER = false;
     public static boolean BRAKE_ON_ZERO = true;
     public static boolean USING_BULK_READ = true;
     public static boolean USING_STRAFE_DIAGONAL = true;
@@ -54,20 +54,20 @@ public class DriveConstantsPID {
     public static double odoEncoderTicksPerRevFront = 1565.0;
     public static double imuPollingInterval = 10;
     public static boolean forceOdomInStrafe = true;
-    public static boolean ENABLE_LOGGING = false;
+    public static boolean ENABLE_LOGGING = true;
     public static double TEST_SKY_STONE_POSITION = 1;
     public static boolean ENABLE_ARM_ACTIONS = true;
     public static double TEST_PAUSE_TIME = 1;  // milli-seconds;
 
     private static String TAG = "DriveConstants";
 
-    public static double txP = 5.0; //translational x/y co-efficients
+    public static double txP = 8.0; //translational x/y co-efficients
     public static double txI = 0.5;
     public static double txD = 0.0;
-    public static double tyP = 5.0;
-    public static double tyI = 10.0;
-    public static double tyD = 0.00001;
-    public static double hP = 10;    // heading co-efficients;
+    public static double tyP = 10.0;
+    public static double tyI = 4.0;
+    public static double tyD = 3.00001;
+    public static double hP = 12.0;    // heading co-efficients;
     public static double hI = 0.5;
     public static double hD = 0.00001;
 
@@ -132,10 +132,12 @@ public class DriveConstantsPID {
     public static double kStatic = 0;
 	public static double TEST_DISTANCE = 48;
     public static double TEST_DISTANCE_0 = 24;
-	public static double maxVel = 75.0; //90.0
+	public static double maxVel = 70.0; //90.0
 	public static double maxAccel = 35.0;   //35.0
     public static double strafeMaxVel = 25.0; //40.0
     public static double strafeMaxAccel = 7.0;   //20.0
+    public static double splineMaxVel = 50.0;
+    public static double splineMaxAcc = 30.0;
     public static double maxAngVel = 135.0;
     public static double maxAngAccel = 90.0;
 	public static boolean keep_vuforia_running = false;
@@ -160,9 +162,18 @@ public class DriveConstantsPID {
             Math.toRadians(maxAngVel), Math.toRadians(maxAngAccel), 0.0
     );
 
+    public static DriveConstraints STRAFE_BASE_CONSTRAINTS_FAST = new DriveConstraints(
+            40.0, 20.0, 0.0,    //20.0, 10.0, 0.0
+            Math.toRadians(maxAngVel), Math.toRadians(maxAngAccel), 0.0
+    );
+
     public static DriveConstraints ROTATION_CONSTRAINTS = new DriveConstraints(
             maxVel, maxAccel, 0.0,
-            Math.toRadians(270.0), Math.toRadians(180.0), 0.0
+            Math.toRadians(360.0), Math.toRadians(270.0), 0.0
+    );
+
+    public static DriveConstraints SPLINE_CONSTRAINTS = new DriveConstraints(
+          splineMaxVel, splineMaxAcc, 0.0, Math.toRadians(270.0), Math.toRadians(180.0), 0.0
     );
 
     public static double encoderTicksToInches(double ticks) {

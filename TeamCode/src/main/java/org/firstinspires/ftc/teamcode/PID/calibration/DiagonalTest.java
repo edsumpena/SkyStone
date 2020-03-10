@@ -55,8 +55,8 @@ public class DiagonalTest extends LinearOpMode {
             //_drive.getLocalizer().setPoseEstimate(new Pose2d(0, 0, 0));
 
             if (DriveConstantsPID.DIAGONAL_SPLIT)
-                Path.StrafeDiagonalHelper(_drive, new Vector2d(DriveConstantsPID.TEST_DISTANCE, DriveConstantsPID.TEST_DISTANCE_0));
-            else {
+                //StrafeDiagonalHelper(_drive, new Vector2d(DriveConstantsPID.TEST_DISTANCE, DriveConstantsPID.TEST_DISTANCE_0));
+            /*else*/ {
                 Trajectory trajectory = _drive.trajectoryBuilder()
                         .strafeTo(new Vector2d(DriveConstantsPID.TEST_DISTANCE, DriveConstantsPID.TEST_DISTANCE_0))
                         .build();
@@ -83,11 +83,11 @@ public class DiagonalTest extends LinearOpMode {
             Path.sleep_millisec_opmode(2000, this);
 
             if (DriveConstantsPID.RESET_FOLLOWER)
-                _drive.resetFollowerWithParameters(DriveConstantsPID.USING_STRAFE_DIAGONAL, false);
+                _drive.resetFollowerWithParameters(DriveConstantsPID.USING_STRAFE_DIAGONAL,false, false);
 
             if (DriveConstantsPID.DIAGONAL_SPLIT)
-                Path.StrafeDiagonalHelper(_drive, new Vector2d(0, 0));
-            else {
+                /*Path.StrafeDiagonalHelper(_drive, new Vector2d(0, 0));
+            else*/ {
                 Trajectory trajectory = _drive.trajectoryBuilder()
                         .strafeTo(new Vector2d(0, 0))
                         .build();
@@ -98,7 +98,7 @@ public class DiagonalTest extends LinearOpMode {
             error_pose = _drive.follower.getLastError();
             RobotLogger.dd(TAG, "currentPos %s, errorPos %s", currentPos.toString(), error_pose.toString());
             if (DriveConstantsPID.RESET_FOLLOWER)
-                _drive.resetFollowerWithParameters(DriveConstantsPID.USING_STRAFE_DIAGONAL, false);
+                _drive.resetFollowerWithParameters(DriveConstantsPID.USING_STRAFE_DIAGONAL,false, false);
 
             Path.sleep_millisec_opmode(5000, this);
         }

@@ -11,14 +11,14 @@ adb shell setprop debug.ftc.skystonePos 2
 adb shell setprop debug.ftc.pause 1
 adb shell setprop debug.ftc.vuforia 0
 adb shell setprop debug.ftc.bulk 0
-adb shell setprop debug.ftc.imu 1
+adb shell setprop debug.ftc.imu 0
 adb shell setprop debug.ftc.resetfollow 1
 adb shell setprop debug.ftc.forceOdom 1
 adb shell setprop debug.ftc.diagsplit 1
 adb shell setprop debug.ftc.imuInterval 10
 adb shell setprop debug.ftc.grab 0
 rem ---------------- odometry parameters -----------------
-adb shell setprop debug.ftc.odom 0
+adb shell setprop debug.ftc.odom 1
 adb shell setprop debug.ftc.odoTicksPerRevLeft 1565
 adb shell setprop debug.ftc.odoTicksPerRevRight 1565
 adb shell setprop debug.ftc.odoTicksPerRevFront 1565
@@ -29,8 +29,8 @@ adb shell setprop debug.ftc.brake 1
 adb shell setprop debug.ftc.recreateDrv 0
 adb shell setprop debug.ftc.drvCorrect 0
 rem (-24, 24) for strafe diagonal
-adb shell setprop debug.ftc.distance -40
-adb shell setprop debug.ftc.distance0 50
+adb shell setprop debug.ftc.distance 48
+adb shell setprop debug.ftc.distance0 24
 adb shell setprop debug.ftc.strafeDiag 1
 adb shell setprop debug.ftc.trackwidth 14.2
 adb shell setprop debug.ftc.maxVel 70.0
@@ -44,12 +44,12 @@ adb shell setprop debug.ftc.kP 1.72
 adb shell setprop debug.ftc.kI 0.172
 adb shell setprop debug.ftc.kD 0.0
 rem ----------------------- transitional PID ---------------------
-adb shell setprop debug.ftc.txP 5.0
+adb shell setprop debug.ftc.txP 8.0
 adb shell setprop debug.ftc.txI 0.5
 adb shell setprop debug.ftc.txD 0.00001
-adb shell setprop debug.ftc.tyP 5.0
-adb shell setprop debug.ftc.tyI 10.0
-adb shell setprop debug.ftc.tyD 0.00001
+adb shell setprop debug.ftc.tyP 8.0
+adb shell setprop debug.ftc.tyI 4.0
+adb shell setprop debug.ftc.tyD 3.00001
 rem ------------------------ heading PID ------------------
 adb shell setprop debug.ftc.hP 10.0
 adb shell setprop debug.ftc.hI 0.5

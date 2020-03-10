@@ -37,13 +37,6 @@
       <h>0.0</h>
    </movestep>
 
-   <movestep drive_type = "5, strafe, after drop 2nd, strafe away from foundation">
-      <!---(-7, -10)-->
-      <x>45.0</x>
-      <y>-41.0</y>
-      <h>0.0</h>
-   </movestep>
-
    <movestep drive_type = "6, reverse true, lineto, after turn, to lock foundation, this is delta!!!">
       <!--not using X-->
       <x>0.0</x>

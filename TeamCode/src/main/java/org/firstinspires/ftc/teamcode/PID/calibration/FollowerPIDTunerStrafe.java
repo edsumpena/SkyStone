@@ -51,7 +51,7 @@ public class FollowerPIDTunerStrafe extends LinearOpMode {
 
             if (DriveConstantsPID.USING_STRAFE_DIAGONAL == true) {
                 if (DriveConstantsPID.RESET_FOLLOWER)
-                    _drive.resetFollowerWithParameters(DriveConstantsPID.USING_STRAFE_DIAGONAL, false);
+                    _drive.resetFollowerWithParameters(DriveConstantsPID.USING_STRAFE_DIAGONAL, false,false);
 
                 _drive.followTrajectorySync(
                         _drive.trajectoryBuilder()
@@ -60,7 +60,7 @@ public class FollowerPIDTunerStrafe extends LinearOpMode {
             }
             else {
                 if (DriveConstantsPID.RESET_FOLLOWER)
-                    _drive.resetFollowerWithParameters(DriveConstantsPID.USING_STRAFE_DIAGONAL, false);
+                    _drive.resetFollowerWithParameters(DriveConstantsPID.USING_STRAFE_DIAGONAL, false,false);
 
                 _drive.followTrajectorySync(
                         _drive.trajectoryBuilder()

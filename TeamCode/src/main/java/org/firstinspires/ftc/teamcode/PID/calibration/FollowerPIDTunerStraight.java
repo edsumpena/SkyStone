@@ -20,7 +20,6 @@ import org.firstinspires.ftc.teamcode.PID.mecanum.SampleMecanumDriveREVOptimized
  */
 @Config
 @Autonomous(name = "FollowerPIDTunerStraight", group = "drive")
-@Disabled
 public class FollowerPIDTunerStraight extends LinearOpMode {
     public static double DISTANCE = 0; // update later;
     private String TAG = "FollowerPIDTunerStraight";
@@ -49,7 +48,7 @@ public class FollowerPIDTunerStraight extends LinearOpMode {
             //drive.setPoseEstimate(drive.getPoseEstimate());
 
             if (DriveConstantsPID.RESET_FOLLOWER)
-                drive.resetFollowerWithParameters(false, false);
+                drive.resetFollowerWithParameters(false, false,false);
 
             drive.followTrajectorySync(
                     drive.trajectoryBuilder()
@@ -63,7 +62,7 @@ public class FollowerPIDTunerStraight extends LinearOpMode {
             Path.sleep_millisec_opmode(2000, this);
 
             if (DriveConstantsPID.RESET_FOLLOWER)
-                drive.resetFollowerWithParameters(false, false);
+                drive.resetFollowerWithParameters(false, false,false);
 
             drive.followTrajectorySync(
                     drive.trajectoryBuilder()

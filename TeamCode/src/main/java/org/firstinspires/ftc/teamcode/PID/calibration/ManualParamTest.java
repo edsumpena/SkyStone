@@ -35,7 +35,6 @@ import static org.firstinspires.ftc.teamcode.PID.DriveConstantsPID.RUN_USING_ENC
  */
 @Config
 @Autonomous(name = "ManualParamTest", group = "drive")
-@Disabled
 public class ManualParamTest extends LinearOpMode {
     private DcMotorEx leftFront, leftRear, rightRear, rightFront;
     private List<DcMotorEx> motors;

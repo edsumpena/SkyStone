@@ -110,7 +110,7 @@ public class RunTrajectoryFromString {
             //RobotLog.dd("TrajectoryRunner", "start new step: %s, count[%d], currentPos %s, errorPos %s",
             //        label, step_count, currentPos.toString(), error_pose.toString());
 
-            rev.resetFollowerWithParameters(isStrafe, false);
+            rev.resetFollowerWithParameters(isStrafe, false, false);
 
             //_drive = new SampleMecanumDriveREV(hardwareMap, isStrafe, init_imu);
             rev.getLocalizer().setPoseEstimate(currentPos);
