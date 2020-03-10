@@ -14,6 +14,7 @@ import org.firstinspires.ftc.teamcode.All.HardwareMap;
 import org.firstinspires.ftc.teamcode.All.Lift;
 import org.firstinspires.ftc.teamcode.Autonomous.FieldPosition;
 import org.firstinspires.ftc.teamcode.Autonomous.Path;
+import org.firstinspires.ftc.teamcode.PID.RobotLogger;
 import org.firstinspires.ftc.teamcode.TeleOp.ToggleButtons.GamepadButtons;
 import org.firstinspires.ftc.teamcode.TeleOp.ToggleButtons.OnOffButton;
 
@@ -163,8 +164,24 @@ public class Teleop extends LinearOpMode {
             Path.sleep_millisec_opmode(200, this);
         }
         hwMap.innerTransfer.setPosition(TeleopConstants.innerTransferPosClosed);
-
+        boolean TESTSTARTED = false;
         while (opModeIsActive()) {
+
+            if((hwMap.backRight.getPower() != 0) && !TESTSTARTED){
+                TESTSTARTED = true;
+            }
+
+            if(TESTSTARTED) {
+                RobotLogger.dd("backLeftPower: ", ((Double) hwMap.backLeft.getPower()).toString());
+                RobotLogger.dd("backRightPower: ", ((Double) hwMap.backRight.getPower()).toString());
+                RobotLogger.dd("frontLeftPower: ", ((Double) hwMap.frontLeft.getPower()).toString());
+                RobotLogger.dd("frontRightPower: ", ((Double) hwMap.frontRight.getPower()).toString());
+
+                RobotLogger.dd("backLeftVelocity: ", ((Double) hwMap.backLeft.getVelocity()).toString());
+                RobotLogger.dd("backRightVelocity: ", ((Double) hwMap.backRight.getVelocity()).toString());
+                RobotLogger.dd("frontLeftVelocity: ", ((Double) hwMap.frontLeft.getVelocity()).toString());
+                RobotLogger.dd("frontRightVelocity: ", ((Double) hwMap.frontRight.getVelocity()).toString());
+            }
 
             if (gamepad2.a && buttonLogic.get(0).getState()[0]) {
                 hwMap.transferHorn.setPosition(TeleopConstants.transferHornPosReady);

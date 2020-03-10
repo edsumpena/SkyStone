@@ -1,0 +1,4 @@
+cmd logfilename ps_name
+u0_a198   2387  363   1856856 192500 sys_epoll_ 00000000 S com.qualcomm.ftcrobotcontroller
+2387
+Terminate batch job (Y/N)? 

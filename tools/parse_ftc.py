@@ -302,7 +302,7 @@ with open(filepath) as fp:
 fp.close();
 
 print("===============summary==========================")
-t = max_power_time.strftime('%H:%M:%S.%f');
+#t = max_power_time.strftime('%H:%M:%S.%f');
 max_power_time = t[:-3];
 print("max power to wheel: ", max_power, " timestamp: ", max_power_time, " timeoffset: ", max_power_delta)
 
@@ -345,8 +345,9 @@ print("max error: ", max_final_x_err, max_final_y_err, max_final_heading_err);
 print("last error: ", last_x_err, last_y_err, last_h_err);
 #print("start time(in miliseconds): ", start_time.timestamp() * 1000, " end time: ", end_time.timestamp() * 1000);
 print(filepath);
-
+"""
 if print_summary != 0:
+    """
     plt.style.use('ggplot')
     #plt.legend(bbox_to_anchor=(0., 1.02, 1., .102), loc='lower left', ncol=3, mode="expand", borderaxespad=0.);
     plt.plot(data_time, data_x, label="xError");
@@ -364,7 +365,7 @@ if print_summary != 0:
     plt.scatter(auto_time, nm.add(auto_x, auto_x1),  zorder=2)
     plt.xlabel('time (seconds)');
     plt.ylabel('distance(inches)');
-    plt.legend();
+    plt.legend();   
     plt.figure();
 
     plt.plot(data_time, nm.add(data_y, data_y_raw), label="target Y");
@@ -432,7 +433,7 @@ if print_summary != 0:
         #plt.plot(new_y[i], 600-new_x[i])
     plt.plot(new_y, new_x)
     implot = plt.imshow(im);
+    plt.show()
 
-    plt.show();
     #plt.waitforbuttonpress(1); input();
     #plt.close('all')

@@ -40,7 +40,7 @@ import org.w3c.dom.Element;
 @Config
 public class DriveConstantsPID {
 
-    public static final boolean RUN_USING_PARAMTER_FROM_PROPERTIES = false;
+    public static final boolean RUN_USING_PARAMTER_FROM_PROPERTIES = true;
 
     public static boolean RUN_USING_ODOMETRY_WHEEL = false;
     public static boolean RUN_USING_IMU_LOCALIZER = true;
@@ -54,7 +54,7 @@ public class DriveConstantsPID {
     public static double odoEncoderTicksPerRevFront = 1565.0;
     public static double imuPollingInterval = 10;
     public static boolean forceOdomInStrafe = true;
-    public static boolean ENABLE_LOGGING = false;
+    public static boolean ENABLE_LOGGING = true;
     public static double TEST_SKY_STONE_POSITION = 1;
     public static boolean ENABLE_ARM_ACTIONS = true;
     public static double TEST_PAUSE_TIME = 1;  // milli-seconds;
